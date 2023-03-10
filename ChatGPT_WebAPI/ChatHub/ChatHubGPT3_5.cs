@@ -124,6 +124,10 @@ namespace ChatGPT_WebAPI.ChatHub
                         if (Error.Contains("error"))
                         {
                             var ErrModel = JsonConvert.DeserializeObject<ChatGPT_Model.GPT3_5.ErrorBody>(Error.Trim(' '));
+                            if (ErrModel.error.type == "access_terminated"|| ErrModel.error.type == "insufficient_quota")
+                            {
+                                ApiKeyCacheTime.RemvoCache(APIKEY);
+                            }
                             DiLog.Add("5.", DateTime.Now.ToString() + "|接收异常:[代码:" + ErrModel.error.type + "][内容:" + ErrModel.error.message + "]");
                             await Clients.Caller.SendAsync("ErrMessage", "", ErrModel.error.message);//异常回复
                             await Log(DiLog);

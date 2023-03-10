@@ -1,0 +1,160 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="/lib/vant/css/index.css" />
+    <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
+    <title>@ViewBag.Title</title>
+    <style>
+        iframe {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0px;
+            bottom: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <transition :name="item.transition" v-for="(item,index) in route" :key="index">
+            <iframe :src="item.islode==true?item.url:''" v-show="index==active" data-scrolltop="0" frameborder="0" onload="Lode()"></iframe>
+        </transition>
+        <van-tabbar v-show="TabbarShow" v-model="active" safe-area-inset-bottom fixed @@change="tabChange" :before-change="beforeChange">
+            <van-tabbar-item v-for="(item,index) in route" :key="index" :icon="item.icon" :dot="item.dot">{{item.name}}</van-tabbar-item>
+        </van-tabbar>
+    </div>
+
+    <!-- 引入 Vue 和 Vant 的 JS 文件 -->
+    <script src="/lib/vue/vue.js"></script>
+    <script src="/lib/vant/js/vant.js"></script>
+    <script>
+        function Lode() {
+            window.HomeVue.iframeLode();
+        }
+    </script>
+    <script>
+        // 在 #app 标签下渲染一个按钮组件
+        window.HomeVue = new Vue({
+            el: '#app',
+            data: {
+                active: 0,
+                route: [],
+                Index: 0,
+                TabbarShow: false,
+                isHaveBill: false,
+            },
+            methods: {
+                ChangeAI(botID) {
+                    this.route[0].url = `/ChatGPT/AI/GPT3_5Voice?botID=${botID}`;
+                    this.active = 0;
+                    this.tabChange(0);
+                },
+                HomeHref(url) {
+                    console.log(this.Index);
+                    sessionStorage.setItem("Index", this.Index);
+                    window.location.href = url;
+                },
+                //iframe加载完成事件
+                iframeLode() {
+                    vant.Toast.clear();
+                },
+                beforeChange(name) {
+                    if (!this.route[name].islode) {
+                        vant.Toast.loading({
+                            message: '加载中...',
+                            forbidClick: true,
+                            duration: 0,
+                        });
+                        setTimeout(() => {
+                            this.route[name].islode = true;
+                            //vant.Toast.clear();
+                        }, 500)
+                    }
+                    if (this.Index < name) {
+                        this.route[name].transition = 'van-slide-right';
+                        this.route[this.Index].transition = 'van-slide-left';
+                    } else {
+                        this.route[name].transition = 'van-slide-left';
+                        this.route[this.Index].transition = 'van-slide-right';
+                    }
+                    return true;
+                },
+                tabChange(index) {
+                    this.Index = index;
+                    window.location.hash= `#${index}`;
+                },
+            },
+            mounted() {
+                const that = this;
+
+                window.addEventListener('pageshow', function (event) {
+                    // 点击回退按钮返回
+                    if (event.persisted || window.performance && window.performance.navigation.type == 2) {
+
+                        const href = window.location.hash;
+                        if (href) {
+                            let maodianID = href.replace('#', '');
+                            that.active = Number.parseInt(maodianID);
+                            that.Index = Number.parseInt(maodianID);
+                        }
+                        const Storage = sessionStorage.getItem("Index");
+                        console.log('Storage', Storage);
+                        if (Storage) {
+                            that.active = Number.parseInt(Storage);
+                            that.Index = Number.parseInt(Storage);
+                        }
+                    } else {
+                        const href = window.location.hash;
+                        if (href) {
+                            let maodianID = href.replace('#', '');
+                            that.active = Number.parseInt(maodianID);
+                            that.Index = Number.parseInt(maodianID);
+                        }
+                    }
+                    that.route = [];
+                    const list = [
+                        {
+                            url: '/ChatGPT/AI/GPT3_5',
+                            name: 'ChatGPT',
+                            icon: 'chat-o',
+                            transition: 'van-slide-right',
+                            Index: 0,
+                            islode: false,
+                            dot: true,
+                        },
+                        //{
+                        //    url: '/ChatGPT/Scene/Index',
+                        //    name: '情景模式',
+                        //    icon: 'cluster-o',
+                        //    transition: 'van-slide-right',
+                        //    Index: 1,
+                        //    islode: false,
+                        //    dot: false,
+                        //},
+                        {
+                            url: '/ChatGPT/My',
+                            name: '个人中心',
+                            icon: 'user-o',
+                            transition: 'van-slide-right',
+                            Index: 2,
+                            islode: false,
+                            dot: false,
+                        }];
+                    list[that.Index].islode = true;
+                    list.forEach((item) => {
+                        that.route.push(item);
+                    });
+                    that.TabbarShow = true;
+                }, false)
+            }
+        });
+    </script>
+</body>
+</html>

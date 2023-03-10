@@ -1,0 +1,33 @@
+﻿{
+    "text": "你说的这些内容，希望能用对应的Json 数据重新对应举例说明",
+    "context": [
+        {
+            "question": "详细讲述，chatgpt api 接入时，context 内包含的参数和详细的说明及用法",
+            "answer": {
+                //AI信息
+                "userInfo": {
+                    "id": "123456", //用户ID
+                    "name": "John Doe", //昵称
+                    "gender": "male", //性别
+                    "age": 25 //年龄
+                },
+                //会话信息
+                "sessionInfo": {
+                    "id": "001" //会话的 ID
+                },
+                //上下文信息
+                "contextInfo": [
+                    {
+                        "previousContent": "我想去旅行?", 
+                        "previousResult": "推荐你去香港" 
+                    }
+                ],
+                //其他信息
+                "otherInfo": {
+                    "location": "New York",//位置
+                    "deviceType": "mobile"//设备类型
+                }
+            }
+        }
+    ]
+}

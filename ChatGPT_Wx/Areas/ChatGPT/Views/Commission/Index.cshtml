@@ -1,0 +1,270 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="/lib/vant/css/index.css" />
+    <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
+    <title>@ViewBag.Title</title>
+    <style>
+        html {
+            background-color: #e0f0ff;
+        }
+
+        .CTitle {
+            font-size: 14px;
+            color: #727272;
+        }
+
+        .CMain {
+            font-size: 18px;
+            color: #1989fa;
+            font-weight: 500;
+        }
+
+        .Content {
+            color: #000000;
+        }
+
+        .ContentN {
+            color: #1989fa;
+        }
+        .flontBtn {
+            position: fixed;
+            background-color: #1989fa;
+            width: 50px;
+            height: 50px;
+            z-index: 2;
+            color: #ffffff;
+            border-radius: 38px;
+            line-height: 16px;
+            right: 10px;
+            top: 97px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div class="flontBtn"><div style="width: 29px; margin: 0 auto; margin-top: 8px;" @@click="TX">佣金提现</div></div>
+        <van-nav-bar title="分佣详情"
+                     left-text="返回"
+                     right-text="推广对象"
+                     left-arrow
+                     @@click-left="onClickLeft"
+                     @@click-right="onClickRight"></van-nav-bar>
+        <van-dropdown-menu>
+            <van-dropdown-item v-model="CheckState" :options="option" @@change="dropdown"></van-dropdown-item>
+            <van-dropdown-item title="时间" ref="item">
+                <van-cell center title="">
+                    <template #right-icon>
+                        <van-cell title="选择日期区间" :value="date" @@click="show = true"></van-cell>
+                    </template>
+                </van-cell>
+            </van-dropdown-item>
+        </van-dropdown-menu>
+        <van-cell-group inset :title="`合计金额：${Page.JE}元`">
+            <van-collapse v-model="activeName" accordion>
+                <van-collapse-item :name="Item.ID" v-for="(Item,Index) in List" :key="Index">
+                    <template #title>
+                        <div>
+                            <span class="CTitle">分佣：</span>
+                            <span class="CMain">{{Item.Commission}}</span>
+                            <span class="CTitle">元</span>
+                            <van-tag color="#bfbfbf" text-color="#ffffff" v-if="Item.CheckState==0">未提现</van-tag>
+                            <van-tag type="primary" v-else-if="Item.CheckState==2">提现中</van-tag>
+                            <van-tag type="success" v-else>已提现</van-tag>
+                        </div>
+                    </template>
+                    <van-row>
+                        <van-col span="12">推广对象</van-col>
+                        <van-col span="12" class="Content">{{Item.Buy_NikeName}}</van-col>
+                    </van-row>
+                    <van-row>
+                        <van-col span="12">支付时间</van-col>
+                        <van-col span="12" class="Content">{{Item.BackStamp}}</van-col>
+                    </van-row>
+                    <van-row>
+                        <van-col span="12">支付商品</van-col>
+                        <van-col span="12" class="Content">{{Item.CommodityName}}</van-col>
+                    </van-row>
+                    <van-row>
+                        <van-col span="12">支付原价</van-col>
+                        <van-col span="12" class="Content">{{Item.OrderAmountYuan}}元</van-col>
+                    </van-row>
+                    <van-row>
+                        <van-col span="12">分佣比例</van-col>
+                        <van-col span="12" class="Content">{{Item.ShareCommission}}</van-col>
+                    </van-row>
+                    <van-row>
+                        <van-col span="12">实际分佣</van-col>
+                        <van-col span="12" class="ContentN">{{Item.Commission}}元</van-col>
+                    </van-row>
+                </van-collapse-item>
+            </van-collapse>
+        </van-cell-group>
+        <div style="height:40px;"></div>
+        <van-pagination style="position:fixed;bottom:0;width:100%;"
+                        v-model="Page.PageNum"
+                        :total-items="Page.Total"
+                        :show-page-size="3"
+                        :items-per-page="10"
+                        force-ellipses></van-pagination>
+        <van-calendar v-model="show" type="range" @@confirm="onConfirm" :min-date="minDate"></van-calendar>
+        <van-popup v-model="PopupShow" position="bottom" :style="{ height: '90%' }">
+            <van-cell v-for="(Item,Index) in UserList" :key="Index">
+                <!-- 使用 title 插槽来自定义标题 -->
+                <template #title>
+                    <span class="custom-title">
+                        <van-image round
+                                   width="64px"
+                                   height="64px"
+                                   :src="Item.WxHeadUrl"></van-image>
+                    </span>
+                </template>
+                <template #right-icon>
+                    <div style="line-height:71px;">{{Item.NikeName}}</div>
+                </template>
+            </van-cell>
+        </van-popup>
+    </div>
+    <script src="/lib/vue/vue.js"></script>
+    <script src="/lib/vant/js/vant.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script>
+        // 在 #app 标签下渲染一个按钮组件
+        new Vue({
+            el: '#app',
+            data: {
+                CheckState: 0,
+                TimeStart: '',
+                TimeEnd: '',
+                option: [
+                    { text: '未提现', value: 0 },
+                    { text: '提现中', value: 2 },
+                    { text: '已提现', value: 1 }
+                ],
+                minDate: new Date(2023, 1, 1),
+                date: '',
+                activeName: '',
+                List: [],
+                UserList: [],
+                Page: {
+                    PageNum: 1,
+                    PageSize: 7,
+                    Total: 500,
+                    JE: 0.00,
+                },
+                show: false,
+                PopupShow: false
+            },
+            methods: {
+                TX() {
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/Commission/ChekedIsOk',
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        //满足提现要求，询问是否要提现
+                        vant.Dialog.confirm({
+                            title: '确认提现吗',
+                            message: `提现${res.DATACOUNT}笔，${res.SUM}元`,
+                        }).then(() => {
+                            axios({
+                                method: 'post',
+                                url: '/ChatGPT/Commission/Account',
+                                headers: {
+                                    'Content-Type': 'application/json; charset=UTF-8'
+                                },
+                            }).then(res => {
+                                vant.Notify({ type: 'success', message: '提现申请成功，请等待管理员处理！', duration: 5000 });
+                                this.GetList();
+                            }).catch(err => {
+
+                            })
+                        }).catch(() => {
+                            // on cancel
+                        });
+                    }).catch(err => {
+                        //不允许提现
+                        vant.Dialog.alert({
+                            title: '消息',
+                            message: err,
+                        }).then(() => {
+                            // on close
+                        });
+                    })
+                },
+                dropdown() {
+                    this.GetList();
+                },
+                onClickLeft() {
+                    history.back();
+                },
+                onClickRight() {
+                    this.PopupShow = true;
+                },
+                formatDate(date) {
+                    return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+                },
+                onConfirm(date) {
+                    const [start, end] = date;
+                    this.show = false;
+                    this.TimeStart = this.formatDate(start);
+                    this.TimeEnd = this.formatDate(end);
+                    this.date = `${this.TimeStart} - ${this.TimeEnd}`;
+                    this.GetList();
+                },
+                GetList() {
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/Commission/GetListPage',
+                        params: {
+                            TimeStart: this.TimeStart,
+                            TimeEnd: this.TimeEnd,
+                            CheckState: this.CheckState,
+                            PageNum: this.Page.PageNum,
+                            PageSize: this.Page.PageSize
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        this.List = res.DATA;
+                        this.Page.Total = res.DATACOUNT;
+                        this.Page.JE = res.DATASUM
+                    }).catch(err => {
+
+                    })
+                },
+                GetUserList() {
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/Commission/GetUserListPage',
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        this.UserList = res;
+                    }).catch(err => {
+
+                    })
+                }
+            },
+            created() {
+                this.GetList();
+                this.GetUserList();
+            },
+            mounted() {
+
+            }
+        })
+    </script>
+</body>
+</html>

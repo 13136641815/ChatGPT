@@ -1,0 +1,282 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="/lib/vant/css/index.css" />
+    <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
+    <title></title>
+    <style>
+        html {
+            background-color: #e0f0ff;
+        }
+
+        .div_content {
+        }
+
+        .van-popup--bottom {
+            bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div class="div_top">
+            <div class="Img">
+                <van-image round
+                           width="9rem"
+                           height="9rem"
+                           :src="UserInfo.WxHeadUrl" style="box-shadow: rgb(25, 137, 250) 0px 5px 0px -21px, rgb(25, 137, 250) 0px 0px 50px -11px"></van-image>
+            </div>
+            <div class="Info">
+                <div>
+                    <p class="P_ID">ID：{{UserInfo.ID}}</p>
+                    <p class="P_Name">{{UserInfo.NikeName}}</p>
+                    <van-tag type="primary" color="#ffc800" v-if="UserInfo.IsShowTime" size="large">SVIP</van-tag>
+                    <van-tag color="#8f8f8f" v-else size="large">游客</van-tag>
+                    <p class="P_Tips" v-if="UserInfo.IsShowTime">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
+                    <p class="P_Tips" v-else>剩余体验次数{{UserInfo.Free_Second}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="div_content" style="margin-top:30px;">
+            <van-cell-group inset>
+                <van-cell value="" is-link @@click="GoUrl('/ChatGPT/Pay/PayMember')">
+                    <!-- 使用 title 插槽来自定义标题 -->
+                    <template #title>
+                        <span class="custom-title">充值会员</span>
+                        <van-tag type="danger" color="#ffc800">SVIP</van-tag>
+                    </template>
+                </van-cell>
+                <van-cell value="" is-link @@click="showPopup=true">
+                    <!-- 使用 title 插槽来自定义标题 -->
+                    <template #title>
+                        <span class="custom-title">推广赚钱</span>
+                        <van-tag type="success">赚</van-tag>
+                    </template>
+                </van-cell>
+                <van-cell value="" is-link @@click="show=true">
+                    <!-- 使用 title 插槽来自定义标题 -->
+                    <template #title>
+                        <span class="custom-title">卡密充值</span>
+                        <van-tag type="danger">CDK</van-tag>
+                    </template>
+                </van-cell>
+            </van-cell-group>
+        </div>
+        <van-dialog v-model="show" title="卡密兑换" show-cancel-button @@confirm="confirmCard" @@cancel="show=false;inputCard=''">
+            <van-cell-group>
+                <van-field v-model="inputCard" placeholder="请输入卡密"></van-field>
+            </van-cell-group>
+        </van-dialog>
+        <van-action-sheet v-model="showPopup" :actions="actions" @@select="onSelect"></van-action-sheet>
+        <van-dialog v-model="RemarkShow" title="分销说明">
+            <div style="line-height: 25px; padding: 10px;white-space:pre-wrap;word-break: break-all;">@ViewBag.CommissionRemark</div>
+        </van-dialog>
+        <van-popup v-model="FormShow" position="top" :style="{ height: '230px' }">
+            <van-cell-group style="margin-top:30px;">
+                <van-form @@submit="onSubmit">
+                    <van-field name="radio" label="账户类型">
+                        <template #input>
+                            <van-radio-group v-model="UserInfo.AccountType" direction="horizontal">
+                                <van-radio name="微信">微信</van-radio>
+                                <van-radio name="支付宝">支付宝</van-radio>
+                            </van-radio-group>
+                        </template>
+                    </van-field>
+                    <van-field v-model="UserInfo.AccountNum" label="收款账户"
+                               name="AccountNum"
+                               placeholder="请填写收款账户"
+                               :rules="[{ required: true, message: '请填写账户' }]"></van-field>
+                    <div style="margin: 16px;">
+                        <van-button round block type="info" native-type="submit">提交</van-button>
+                    </div>
+                </van-form>
+            </van-cell-group>
+        </van-popup>
+    </div>
+    <script src="/lib/vue/vue.js"></script>
+    <script src="/lib/vant/js/vant.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script src="/ChatGPT_Wx/Script/script.js"></script>
+    <script>
+        // 在 #app 标签下渲染一个按钮组件
+        new Vue({
+            el: '#app',
+            data: {
+                active: 0,
+                route: [],
+                Index: 0,
+                TabbarShow: false,
+                isHaveBill: false,
+                UserInfo: {},
+                show: false,
+                inputCard: '',
+                showPopup: false,
+                actions: [{ name: '分销说明' }, { name: '推广码' }, { name: '佣金明细' }, { name: '收款账户' }],
+                RemarkShow: false,
+                FormShow: false,
+            },
+            methods: {
+                onSubmit(values) {
+                    axios({
+                        method: 'put',
+                        url: '/ChatGPT/My/UpdateAccountNum',
+                        data: this.UserInfo,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        vant.Notify({ type: 'success', message: '保存成功', duration: 3000 });
+                    }).catch(err => {
+                        vant.Notify({ type: 'danger', message: err, duration: 2000 });
+                    })
+                    this.FormShow = false;
+                },
+                onSelect(item) {
+                    this.showPopup = false;
+                    this.show = false;
+                    if (item.name == '分销说明') {
+                        this.RemarkShow = true;
+                    } else if (item.name == '推广码') {
+                        axios({
+                            method: 'get',
+                            url: '/ChatGPT/My/GetMyQrCode',
+                            headers: {
+                                'Content-Type': 'application/json; charset=UTF-8'
+                            },
+                        }).then(res => {
+                            vant.ImagePreview([res]);
+                        }).catch(err => {
+
+                        })
+                    } else if (item.name == '佣金明细') {
+                        this.GoUrl('/ChatGPT/Commission/Index')
+                    } else {
+                        this.FormShow = true
+                    }
+                },
+                OpenDai() {
+
+                },
+                ResetTimes() {
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/Test/ResetTimes?OpenID=' + this.UserInfo.WxOpenID,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        vant.Toast.success('操作成功！');
+                    }).catch(err => {
+
+                    })
+                },
+                NoVip() {
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/Test/NoVip?OpenID=' + this.UserInfo.WxOpenID,
+                        params: {
+                            OpenID: this.GetUserInfo.WxOpenID
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        vant.Toast.success('操作成功！');
+                        this.GetUserInfo();
+                    }).catch(err => {
+
+                    })
+                },
+                VipTimeOut() {
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/Test/VipTimeOut?OpenID=' + this.UserInfo.WxOpenID,
+                        params: {
+                            OpenID: this.GetUserInfo.WxOpenID
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        vant.Toast.success('操作成功！');
+                        this.GetUserInfo();
+                    }).catch(err => {
+
+                    })
+                },
+                GoUrl(url) {
+                    window.parent.HomeVue.HomeHref(url);
+                },
+                GetUserInfo() {
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/My/GetInfoModel',
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        this.UserInfo = res;
+                    }).catch(err => {
+
+                    })
+                },
+                confirmCard() {
+                    if (!this.inputCard) {
+                        vant.Notify({ type: 'danger', message: '请输入卡密' });
+                        return;
+                    }
+                    axios({
+                        method: 'put',
+                        url: '/ChatGPT/My/ExchangeCDK',
+                        data: {
+                            CDK: this.inputCard
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        this.show = false;
+                        vant.Notify({ type: 'success', message: res, duration: 5000 });
+                        this.inputCard = '';
+                        this.GetUserInfo();
+                    }).catch(err => {
+                        vant.Notify({ type: 'danger', message: err });
+                    })
+                    // 危险通知
+
+
+                },
+                Call() {
+                    //添加微信：wuyoukaoba
+                    vant.Dialog.alert({
+                        title: '客服微信',
+                        message: 'wuyoukaoba',
+                        confirmButtonText: '复制'
+                    }).then(() => {
+                        // on close
+                        const copyToClipboard = str => {
+                            if (navigator && navigator.clipboard && navigator.clipboard.writeText)
+                                return navigator.clipboard.writeText(str);
+                            return Promise.reject('The Clipboard API is not available.');
+                        };
+                        copyToClipboard('wuyoukaoba');
+                        vant.Notify({ type: 'success', message: '已复制到剪贴板' });
+                    });
+                }
+            },
+            created() {
+                this.GetUserInfo();
+            },
+            mounted() {
+
+            }
+        })
+    </script>
+</body>
+</html>

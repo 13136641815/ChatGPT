@@ -1,0 +1,57 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <!-- Element CSS -->
+    <link rel="stylesheet" href="/lib/Element/css/index.css">
+    <!-- 全局通用样式 -->
+    <link rel="stylesheet" href="/lib/css/style.css" />
+    <title></title>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <ul>
+            <li><a href="/ChatGPT/Setup">参数设置</a></li>
+            <li><a href="/ChatGPT/APIKEY/KeyPool">APIKEY池</a></li>
+            <li><a href="/ChatGPT/User/List">用户管理</a></li>
+            @*<li><a href="">订单管理</a></li>*@
+            <li><a href="/ChatGPT/Bill/BillList">支付订单</a></li>
+            <li><a href="/ChatGPT/Commodity/List">会员方案</a></li>
+            <li><a href="/ChatGPT/Words/List">敏感词库</a></li>
+            <li><a href="/ChatGPT/Commission/Index">佣金结算</a></li>
+            <li><a href="/ChatGPT/Apply/Index">提现申请</a></li>
+            <li><a href="/ChatGPT/CDK/CDKList">兑换码</a></li>
+            <li><a href="/ChatGPT/Bot">机器人</a></li>
+        </ul>
+    </div>
+    <script src="/lib/Vue/vue.js"></script>
+    <script src="/lib/Element/js/index.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/Scripts/admin.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+
+                };
+            },
+            methods: {
+
+            },
+            created: function () {
+
+            },
+            mounted: function () {
+
+            }
+        })
+    </script>
+</body>
+</html>

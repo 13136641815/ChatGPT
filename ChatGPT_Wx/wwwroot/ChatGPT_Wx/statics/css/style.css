@@ -1,0 +1,72 @@
+*{margin: 0;padding: 0;border: 0;list-style: none;text-decoration: none;color: inherit;font-weight: normal;font-family: "微软雅黑";box-sizing: border-box;font-style: normal;outline: none;-webkit-tap-highlight-color: transparent;}
+body {
+    width: 100%;
+    overflow-x: hidden;
+    background: url(/ChatGPT_Wx/statics/images/head-bg.png) top -.6rem left no-repeat #ffffff;
+    background-size: 100% auto;
+    color: #ffffff;
+}
+img{vertical-align: middle;max-width: 100%;}
+.container{width: 100%;padding: 0 .4rem;}
+/*顶部*/
+.top{width: 100%;height: auto;overflow: hidden;}
+.top .title{display: flex;justify-content: center;align-items: center;width: 100%;height: .88rem;font-size: .34rem;letter-spacing: .01rem;}
+.top span.more{position: absolute;left: .3rem;height:.88rem;width:.41rem;background: url(../images/more.png) center center no-repeat;background-size: 100% auto;}
+.top .more-box{background: #ffffff;position: absolute;top: .6rem;left: .3rem;padding: .15rem .35rem;border-radius: .05rem;font-size: .2rem;color: #333;box-shadow: 0 0 .1rem rgba(0,0,0,.1);}
+.top .more-box a{line-height: .35rem;}
+.top .type{width: 100%;padding: .2rem .85rem;}
+.top .type ul{display: flex;justify-content: space-between;align-items: center;}
+.top .type ul li{font-size: .32rem;letter-spacing: .03rem;position: relative;}
+.top .type ul li.active{font-size: .4rem;}
+.top .type ul li.active:after{content: "";position: absolute;display: inline-block;width: .3rem;height: .05rem;background: #FFFFFF;border-radius: .05rem;bottom: -.1rem;left: 50%;transform: translateX(-50%);}
+.top .status{width: 100%;padding-top: 1.5rem;display: flex;flex-direction: column;}
+.top .status span{font-size: .3rem;color: #b38a63;padding-left: 3.8rem;letter-spacing: .01rem;}
+.top .status p{font-size: .24rem;color: #b08760;padding-top: .4rem;padding-left: .75rem;letter-spacing: .01rem;}
+/*会员卡列表*/
+.card-list{width: 100%;margin-top: .34rem;padding-bottom: .2rem;color: #333333;display: none;position: relative;}
+.card-list::after{content: "";display: block;width: 100%;height: .2rem;background: #f6f7f6;bottom: 0;left: 0;}
+.card-list.active{display: block;}
+.card-list .cate{display: flex;justify-content: space-between;align-items: center;width: 100%;height: .9rem;padding: 0 .8rem;border-bottom: .01rem solid #e3e4e3;}
+.card-list .cate p{font-size: .32rem;color: #333333;display: flex;align-items: center;position: relative;}
+    .card-list .cate p i {
+        display: inline-block;
+        width: .37rem;
+        height: .9rem;
+        background: url(/ChatGPT_Wx/statics/images/icon-zuanshi-light.png) center center no-repeat;
+        background-size: 100% auto;
+        margin-right: .08rem;
+    }
+    .card-list .cate p.active i {
+        background-image: url(/ChatGPT_Wx/statics/images/icon-zuanshi-dark.png);
+    }
+.card-list .cate p.active{color: #615691;}
+.card-list .cate p.active:after{content: "";display: inline-block;position: absolute;width: 100%;height: .05rem;background: #615691;bottom: -0.01rem;left: 0;}
+.card-list .list{padding: .2rem .35rem;padding-bottom: .2rem;padding-right: 0;}
+.card-list .list ul{display: none;padding-bottom: 0;}
+.card-list .list ul.active{display: block;display: flex;flex-wrap: nowrap;overflow-x: auto;width: 100%;}
+.card-list .list ul.active::-webkit-scrollbar{width: 0;}
+.card-list .list ul li{flex-shrink: 0;width: 1.85rem;margin-right: .15rem;}
+.card-list .list ul li .title{width: 100%;background: #f4f4f4;font-size: .3rem;color: #33290c;text-align: center;height: .7rem;line-height: .7rem;border-radius: .1rem .1rem 0 0;}
+.card-list .list ul li .desc{border: .02rem solid #e9e9e9;border-top:0 ;text-align: center;display: flex;flex-direction: column;align-items: center;justify-content: flex-end;height: 1.7rem;padding-bottom: .3rem;border-radius:  0 0 .1rem .1rem;}
+.card-list .list ul li .desc .yh{display: inline-block;font-size: .26rem;color: #FFFFFF;background: #f4635c;height: .36rem;line-height: .36rem;padding: 0 .2rem;border-radius: .05rem;}
+.card-list .list ul li .desc .money{color: #333333;display: flex;justify-content: center;align-items: baseline;}
+.card-list .list ul li .desc .money i{font-size: .26rem;}
+.card-list .list ul li .desc .money span{font-size: .46rem;font-weight: bold;}
+    .card-list .list ul li .desc .old {
+        font-size: .2rem;
+        color: #999;
+        text-decoration: line-through;
+    }
+.card-list .list p.tip{font-size: .24rem;color: #999;padding-bottom: .3rem;margin-top: -.1rem;text-indent: .024rem;}
+.card-list .list ul li.active .title{background: #ffec86;font-weight: bold;color: #33290c;}
+.card-list .list ul li.active .desc{background: #fefbec;border-color: #ffde86;}
+/*特权*/
+.tequan{width: 100%;padding: .4rem .35rem;}
+.tequan ul{display: flex;justify-content: space-between;color: #525252;}
+.tequan ul li{width: 100%;display: flex;flex-direction: column;align-items: center;}
+.tequan ul li img{width: .73rem;}
+.tequan ul li p{font-size: .26rem;padding-top: .15rem;}
+.tequan ul li span{font-size: .2rem;color: #cfa767;}
+/*开通会员*/
+.submit{width: 100%;padding: .1rem .45rem .3rem .45rem;}
+.submit button{background: linear-gradient(to right,#968acb,#4d447b);height: .8rem;color: #FFFFFF;font-size: .28rem;letter-spacing: .01rem;width: 100%;border-radius: .1rem;}

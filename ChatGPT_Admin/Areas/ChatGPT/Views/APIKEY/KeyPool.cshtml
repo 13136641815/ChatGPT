@@ -1,0 +1,365 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <!-- Element CSS -->
+    <link rel="stylesheet" href="/lib/Element/css/index.css">
+    <!-- 全局通用样式 -->
+    <link rel="stylesheet" href="/lib/css/style.css" />
+    <title></title>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <el-container>
+            <el-header height="40">
+                <div class="SelectDiv">
+                    <div class="InputContainer">
+                        <el-input v-model="model.ApiKey" placeholder="APIKEY" clearable></el-input>
+                    </div>
+                    <div class="SelectContainer">
+                        <el-select v-model="model.Enable" placeholder="启用状态" style="width:100%;" clearable>
+                            <el-option label="开启" :value="1"></el-option>
+                            <el-option label="关闭" :value="0"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="SelectContainer">
+                        <el-select v-model="model.State" placeholder="消耗状态" style="width:100%;" clearable>
+                            <el-option label="存量" :value="1"></el-option>
+                            <el-option label="耗尽" :value="0"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="ButtonContainer">
+                        <el-button type="primary" icon="el-icon-search" @@click="Select">搜索</el-button>
+                    </div>
+                    <div class="ButtonContainer">
+                        <el-button type="primary" icon="el-icon-edit" @@click="Create">添加</el-button>
+                    </div>
+                </div>
+                <el-button type="text" @@click="ExportExcel">下载模板</el-button>
+                <el-upload accept=".xls,.xlsx"
+                           action="/ChatGPT/APIKEY/Import"
+                           :on-exceed="handleExceed"
+                           :before-upload="beforeupload"
+                           :on-success="Success"
+                           :file-list="fileList"
+                           :on-change=handleChange>
+                    <template Slot="trigger">
+                        <el-button size="small" type="primary" icon="el-icon-upload2">文件导入</el-button>
+                    </template>
+                    <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，且不超过15MB</div>
+                </el-upload>
+            </el-header>
+            <el-main>
+                <el-table :data="tableData"
+                          size="mini"
+                          border
+                          max-height="500"
+                          row-key="ID"
+                          style="width: 100%;min-height:487px;">
+                    <el-table-column prop="ID"
+                                     label="ID"
+                                     width="50">
+                    </el-table-column>
+                    <el-table-column prop="Stamp"
+                                     label="入库时间"
+                                     width="200">
+                    </el-table-column>
+                    <el-table-column prop="ApiKey"
+                                     label="ApiKey">
+                    </el-table-column>
+                    <el-table-column label="启用状态"
+                                     width="70">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.Enable==1?'success':'danger'">{{scope.row.Enable==1?'启用':'停用'}}</el-tag>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="消耗状态"
+                                     width="70">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.State==1?'success':'danger'">{{scope.row.State==1?'余量':'耗尽'}}</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column fixed="right"
+                                     label="操作"
+                                     width="290">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @@click="Edit(scope.row)">编辑</el-button>
+
+                            <el-popconfirm title="确定提交删除么？" @@confirm="Delete(scope.row.ID)" style="margin-left:10px;">
+                                <el-button type="text" size="small" slot="reference">删除</el-button>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-main>
+            <el-footer>
+                <el-pagination @@size-change="handleSizeChange"
+                               @@current-change="handleCurrentChange"
+                               :current-page="PageParams.PageNum"
+                               :page-sizes="PageParams.PageSizeList"
+                               :page-size="PageParams.PageSize"
+                               layout="total, sizes, prev, pager, next, jumper"
+                               :total="PageParams.Total"
+                               style="width:99%;">
+                </el-pagination>
+            </el-footer>
+            <el-dialog :title="Dialog.Title" :visible.sync="Dialog.Show">
+                <el-form ref="SubForm" :model="Form" :label-width="labelwidth" :rules="Rule">
+                    <el-form-item label="APIKEY" prop="ApiKey">
+                        <el-input v-model="Form.ApiKey"></el-input>
+                    </el-form-item>
+                    <el-form-item label="启用状态">
+                        <el-radio v-model="Form.Enable" :label="1">启用</el-radio>
+                        <el-radio v-model="Form.Enable" :label="0">停用</el-radio>
+                    </el-form-item>
+                    <el-form-item label="消耗状态">
+                        <el-radio v-model="Form.State" :label="1">启用</el-radio>
+                        <el-radio v-model="Form.State" :label="0">停用</el-radio>
+                    </el-form-item>
+                    <el-form-item label="备注">
+                        <el-input v-model="Form.Explain" type="textarea"
+                                  :rows="4"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="SubForm('SubForm')">保存</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+        </el-container>
+    </div>
+    <script src="/lib/Vue/vue.js"></script>
+    <script src="/lib/Element/js/index.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/Scripts/admin.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    tableData: [],
+                    PageParams: {
+                        PageSizeList: window.PageSizeList,
+                        PageNum: 1,
+                        PageSize: 10,
+                        Total: 0
+                    },
+                    model: {
+                        Enable: null,
+                        State: null,
+                        ApiKey: ''
+                    },
+                    Dialog: {
+                        Title: '',
+                        Show: false,
+                    },
+                    labelwidth: '35%',
+                    Form: {
+                        Enable: 1,
+                        State: 1,
+                        ApiKey: '',
+                        Explain: ''
+                    },
+                    thisRow: {},
+                    Rule: {
+                        ApiKey: [
+                            { required: true, message: '请输入APIKEY', trigger: 'blur' }
+                        ]
+                    }
+                };
+            },
+            methods: {
+                ExportExcel() {
+                    window.location.href = '/ChatGPT/File/ApiKey导入模板.xls';
+                },
+                //上传文件超过数量函数
+                handleExceed(files, fileList) {
+                    this.$message.warning(`只能预览一个Excel文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+                },
+                //上传前校验大小和类型函数
+                beforeupload(file) {
+                    let FileJson = file.name.split('.');
+                    if (FileJson.length > 2) {
+                        //文件非法
+                        this.$message.warning(`文件非法，请检查文件名称是否包含多个扩展名`);
+                        return false;
+                    } else {
+                        if (FileJson[1] === "xls" || FileJson[1] === "xlsx" || FileJson[1] === "XLS" || FileJson[1] === "XLSX") {
+                            const filesize = file.size / 1024 / 1024;
+                            if (filesize > 15) {
+                                this.$message.warning(`文件最多支持大小15M，当前文件大小${filesize}`);
+                                return false;
+                            }
+                            return true;
+                        } else {
+                            this.$message.warning(`当前限制选择1个Excel文件，本次选择了 ${FileJson[1]} 文件`);
+                            return false;
+                        }
+                    }
+                },
+
+                //上传文件覆盖
+                handleChange(file, fileList) {
+                    if (fileList.length > 1) {
+                        fileList.splice(0, 1);
+                    }
+                },
+                // Excel上传成功函数
+                Success(response, file, fileList) {
+                    this.$message({
+                        message: `导入成功${response.DATA}条！`,
+                        type: 'success'
+                    });
+                    this.GetListPage();
+                },
+                Select() {
+                    this.PageParams.pageNum = 1;
+                    this.GetListPage();
+                },
+                Create() {
+                    const MOD = this.$refs['SubForm'];
+                    if (MOD) {
+                        MOD.resetFields()
+                    }
+                    this.Dialog.Title = '添加';
+                    this.Dialog.Show = true;
+                },
+                Edit(row) {
+                    this.Dialog.Show = true;
+                    this.$nextTick(() => {
+                        const MOD = this.$refs['SubForm'];
+                        if (MOD) {
+                            MOD.resetFields()
+                        }
+                        this.thisRow = row;
+                        this.Form = JSON.parse(JSON.stringify(row));
+                        this.Dialog.Title = '修改';
+                    });
+                },
+                SubForm(formName) {
+                    const that = this;
+                    this.$refs[formName].validate(function (valid) {
+                        if (valid) {
+                            if (that.Dialog.Title == '添加') {
+                                that.Add();
+                            } else {
+                                that.Update();
+                            }
+                        }
+                    })
+                },
+                Add() {
+                    const that = this;
+                    axios({
+                        method: 'post',
+                        url: '/ChatGPT/APIKEY/Add',
+                        data: that.Form,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.tableData.push(res);
+                        that.$message({
+                            message: '添加成功！',
+                            type: 'success'
+                        });
+                        that.Dialog.Show = false;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                Update() {
+                    const that = this;
+                    axios({
+                        method: 'put',
+                        url: '/ChatGPT/APIKEY/Update',
+                        data: that.Form,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.thisRow.ApiKey = that.Form.ApiKey;
+                        that.thisRow.Enable = that.Form.Enable;
+                        that.thisRow.State = that.Form.State;
+                        that.$message({
+                            message: '更新成功！',
+                            type: 'success'
+                        });
+                        that.Dialog.Show = false;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                Delete(ID) {
+                    const that = this;
+                    axios({
+                        method: 'Delete',
+                        url: '/ChatGPT/APIKEY/Delete',
+                        params: {
+                            ID: ID
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.$message({
+                            message: '删除成功！',
+                            type: 'success'
+                        });
+                        that.tableData.splice(that.tableData.findIndex(item => item.ID === ID), 1);
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                GetListPage() {
+                    const that = this;
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/APIKEY/GetListPage',
+                        params: {
+                            Enable: that.model.Enable,
+                            State: that.model.State,
+                            ApiKey: that.model.ApiKey,
+                            PageNum: that.PageParams.PageNum,
+                            PageSize: that.PageParams.PageSize,
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.tableData = res.DATA;
+                        that.PageParams.Total = res.DATACOUNT;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                    this.tableData;
+                },
+                handleSizeChange(pageSize) {
+                    //当前页数
+                    this.PageParams.PageNum = 1;
+                    //当前页最大值
+                    this.PageParams.PageSize = pageSize;
+                    this.GetListPage();
+                },
+                handleCurrentChange(pageNum) {
+                    //当前页数
+                    this.PageParams.PageNum = pageNum;
+                    this.GetListPage();
+                }
+            },
+            created: function () {
+                this.GetListPage();
+            },
+            mounted: function () {
+
+            }
+        })
+    </script>
+</body>
+</html>

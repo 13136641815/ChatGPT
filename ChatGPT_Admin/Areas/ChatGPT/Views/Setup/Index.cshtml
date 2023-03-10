@@ -1,0 +1,177 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <!-- Element CSS -->
+    <link rel="stylesheet" href="/lib/Element/css/index.css">
+    <!-- 全局通用样式 -->
+    <link rel="stylesheet" href="/lib/css/style.css" />
+    <title></title>
+    <style>
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <el-container class="font">
+            <el-main>
+                <el-card class="box-card" style="width:50%;margin:0px auto;">
+                    <div slot="header" class="clearfix">
+                        <span>
+                            最后更新时间&nbsp;&nbsp;&nbsp;<el-tag>{{GPT_Setup.Stamp}}</el-tag>
+                        </span>
+                        <el-button style="float: right; margin-left: 10px;" type="primary" @@click="Submit('form')" size="small">保存</el-button>
+                        <el-button style="float: right;" type="warning" @@click="Update" size="small">更新Key池缓存</el-button>
+                        <el-button style="float: right;" type="success" @@click="Get" size="small">获取当前有效Key池缓存</el-button>
+                    </div>
+                    <div class="text item">
+                        <el-form ref="form" :model="GPT_Setup" label-width="170px" :rules="Rule">
+                            <el-form-item label="移动端标题" prop="Title">
+                                <el-input v-model="GPT_Setup.Title"></el-input>
+                            </el-form-item>
+                            <el-form-item label="API接口地址" prop="ApiUrl">
+                                <el-input v-model="GPT_Setup.ApiUrl"></el-input>
+                            </el-form-item>
+                            <el-form-item label="新用户体验次数" prop="Free_Second">
+                                <el-input-number v-model="GPT_Setup.Free_Second" :min="1" :max="500" label="免费次数"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="佣金提现门槛金额" prop="DoorJe">
+                                <el-input-number v-model="GPT_Setup.DoorJe" :min="1" :max="3000" label="提现门槛金额"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="分销说明" prop="CommissionRemark">
+                                <el-input type="textarea"
+                                          :rows="8" v-model="GPT_Setup.CommissionRemark"></el-input>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </el-card>
+            </el-main>
+        </el-container>
+        <el-dialog title="当前缓存中有效的Key池" :visible.sync="dialogTableVisible" top="5">
+            <el-table :data="gridData">
+                <el-table-column property="APIKEY" label="Key"></el-table-column>
+                <el-table-column property="i" label="轮询次数" width="200"></el-table-column>
+                <el-table-column property="DateTime" label="时间" width="200"></el-table-column>
+            </el-table>
+        </el-dialog>
+    </div>
+    <script src="/lib/Vue/vue.js"></script>
+    <script src="/lib/Element/js/index.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/Scripts/admin.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    dialogTableVisible: false,
+                    gridData: [],
+                    GPT_Setup: {
+                    },
+                    Rule: {
+                        Title: [
+                            { required: true, message: '请输入移动端标题', trigger: 'blur' }
+                        ],
+                        ApiUrl: [
+                            { required: true, message: '请输入API接口地址', trigger: 'blur' }
+                        ],
+                        Free_Second: [
+                            { required: true, message: '请输入新用户体验次数', trigger: 'blur' }
+                        ],
+                        DoorJe: [
+                            { required: true, message: '请输入门槛金额', trigger: 'blur' }
+                        ]
+                    }
+                };
+            },
+            methods: {
+                Update() {
+                    const that = this;
+                    axios({
+                        method: 'get',
+                        url: that.GPT_Setup.ApiUrl + '/api/TimeKey',
+                        data: that.GPT_Setup,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.$message({
+                            message: '更新成功',
+                            type: 'success'
+                        });
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                Get() {
+                    const that = this;
+                    axios({
+                        method: 'post',
+                        url: that.GPT_Setup.ApiUrl + '/api/TimeKey',
+                        data: that.GPT_Setup,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        //获取Key池
+                        that.gridData = res;
+                        that.dialogTableVisible = true;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                Submit(formName) {
+                    const that = this;
+                    this.$refs[formName].validate(function (valid) {
+                        if (valid) {
+                            axios({
+                                method: 'put',
+                                url: '/ChatGPT/Setup/Update',
+                                data: that.GPT_Setup,
+                                headers: {
+                                    'Content-Type': 'application/json; charset=UTF-8'
+                                },
+                            }).then(function (res) {
+                                that.$message({
+                                    message: '更新成功',
+                                    type: 'success'
+                                });
+                            }).catch(function (err) {
+                                that.$message.error(err);
+                            });
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    })
+                },
+                GetFirst() {
+                    const that = this;
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/Setup/GetFirst',
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.GPT_Setup = res;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                }
+            },
+            created: function () {
+                this.GetFirst();
+            },
+            mounted: function () {
+
+            }
+        })
+    </script>
+</body>
+</html>

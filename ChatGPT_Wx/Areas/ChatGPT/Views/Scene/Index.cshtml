@@ -1,0 +1,70 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="/lib/vant/css/index.css" />
+    <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
+    <title></title>
+     <style>
+         .van-image--round img {
+             background-color: #e0f0ff;
+         }
+     </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div style="width:100%;float:left;">
+            <div style="width:25%;float:left;" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)">
+                <van-image round
+                           width="90%"
+                           height="90%"
+                           style="padding:5%;"
+                           :src="Item.Img"></van-image>
+                <p style="text-align:center;margin:0px;">{{Item.Name}}</p>
+            </div>
+        </div>
+    </div>
+    <script src="/lib/vue/vue.js"></script>
+    <script src="/ChatGPT_Wx/Script/script.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/vant/js/vant.js"></script>
+    <script>
+        // 在 #app 标签下渲染一个按钮组件
+        new Vue({
+            el: '#app',
+            data: {
+                list: []
+            },
+            methods: {
+                Jump(BotID) {
+                    parent.HomeVue.ChangeAI(BotID);
+                },
+                GetList() {
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/Scene/GetBot',
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then((res) => {
+                        this.list = res;
+                    }).catch(err => {
+
+                    })
+                }
+            },
+            created() {
+                this.GetList();
+            },
+            mounted() {
+
+            }
+        })
+    </script>
+</body>
+</html>

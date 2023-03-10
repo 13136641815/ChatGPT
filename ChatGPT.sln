@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32802.440
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_Wx", "ChatGPT_Wx\ChatGPT_Wx.csproj", "{D2D761B0-6586-4302-BC9B-4E2F454FB56E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_Admin", "ChatGPT_Admin\ChatGPT_Admin.csproj", "{63AE38E0-1A20-41FE-8ADD-B3CA277B8C30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_Mapper", "ChatGPT_Mapper\ChatGPT_Mapper.csproj", "{E56FB57D-76E2-4FEB-A287-36D5F4793802}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_Service", "ChatGPT_Service\ChatGPT_Service.csproj", "{3E0FFF76-F68A-437B-AF84-7301AA9C1C95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_Model", "ChatGPT_Model\ChatGPT_Model.csproj", "{F8EC881B-7144-4120-ACB9-25BB3345CDF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_WebAPI", "ChatGPT_WebAPI\ChatGPT_WebAPI.csproj", "{CD8161F6-F9C5-4367-8523-F359B66C36D4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D2D761B0-6586-4302-BC9B-4E2F454FB56E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2D761B0-6586-4302-BC9B-4E2F454FB56E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2D761B0-6586-4302-BC9B-4E2F454FB56E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2D761B0-6586-4302-BC9B-4E2F454FB56E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63AE38E0-1A20-41FE-8ADD-B3CA277B8C30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63AE38E0-1A20-41FE-8ADD-B3CA277B8C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63AE38E0-1A20-41FE-8ADD-B3CA277B8C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63AE38E0-1A20-41FE-8ADD-B3CA277B8C30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E56FB57D-76E2-4FEB-A287-36D5F4793802}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E56FB57D-76E2-4FEB-A287-36D5F4793802}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E56FB57D-76E2-4FEB-A287-36D5F4793802}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E56FB57D-76E2-4FEB-A287-36D5F4793802}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E0FFF76-F68A-437B-AF84-7301AA9C1C95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E0FFF76-F68A-437B-AF84-7301AA9C1C95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E0FFF76-F68A-437B-AF84-7301AA9C1C95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E0FFF76-F68A-437B-AF84-7301AA9C1C95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8EC881B-7144-4120-ACB9-25BB3345CDF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8EC881B-7144-4120-ACB9-25BB3345CDF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8EC881B-7144-4120-ACB9-25BB3345CDF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8EC881B-7144-4120-ACB9-25BB3345CDF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD8161F6-F9C5-4367-8523-F359B66C36D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD8161F6-F9C5-4367-8523-F359B66C36D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD8161F6-F9C5-4367-8523-F359B66C36D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD8161F6-F9C5-4367-8523-F359B66C36D4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E24E837-83B3-4E58-B66A-5A366D2E619C}
+	EndGlobalSection
+EndGlobal

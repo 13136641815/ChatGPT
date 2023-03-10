@@ -1,0 +1,495 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <!-- Element CSS -->
+    <link rel="stylesheet" href="/lib/Element/css/index.css">
+    <!-- 全局通用样式 -->
+    <link rel="stylesheet" href="/lib/css/style.css" />
+    <title></title>
+    <style>
+        .el-upload--picture-card img {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <el-container>
+            <el-header height="40">
+                <div class="SelectDiv">
+                    <div class="InputContainer">
+                        <el-input v-model="model.Name" placeholder="机器人名称" clearable></el-input>
+                    </div>
+                    <div class="ButtonContainer">
+                        <el-button type="primary" icon="el-icon-search" @@click="Select">搜索</el-button>
+                    </div>
+                    <div class="ButtonContainer">
+                        <el-button type="primary" icon="el-icon-edit" @@click="Create">添加</el-button>
+                    </div>
+                </div>
+            </el-header>
+            <el-main>
+                <el-table :data="tableData"
+                          size="mini"
+                          border
+                          max-height="700"
+                          row-key="ID"
+                          style="width: 100%;min-height:650px;">
+                    <el-table-column prop="ID"
+                                     label="ID"
+                                     width="50"
+                                     align="center">
+                    </el-table-column>
+                    <el-table-column prop="Stamp"
+                                     label="添加时间"
+                                     width="200">
+                    </el-table-column>
+                    <el-table-column prop="Name"
+                                     label="机器人名称">
+                    </el-table-column>
+                    <el-table-column prop="Img"
+                                     label="机器人头像"
+                                     width="150">
+                        <template slot-scope="scope">
+                            <el-avatar :src="scope.row.Img"></el-avatar>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="类型"
+                                     align="center"
+                                     width="120">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.Type==1?'success':'danger'">{{scope.row.Type==1?'系统机器人':'私人机器人'}}</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="状态"
+                                     align="center"
+                                     width="70">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.State==1?'success':'danger'">{{scope.row.State==1?'启用':'停用'}}</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column fixed="right"
+                                     label="操作"
+                                     width="150">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @@click="Edit(scope.row)">编辑</el-button>
+                            <el-popconfirm title="确定提交删除么？" @@confirm="Delete(scope.row.ID)" style="margin-left:10px;">
+                                <el-button type="text" size="small" slot="reference">删除</el-button>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-main>
+            <el-footer>
+                <el-pagination @@size-change="handleSizeChange"
+                               @@current-change="handleCurrentChange"
+                               :current-page="PageParams.PageNum"
+                               :page-sizes="PageParams.PageSizeList"
+                               :page-size="PageParams.PageSize"
+                               layout="total, sizes, prev, pager, next, jumper"
+                               :total="PageParams.Total"
+                               style="width:99%;">
+                </el-pagination>
+            </el-footer>
+            <el-dialog :title="Dialog.Title" :visible.sync="Dialog.Show" top="10px">
+                <el-form ref="SubForm" :model="Form" :label-width="labelwidth" :rules="Rule">
+                    <el-form-item label="机器人名称" prop="Name">
+                        <el-input v-model="Form.Name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="状态">
+                        <el-radio v-model="Form.State" :label="1">启用</el-radio>
+                        <el-radio v-model="Form.State" :label="0">停用</el-radio>
+                    </el-form-item>
+                    <el-form-item label="类型">
+                        <el-radio v-model="Form.Type" :label="1">系统自带</el-radio>
+                        <el-radio v-model="Form.Type" :label="0">私人定制</el-radio>
+                    </el-form-item>
+                    <el-form-item label="用户代码" prop="Openid" v-if="Form.Type==0">
+                        <el-input v-model="Form.Openid"></el-input>
+                    </el-form-item>
+                    <el-form-item label="机器人头像" prop="Img">
+                        <el-upload action="/ChatGPT/Bot/UploedImg"
+                                   list-type="picture-card"
+                                   :show-file-list="false"
+                                   :on-preview="handlePictureCardPreview"
+                                   accept=".jpg,.png"
+                                   :on-exceed="handleExceed"
+                                   :before-upload="beforeupload"
+                                   :on-success="TopicSuccess"
+                                   :file-list="imagesfileList">
+                            <img v-if="Form.Img" :src="Form.Img" class="avatar">
+                            <i v-else class="el-icon-plus" style="color:#fff;"></i>
+                        </el-upload>
+                    </el-form-item>
+                    <el-form-item label="问候语">
+                        <el-input v-model="Form.Greetings" type="textarea"
+                                  :rows="4"></el-input>
+                    </el-form-item>
+                    <el-form-item label="情景设定">
+                        <el-input v-model="Form.Ccene" type="textarea"
+                                  :rows="8"></el-input>
+                    </el-form-item>
+                    <el-divider>API参数</el-divider>
+                    <el-form-item label="model">
+                        <el-input v-model="Form.APIJson.model"></el-input>
+                    </el-form-item>
+                    <el-form-item label="temperature">
+                        <el-tooltip class="item" effect="dark" content="介于 0 和 2 之间。较高的值（如 0.8）将使输出更加随机，而较低的值（如 0.2）将使其更加集中和确定。" placement="left">
+                            <el-input v-model="Form.APIJson.temperature"></el-input>
+                        </el-tooltip>
+                    </el-form-item>
+                    <el-form-item label="top_p">
+                        <el-tooltip class="item" effect="dark" content="使用温度采样的替代方法称为核心采样，其中模型考虑具有top_p概率质量的令牌的结果。因此，0.1 意味着只考虑包含前 10% 概率质量的代币。
+                        我们通常建议更改此设置，但不要同时更改两者。" placement="left">
+                            <el-input v-model="Form.APIJson.top_p"></el-input>
+                        </el-tooltip>
+                    </el-form-item>
+                    <el-form-item label="max_tokens">
+                        <el-tooltip class="item" effect="dark" content="生成的答案允许的最大令牌数。默认情况下，模型可以返回的令牌数为 （4096 - 提示令牌）。" placement="left">
+                            <el-input v-model="Form.APIJson.max_tokens"></el-input>
+                        </el-tooltip>
+                    </el-form-item>
+                    <el-form-item label="presence_penalty">
+                        <el-tooltip class="item" effect="dark" content="介于 -2.0 和 2.0 之间的数字。正值会根据新标记到目前为止是否出现在文本中来惩罚它们，从而增加模型讨论新主题的可能性。" placement="left">
+                            <el-input v-model="Form.APIJson.presence_penalty"></el-input>
+                        </el-tooltip>
+                    </el-form-item>
+                    <el-form-item label="stream">
+                        <el-switch v-model="Form.APIJson.stream"
+                                   active-color="#13ce66"
+                                   inactive-color="#ff4949" disabled>
+                        </el-switch>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="SubForm('SubForm')">保存</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+        </el-container>
+    </div>
+    <script src="/lib/Vue/vue.js"></script>
+    <script src="/lib/Element/js/index.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/Scripts/admin.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    pickerOptions: {
+                        shortcuts: [{
+                            text: '最近一周',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '最近一个月',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '最近三个月',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }]
+                    },
+                    tableData: [],
+                    PageParams: {
+                        PageSizeList: window.PageSizeList,
+                        PageNum: 1,
+                        PageSize: 10,
+                        Total: 0
+                    },
+                    model: {
+                        Name: ''
+                    },
+                    Dialog: {
+                        Title: '',
+                        Show: false,
+                    },
+                    labelwidth: '35%',
+                    Form: {
+                        ID: 0,
+                        Name: '',
+                        Type: 1,
+                        State: 1,
+                        Openid: '0',
+                        Img: '',
+                        Greetings: '',
+                        APIJson: {
+                            model: 'gpt-3.5-turbo',
+                            temperature: 0,
+                            max_tokens: 1024,
+                            stream: true,
+                            top_p: 1,
+                            presence_penalty: 0.00
+                        },
+                        Ccene: ''
+                    },
+                    imagesfileList: [],
+                    thisRow: {},
+                    Rule: {
+                        Name: [
+                            { required: true, message: '请输入机器人名称', trigger: 'blur' }
+                        ],
+                        Img: [
+                            { required: true, message: '请上传机器人头像', trigger: 'blur' }
+                        ],
+                        Greetings: [
+                            { required: true, message: '请输入问候语', trigger: 'blur' }
+                        ]
+                    }
+                };
+            },
+            methods: {
+                //元转分
+                YuanToFen(fen) {
+                    var num = fen;
+                    num = fen * 0.01;
+                    num += '';
+                    var reg = num.indexOf('.') > -1 ? /(\d{1,3})(?=(?:\d{3})+\.)/g : /(\d{1,3})(?=(?:\d{3})+$)/g;
+                    num = num.replace(reg, '$1');
+                    num = this.toDecimal2(num)
+                    return num
+                },
+                //时间转换
+                DateConvert(TimeStamp) {
+                    var Time = new Date(TimeStamp);
+                    var Year = Time.getFullYear();
+                    var Month = Time.getMonth() + 1;
+                    var Day = Time.getDate();
+                    return Year + '-' + this.Supplement(Month) + '-' + this.Supplement(Day);
+                },
+                //时间零补位
+                Supplement(TimeVal) {
+                    return parseInt(TimeVal) < 10 ? '0' + TimeVal : TimeVal
+                },
+                //最近一个月(开始时间)
+                SRecentTime() {
+                    const start = new Date();
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                    return start;
+                },
+                //最近一个月(结束时间)
+                ERecentTime() {
+                    const end = new Date();
+                    return end;
+                },
+                Select() {
+                    this.PageParams.pageNum = 1;
+                    this.GetListPage();
+                },
+                Create() {
+                    const MOD = this.$refs['SubForm'];
+                    if (MOD) {
+                        MOD.resetFields()
+                    }
+                    this.Dialog.Title = '添加';
+                    this.Dialog.Show = true;
+                },
+                Edit(row) {
+                    this.Dialog.Show = true;
+                    this.$nextTick(() => {
+                        const MOD = this.$refs['SubForm'];
+                        if (MOD) {
+                            MOD.resetFields()
+                        }
+                        this.thisRow = row;
+                        this.Form = JSON.parse(JSON.stringify(row));
+                        this.Dialog.Title = '修改';
+                    });
+                },
+                SubForm(formName) {
+                    const that = this;
+                    this.$refs[formName].validate(function (valid) {
+                        if (valid) {
+                            if (that.Dialog.Title == '添加') {
+                                that.Add();
+                            } else {
+                                that.Update();
+                            }
+                        }
+                    })
+                },
+                Add() {
+                    const that = this;
+                    console.log(that.Form);
+                    axios({
+                        method: 'post',
+                        url: '/ChatGPT/Bot/Add',
+                        data: that.Form,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.tableData.push(res);
+                        that.$message({
+                            message: '添加成功！',
+                            type: 'success'
+                        });
+                        that.Dialog.Show = false;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                Update() {
+                    const that = this;
+                    axios({
+                        method: 'put',
+                        url: '/ChatGPT/Bot/Update',
+                        data: that.Form,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.thisRow.Type = that.Form.Type;
+                        that.thisRow.State = that.Form.State;
+                        that.thisRow.Openid = that.Form.Openid;
+                        that.thisRow.Name = that.Form.Name;
+                        that.thisRow.Img = that.Form.Img;
+                        that.thisRow.Greetings = that.Form.Greetings;
+                        that.thisRow.APIJson = that.Form.APIJson;
+                        that.thisRow.Ccene = that.Form.Ccene;
+                        that.$message({
+                            message: '更新成功！',
+                            type: 'success'
+                        });
+                        that.Dialog.Show = false;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                Delete(ID) {
+                    const that = this;
+                    axios({
+                        method: 'Delete',
+                        url: '/ChatGPT/Bot/Delete',
+                        params: {
+                            ID: ID
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.$message({
+                            message: '删除成功！',
+                            type: 'success'
+                        });
+                        that.tableData.splice(that.tableData.findIndex(item => item.ID === ID), 1);
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                GetListPage() {
+                    const that = this;
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/Bot/GetListPage',
+                        params: {
+                            Name: that.model.Name,
+                            PageNum: that.PageParams.PageNum,
+                            PageSize: that.PageParams.PageSize,
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.tableData = res.DATA;
+                        that.PageParams.Total = res.DATACOUNT;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                    this.tableData;
+                },
+                handleSizeChange(pageSize) {
+                    //当前页数
+                    this.PageParams.PageNum = 1;
+                    //当前页最大值
+                    this.PageParams.PageSize = pageSize;
+                    this.GetListPage();
+                },
+                handleCurrentChange(pageNum) {
+                    //当前页数
+                    this.PageParams.PageNum = pageNum;
+                    this.GetListPage();
+                },
+                CheckTime(Time) {
+                    let DataTime = new Date(Time);
+                    let TimeNow = new Date();
+                    if (TimeNow > DataTime) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
+
+                //文件上传后查看大图
+                handlePictureCardPreview(file) {
+                    this.dialogImageUrl = file.url;
+                    this.dialogVisible = true;
+                },
+                //上传文件超过数量函数
+                handleExceed(files, fileList) {
+                    //this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+                },
+                //上传前校验大小和类型函数
+                beforeupload(file) {
+                    this.Form.Img = '';
+
+                    let FileJson = file.name.split('.');
+                    if (FileJson.length > 2) {
+                        //文件非法
+                        this.$message.warning(`文件非法，请检查文件名称是否包含多个扩展名`);
+                        return false;
+                    } else {
+                        if (FileJson[1] === "png" || FileJson[1] === "PNG" || FileJson[1] === "jpg" || FileJson[1] === "JPG") {
+                            const filesize = file.size / 1024 / 1024;
+                            if (filesize > 15) {
+                                this.$message.warning(`文件最多支持大小15M，当前文件大小${filesize}`);
+                                return false;
+                            }
+                            return true;
+                        } else {
+                            this.$message.warning(`当前限制选择jpg、png文件，本次选择了 ${FileJson[1]} 文件`);
+                            return false;
+                        }
+                    }
+                },
+                //上传成功回调
+                TopicSuccess(response, file, fileList) {
+                    if (response.CODE == 200) {
+                        this.Form.Img = response.DATA;
+                    } else {
+                        this.imagesfileList.splice(0, this.imagesfileList.length);
+                        this.$message.warning(`上传失败！${response.MSG}`);
+                    }
+                },
+            },
+            created: function () {
+                this.GetListPage();
+            },
+            mounted: function () {
+
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <!-- Element CSS -->
+    <link rel="stylesheet" href="/lib/Element/css/index.css">
+    <!-- 全局通用样式 -->
+    <link rel="stylesheet" href="/lib/css/style.css" />
+    <title></title>
+    <style>
+
+        .el-checkbox__input.is-disabled .el-checkbox__inner {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <el-container>
+            <el-header height="40">
+                <div class="SelectDiv">
+                    <div class="InputContainer">
+                        <el-input v-model="model.NikeName" placeholder="提现人昵称" clearable></el-input>
+                    </div>
+                    <div class="InputContainer">
+                        <el-input v-model="model.Opneid" placeholder="提现人代码" clearable></el-input>
+                    </div>
+                    <div class="SelectContainerLager">
+                        <el-select v-model="model.CheckState" placeholder="提现状态" style="width:100%;">
+                            <el-option label="全部" :value="-1"></el-option>
+                            <el-option label="申请提现" :value="0"></el-option>
+                            <el-option label="提现完成" :value="1"></el-option>
+                            <el-option label="提现失败" :value="2"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="ButtonContainer">
+                        <el-button type="primary" icon="el-icon-search" @@click="Select">搜索</el-button>
+                    </div>
+                    <div class="ButtonContainer">
+                        <el-button type="success" icon="success" @@click="Check">提现成功</el-button>
+                    </div>
+                </div>
+            </el-header>
+            <el-main>
+                <el-table :data="tableData"
+                          ref="multipleTable"
+                          size="mini"
+                          border
+                          max-height="500"
+                          row-key="ID"
+                          style="width: 100%;min-height:487px;"
+                          @@selection-change="handleSelectionChange">
+                    <el-table-column type="selection"
+                                     width="55" :selectable="selectable">
+
+                    </el-table-column>
+                    <el-table-column prop="ID"
+                                     label="ID"
+                                     width="50"
+                                     align="center" width="50">
+                    </el-table-column>
+                    <el-table-column prop="Stamp"
+                                     label="申请时间"
+                                     width="170">
+                    </el-table-column>
+                    <el-table-column prop="State"
+                                     label="提现状态" width="100">
+                        <template slot-scope="scope">
+                            <el-tag v-if="scope.row.State==0">申请提现</el-tag>
+                            <el-tag type="success" v-else-if="scope.row.State==1">提现成功</el-tag>
+                            <el-tag type="info" v-else>提现失败</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="AccountType"
+                                     label="账户类型"
+                                     width="80">
+                    </el-table-column>
+                    <el-table-column prop="AccountNum"
+                                     label="账户号">
+                    </el-table-column>
+                    <el-table-column prop="Opneid"
+                                     label="分佣人代码"
+                                     width="250">
+                    </el-table-column>
+                    <el-table-column prop="ZBS"
+                                     label="提现笔数"
+                                     width="120">
+                    </el-table-column>
+                    <el-table-column prop="ZJE"
+                                     label="提现总金额"
+                                     width="130">
+                        <template slot-scope="scope">
+                            {{Format(scope.row.ZJE)}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column fixed="right"
+                                     label="操作"
+                                     width="150">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @@click="GO(scope.row.Opneid)">查看订单</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-main>
+            <el-footer>
+                <el-pagination @@size-change="handleSizeChange"
+                               @@current-change="handleCurrentChange"
+                               :current-page="PageParams.PageNum"
+                               :page-sizes="PageParams.PageSizeList"
+                               :page-size="PageParams.PageSize"
+                               layout="total, sizes, prev, pager, next, jumper"
+                               :total="PageParams.Total"
+                               style="width:99%;">
+                </el-pagination>
+            </el-footer>
+            <el-dialog :title="Dialog.Title" :visible.sync="Dialog.Show">
+
+            </el-dialog>
+        </el-container>
+    </div>
+    <script src="/lib/Vue/vue.js"></script>
+    <script src="/lib/Element/js/index.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/Scripts/admin.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    tableData: [],
+                    PageParams: {
+                        PageSizeList: window.PageSizeList,
+                        PageNum: 1,
+                        PageSize: 10,
+                        Total: 0
+                    },
+                    model: {
+                        State: -1,
+                        NikeName: '',
+                        Opneid: '',
+                    },
+                    Dialog: {
+                        Title: '',
+                        Show: false,
+                    },
+                    labelwidth: '35%',
+                    thisRow: {},
+                    multipleSelection: []
+                };
+            },
+            methods: {
+                GO(openid) {
+                    parent.window.IndexVue.AddPage({
+                        Name: '提现订单',
+                        Code: openid,
+                        Src: '/ChatGPT/Commission/Index?id=' + openid
+                    });
+                },
+                //复选框状态
+                selectable(row, index) {
+                    if (row.State == 1) {
+                        return false;
+                    }
+                    return true;
+                },
+                handleSelectionChange(val) {
+                    this.multipleSelection = val;
+                },
+                //批量结算
+                Check() {
+                    const that = this;
+                    if (this.multipleSelection.length == 0) {
+                        that.$message({
+                            type: 'info',
+                            message: '未勾选数据'
+                        });
+                        return
+                    };
+                    that.$confirm('确认标记勾选的数据吗, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios({
+                            method: 'put',
+                            url: '/ChatGPT/Apply/CheckList',
+                            data: this.multipleSelection,
+                            headers: {
+                                'Content-Type': 'application/json; charset=UTF-8'
+                            },
+                        }).then(function (res) {
+                            that.multipleSelection.forEach(item => {
+                                item.State = 1;
+                            });
+                            that.multipleSelection = [];
+                            that.$refs.multipleTable.clearSelection();
+                            that.$message({
+                                type: 'success',
+                                message: '标记成功！'
+                            });
+                        }).catch(function (err) {
+                            that.$message.error(err);
+                        });
+                    }).catch(() => {
+                        that.$message({
+                            type: 'info',
+                            message: '已取消'
+                        });
+                    });
+                },
+                //千位符函数
+                Format(num) {
+                    if (num) {
+                        const Number = parseFloat(num).toFixed(2);
+                        return Number.replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+                    }
+                    else {
+                        return '0.00';
+                    }
+                },
+                //时间转换
+                DateConvert(TimeStamp) {
+                    var Time = new Date(TimeStamp);
+                    var Year = Time.getFullYear();
+                    var Month = Time.getMonth() + 1;
+                    var Day = Time.getDate();
+                    return Year + '-' + this.Supplement(Month) + '-' + this.Supplement(Day);
+                },
+                //时间零补位
+                Supplement(TimeVal) {
+                    return parseInt(TimeVal) < 10 ? '0' + TimeVal : TimeVal
+                },
+                //最近一个月(开始时间)
+                SRecentTime() {
+                    const start = new Date();
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                    return start;
+                },
+                //最近一个月(结束时间)
+                ERecentTime() {
+                    const end = new Date();
+                    return end;
+                },
+                Select() {
+                    this.PageParams.pageNum = 1;
+                    this.GetListPage();
+                },
+                GetListPage() {
+                    const that = this;
+                    //开始时间
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/Apply/GetListPage',
+                        params: {
+                            NikeName: that.model.NikeName,
+                            Opneid: that.model.Opneid,
+                            State: that.model.State,
+                            PageNum: that.PageParams.PageNum,
+                            PageSize: that.PageParams.PageSize,
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.tableData = res.DATA;
+                        that.PageParams.Total = res.DATACOUNT;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                    this.tableData;
+                },
+                handleSizeChange(pageSize) {
+                    //当前页数
+                    this.PageParams.PageNum = 1;
+                    //当前页最大值
+                    this.PageParams.PageSize = pageSize;
+                    this.GetListPage();
+                },
+                handleCurrentChange(pageNum) {
+                    //当前页数
+                    this.PageParams.PageNum = pageNum;
+                    this.GetListPage();
+                }
+            },
+            created: function () {
+                this.GetListPage();
+            },
+            mounted: function () {
+
+            }
+        })
+    </script>
+</body>
+</html>

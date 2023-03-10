@@ -1,0 +1,393 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <!-- Element CSS -->
+    <link rel="stylesheet" href="/lib/Element/css/index.css">
+    <!-- 全局通用样式 -->
+    <link rel="stylesheet" href="/lib/css/style.css" />
+    <title></title>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <el-container>
+            <el-header height="40">
+                <div class="SelectDiv">
+                    <div class="InputContainer">
+                        <el-input v-model="model.NikeName" placeholder="昵称" clearable></el-input>
+                    </div>
+                    <div class="DatePickContainer">
+                        <el-date-picker v-model="model.Times"
+                                        type="daterange"
+                                        align="right"
+                                        unlink-panels
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        :picker-options="pickerOptions"
+                                        style="width:410px;">
+                        </el-date-picker>
+                    </div>
+                    <div class="SelectContainerMid">
+                        <el-select v-model="model.YN_VIP" placeholder="用户身份" style="width:100%;" clearable>
+                            <el-option label="会员" :value="1"></el-option>
+                            <el-option label="非会员" :value="0"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="SelectContainerMid">
+                        <el-checkbox v-model="model.BeOverdue">查询过期会员</el-checkbox>
+                    </div>
+                    <div class="ButtonContainer">
+                        <el-button type="primary" icon="el-icon-search" @@click="Select">搜索</el-button>
+                    </div>
+                </div>
+            </el-header>
+            <el-main>
+                <el-table :data="tableData"
+                          size="mini"
+                          border
+                          max-height="700"
+                          row-key="ID"
+                          style="width: 100%;min-height:650px;">
+                    <el-table-column prop="ID"
+                                     label="ID"
+                                     width="50"
+                                     align="center">
+                    </el-table-column>
+                    <el-table-column prop="Stamp"
+                                     label="注册时间"
+                                     width="200">
+                    </el-table-column>
+                    <el-table-column prop="Tel"
+                                     label="手机号码"
+                                     width="200">
+                    </el-table-column>
+                    <el-table-column prop="NikeName"
+                                     label="昵称"
+                                     width="180">
+                    </el-table-column>
+                    <el-table-column prop="WxOpenID"
+                                     label="微信标识openid">
+                    </el-table-column>
+                    <el-table-column prop="WxHeadUrl"
+                                     label="微信头像"
+                                     width="130"
+                                     align="center">
+                        <template slot-scope="scope">
+                            <div style="display:block;"><el-avatar shape="square" :src="scope.row.WxHeadUrl"></el-avatar></div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="VIP"
+                                     align="center"
+                                     width="70">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.YN_VIP==1?'warning':'info'">{{scope.row.YN_VIP==1?'是':'否'}}</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="BeOverdue_VIP"
+                                     label="VIP到期时间"
+                                     width="300">
+                        <template slot-scope="scope">
+                            <div v-if="scope.row.YN_VIP==1">
+                                <span style="color:red;" v-if="CheckTime(scope.row.BeOverdue_VIP)">{{scope.row.BeOverdue_VIP}}（已过期）</span>
+                                <span v-else="{{scope.row.BeOverdue_VIP}}"></span>
+                            </div>
+
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="Free_Second"
+                                     label="剩余体验次数"
+                                     width="100">
+                    </el-table-column>
+                    <el-table-column fixed="right"
+                                     label="操作"
+                                     width="150">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @@click="Edit(scope.row)">编辑</el-button>
+                            <el-popconfirm title="确定提交删除么？" @@confirm="Delete(scope.row.ID)" style="margin-left:10px;">
+                                <el-button type="text" size="small" slot="reference">删除</el-button>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-main>
+            <el-footer>
+                <el-pagination @@size-change="handleSizeChange"
+                               @@current-change="handleCurrentChange"
+                               :current-page="PageParams.PageNum"
+                               :page-sizes="PageParams.PageSizeList"
+                               :page-size="PageParams.PageSize"
+                               layout="total, sizes, prev, pager, next, jumper"
+                               :total="PageParams.Total"
+                               style="width:99%;">
+                </el-pagination>
+            </el-footer>
+            <el-dialog :title="Dialog.Title" :visible.sync="Dialog.Show">
+                <el-form ref="SubForm" :model="Form" :label-width="labelwidth" :rules="Rule">
+                    <el-form-item label="用户ID">
+                        <el-input v-model="Form.ID" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="注册时间">
+                        <el-input v-model="Form.Stamp" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="手机号码">
+                        <el-input v-model="Form.Tel" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="昵称">
+                        <el-input v-model="Form.NikeName" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="微信标识（openid）">
+                        <el-input v-model="Form.WxOpenID" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="微信头像地址">
+                        <div style="display:block;"><el-avatar shape="square" :size="50" :src="Form.WxHeadUrl"></el-avatar></div>
+                    </el-form-item>
+                    <el-form-item label="VIP到期时间">
+                        <el-input v-model="Form.BeOverdue_VIP" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="剩余体验次数" prop="Free_Second">
+                        <el-input-number v-model="Form.Free_Second" :min="1" :max="500"></el-input-number>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="SubForm('SubForm')">保存</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+        </el-container>
+    </div>
+    <script src="/lib/Vue/vue.js"></script>
+    <script src="/lib/Element/js/index.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/Scripts/admin.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    pickerOptions: {
+                        shortcuts: [{
+                            text: '最近一周',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '最近一个月',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '最近三个月',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }]
+                    },
+                    tableData: [],
+                    PageParams: {
+                        PageSizeList: window.PageSizeList,
+                        PageNum: 1,
+                        PageSize: 10,
+                        Total: 0
+                    },
+                    model: {
+                        YN_VIP: null,
+                        Times: [this.SRecentTime(), this.ERecentTime()],//时间,
+                        NikeName: '',
+                        BeOverdue: false
+                    },
+                    Dialog: {
+                        Title: '',
+                        Show: false,
+                    },
+                    labelwidth: '35%',
+                    Form: {
+                        ID: 0,
+                        Stamp: '',
+                        Tel: 1,
+                        NikeName: '',
+                        WxOpenID: '',
+                        WxHeadUrl: '',
+                        YN_VIP: '',
+                        BeOverdue_VIP: '',
+                        Free_Second: '',
+                    },
+                    thisRow: {},
+                    Rule: {
+                        ApiKey: [
+                            { required: true, message: '请输入APIKEY', trigger: 'blur' }
+                        ]
+                    }
+                };
+            },
+            methods: {
+                //时间转换
+                DateConvert(TimeStamp) {
+                    var Time = new Date(TimeStamp);
+                    var Year = Time.getFullYear();
+                    var Month = Time.getMonth() + 1;
+                    var Day = Time.getDate();
+                    return Year + '-' + this.Supplement(Month) + '-' + this.Supplement(Day);
+                },
+                //时间零补位
+                Supplement(TimeVal) {
+                    return parseInt(TimeVal) < 10 ? '0' + TimeVal : TimeVal
+                },
+                //最近一个月(开始时间)
+                SRecentTime() {
+                    const start = new Date();
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                    return start;
+                },
+                //最近一个月(结束时间)
+                ERecentTime() {
+                    const end = new Date();
+                    return end;
+                },
+                Select() {
+                    this.PageParams.pageNum = 1;
+                    this.GetListPage();
+                },
+                Edit(row) {
+                    this.Dialog.Show = true;
+                    this.$nextTick(() => {
+                        const MOD = this.$refs['SubForm'];
+                        if (MOD) {
+                            MOD.resetFields()
+                        }
+                        this.thisRow = row;
+                        this.Form = JSON.parse(JSON.stringify(row));
+                        this.Dialog.Title = '修改';
+                    });
+                },
+                SubForm(formName) {
+                    const that = this;
+                    this.$refs[formName].validate(function (valid) {
+                        if (valid) {
+                            if (that.Dialog.Title == '添加') {
+                                that.Add();
+                            } else {
+                                that.Update();
+                            }
+                        }
+                    })
+                },
+                Update() {
+                    const that = this;
+                    axios({
+                        method: 'put',
+                        url: '/ChatGPT/User/Update',
+                        data: that.Form,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.thisRow.Free_Second = that.Form.Free_Second;
+                        that.$message({
+                            message: '更新成功！',
+                            type: 'success'
+                        });
+                        that.Dialog.Show = false;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                Delete(ID) {
+                    const that = this;
+                    axios({
+                        method: 'Delete',
+                        url: '/ChatGPT/User/Delete',
+                        params: {
+                            ID: ID
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.$message({
+                            message: '删除成功！',
+                            type: 'success'
+                        });
+                        that.tableData.splice(that.tableData.findIndex(item => item.ID === ID), 1);
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                GetListPage() {
+                    const that = this;
+                    //开始时间
+                    let TimeStart = '';
+                    let TimeEnd = '';
+                    if (that.model.Times.length > 0) {
+                        TimeStart = that.DateConvert(that.model.Times[0]);
+                        TimeEnd = that.DateConvert(that.model.Times[1]);
+                    }
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/User/GetListPage',
+                        params: {
+                            YN_VIP: that.model.YN_VIP,
+                            NikeName: that.model.NikeName,
+                            TimeStart: TimeStart,
+                            TimeEnd: TimeEnd,
+                            BeOverdue: that.model.BeOverdue,
+                            PageNum: that.PageParams.PageNum,
+                            PageSize: that.PageParams.PageSize,
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.tableData = res.DATA;
+                        that.PageParams.Total = res.DATACOUNT;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                    this.tableData;
+                },
+                handleSizeChange(pageSize) {
+                    //当前页数
+                    this.PageParams.PageNum = 1;
+                    //当前页最大值
+                    this.PageParams.PageSize = pageSize;
+                    this.GetListPage();
+                },
+                handleCurrentChange(pageNum) {
+                    //当前页数
+                    this.PageParams.PageNum = pageNum;
+                    this.GetListPage();
+                },
+                CheckTime(Time) {
+                    let DataTime = new Date(Time);
+                    let TimeNow = new Date();
+                    if (TimeNow > DataTime) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            },
+            created: function () {
+                this.GetListPage();
+            },
+            mounted: function () {
+
+            }
+        })
+    </script>
+</body>
+</html>

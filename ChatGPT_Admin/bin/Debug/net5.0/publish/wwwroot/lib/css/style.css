@@ -1,0 +1,130 @@
+﻿[v-cloak] {
+    display: none;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+.el-dialog .el-input {
+    width: 100%;
+}
+.el-dialog .el-textarea {
+    width: 80%;
+}
+.el-header {
+    margin-top: 20px;
+}
+
+.el-footer {
+    margin-bottom: 50px;
+    white-space: nowrap;
+    overflow-x: hidden;
+    /*允许横向滚动*/
+    display: inline;
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+.SelectDiv {
+    width: 100%;
+}
+
+    .SelectDiv .InputContainer {
+        width: 200px;
+        margin-right: 5px;
+        display: inline-block;
+        margin-bottom:5px;
+    }
+    .SelectDiv .SelectContainer {
+        width: 80px;
+        margin-right: 5px;
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+    .SelectDiv .SelectContainerMid {
+        width: 110px;
+        margin-right: 5px;
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+    .SelectDiv .SelectContainerLager {
+        width: 160px;
+        margin-right: 5px;
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+    .SelectDiv .ButtonContainer {
+        min-width:80px;
+        margin-right: 5px;
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+    .SelectDiv .ButtonContainerRight {
+        margin-right: 5px;
+        display: inline-block;
+        margin-bottom: 5px;
+        float:right;
+    }
+    .SelectDiv .DatePickContainer {
+        min-width: 400px;
+        margin-right: 5px;
+        display: inline-block;
+        margin-bottom: 5px;
+        float:right;
+    }
+.el-tabs--card > .el-tabs__header .el-tabs__nav {
+    user-select: none;
+}
+/*css主要部分的样式*/
+/*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
+
+::-webkit-scrollbar {
+    width: 10px; /*对垂直流动条有效*/
+    height: 10px; /*对水平流动条有效*/
+}
+
+/*定义滚动条的轨道颜色、内阴影及圆角*/
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    border-radius: 3px;
+}
+
+
+/*定义滑块颜色、内阴影及圆角*/
+::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #74B8FF;
+}
+
+/*定义两端按钮的样式*/
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+/*定义右下角汇合处的样式*/
+::-webkit-scrollbar-corner {
+    display: none;
+}
+.el-message-box {
+    vertical-align: unset;
+}
+.TextDefault {
+    color: #606266;
+}
+.TextPrimary {
+    color: #409eff;
+}
+.TextSuccess {
+    color: #67c23a;
+}
+.TextWarning {
+    color: #e6a23c;
+}
+.TextDanger {
+    color: #f56c6c;
+}
+.TextInfo {
+    color: #909399;
+}

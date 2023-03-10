@@ -1,0 +1,12 @@
+E:\ChatGPT\ChatGPT\ChatGPT_Model\obj\Debug\net5.0\ChatGPT_Model.csproj.AssemblyReference.cache
+E:\ChatGPT\ChatGPT\ChatGPT_Model\obj\Debug\net5.0\ChatGPT_Model.GeneratedMSBuildEditorConfig.editorconfig
+E:\ChatGPT\ChatGPT\ChatGPT_Model\obj\Debug\net5.0\ChatGPT_Model.AssemblyInfoInputs.cache
+E:\ChatGPT\ChatGPT\ChatGPT_Model\obj\Debug\net5.0\ChatGPT_Model.AssemblyInfo.cs
+E:\ChatGPT\ChatGPT\ChatGPT_Model\obj\Debug\net5.0\ChatGPT_Model.csproj.CoreCompileInputs.cache
+E:\ChatGPT\ChatGPT\ChatGPT_Model\bin\Debug\net5.0\ChatGPT_Model.deps.json
+E:\ChatGPT\ChatGPT\ChatGPT_Model\bin\Debug\net5.0\ChatGPT_Model.dll
+E:\ChatGPT\ChatGPT\ChatGPT_Model\bin\Debug\net5.0\ChatGPT_Model.pdb
+E:\ChatGPT\ChatGPT\ChatGPT_Model\obj\Debug\net5.0\ChatGPT_Model.dll
+E:\ChatGPT\ChatGPT\ChatGPT_Model\obj\Debug\net5.0\ref\ChatGPT_Model.dll
+E:\ChatGPT\ChatGPT\ChatGPT_Model\obj\Debug\net5.0\ChatGPT_Model.pdb
+E:\ChatGPT\ChatGPT\ChatGPT_Model\bin\Debug\net5.0\ref\ChatGPT_Model.dll

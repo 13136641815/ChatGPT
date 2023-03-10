@@ -1,0 +1,286 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <!-- Element CSS -->
+    <link rel="stylesheet" href="/lib/Element/css/index.css">
+    <!-- 全局通用样式 -->
+    <link rel="stylesheet" href="/lib/css/style.css" />
+    <title></title>
+</head>
+<body>
+    <div id="content">
+        <h1 class="table">张三</h1>
+    </div>
+
+    <div id="app" v-cloak>
+        <input v-model="text" />
+        <a @@click="setText">设置</a>
+        <h1 v-for="item in JSON">{{item.NikeName}}11</h1>
+    </div>
+    <script src="/lib/Vue/vue.js"></script>
+    <script src="/lib/Element/js/index.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/Scripts/admin.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    text:'张三',
+                    JSON: [{
+                        "ID": 17,
+                        "Stamp": "2023-02-13 19:08:02",
+                        "Tel": null,
+                        "NikeName": "AI机器人定制",
+                        "WxOpenID": "oJ6oq630Dctpq-dzjR4by3PvNSGc",
+                        "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/NEUCAvtSXGdmstbV4dI1WTiaUHOrUuSQf2OLiaEibIu4C6Ekfqvdd6Kiah9nsdUheodMiaGn2LOa2agzUbSiapsNYJ1g/132",
+                        "YN_VIP": 0,
+                        "Type_VIP": -1,
+                        "BeOverdue_VIP": "2000-01-01 00:00:00",
+                        "Free_Second": 463
+                    }, {
+                        "ID": 18,
+                        "Stamp": "2023-02-13 19:15:19",
+                        "Tel": null,
+                        "NikeName": "鑫灿科技-古月",
+                        "WxOpenID": "oJ6oq61zZBNht8X5kJdtKuxLV8iY",
+                        "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eqxVUtT0EuJM3HAakUSIr7BDzdl5ia3YnwRz3JXSP2FViaZjWbT8vvbwI5f2dFa0bIEq7qou9lqjdkg/132",
+                        "YN_VIP": 0,
+                        "Type_VIP": -1,
+                        "BeOverdue_VIP": "2000-01-01 00:00:00",
+                        "Free_Second": 478
+                    }, {
+                        "ID": 19,
+                        "Stamp": "2023-02-13 19:21:53",
+                        "Tel": null,
+                        "NikeName": "太阳",
+                        "WxOpenID": "oJ6oq6yTvussPQHt5RUANSQbKqS4",
+                        "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/H98wJNdPaVs18ClMC6UDbkibSARzptymPT539NdBKgIHIaZ4lE2r0vQXrnY3bibBdL0FOEKwFQ1vqMwomLGuq9Vw/132",
+                        "YN_VIP": 0,
+                        "Type_VIP": -1,
+                        "BeOverdue_VIP": "2000-01-01 00:00:00",
+                        "Free_Second": 3
+                    }, {
+                        "ID": 20,
+                        "Stamp": "2023-02-13 19:27:34",
+                        "Tel": null,
+                        "NikeName": "刘双",
+                        "WxOpenID": "oJ6oq60loNits4YgIPyPHgRTAcuU",
+                        "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/HHPWm2UZdIvdkibfzlLwibrYpQGPVBZGXqzRYnlrBcC9spNrI6FCUfPERiacDFD6b16SiadAHGU5Mw7BKloKa6X1eQ/132",
+                        "YN_VIP": 0,
+                        "Type_VIP": -1,
+                        "BeOverdue_VIP": "2000-01-01 00:00:00",
+                        "Free_Second": 8
+                    }, {
+                        "ID": 21,
+                        "Stamp": "2023-02-13 19:30:10",
+                        "Tel": null,
+                        "NikeName": "我迪迦在东北??",
+                        "WxOpenID": "oJ6oq6zC2RTZuT3zloPGpNQxRrP4",
+                        "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKjLDMXX5RvCOnY5JqpAcAOk6iba5sn7Efva5ZfnFvhUgbdIP3u81mAjb53ibvrHN6AHJVicsR0OTa1A/132",
+                        "YN_VIP": 0,
+                        "Type_VIP": -1,
+                        "BeOverdue_VIP": "2000-01-01 00:00:00",
+                        "Free_Second": 18
+                    }, {
+                        "ID": 22,
+                        "Stamp": "2023-02-13 19:32:43",
+                        "Tel": null,
+                        "NikeName": "思思",
+                        "WxOpenID": "oJ6oq64TBVE9DCZ8MWORq3CAOu-U",
+                        "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/G1QxMbLdkRId68wDQ8xooz5RDxgJG1icXxfbmRI6INXic7BOibCkliaswZNzLXkYuNhd4CfCHFTLcaZ2BBhlJAXB0w/132",
+                        "YN_VIP": 0,
+                        "Type_VIP": -1,
+                        "BeOverdue_VIP": "2000-01-01 00:00:00",
+                        "Free_Second": 0
+                    }, {
+                        "ID": 23,
+                        "Stamp": "2023-02-13 19:36:27",
+                        "Tel": null,
+                        "NikeName": "糖醋排骨",
+                        "WxOpenID": "oJ6oq67c8NVNTk7NyCV2Yu1detLc",
+                        "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/LssnVfpCrJX41JcrZcmz9gle6HoQqhhKpNtkdC0Un61hoX0LaTEmoicNbKtPW5uib7Cpen7MzhV6V3VXPfgqKB4A/132",
+                        "YN_VIP": 0,
+                        "Type_VIP": -1,
+                        "BeOverdue_VIP": "2000-01-01 00:00:00",
+                        "Free_Second": 500
+                    }, {
+                        "ID": 24,
+                        "Stamp": "2023-02-13 19:45:18",
+                        "Tel": null,
+                        "NikeName": "ivy",
+                        "WxOpenID": "oJ6oq61ga_eFXjVoYcqnfE2qwSRw",
+                        "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/d9u2mN4UQibQ3orND2esico7gvichX1ia78l8xcN4icuUGRwettA8iaN4tFNWsVaRllc3fABDiatl25sO2ObQ2aUtX0zA/132",
+                        "YN_VIP": 0,
+                        "Type_VIP": -1,
+                        "BeOverdue_VIP": "2000-01-01 00:00:00",
+                        "Free_Second": 9
+                    }, {
+                        "ID": 25,
+                        "Stamp": "2023-02-13 19:45:20",
+                        "Tel": null,
+                        "NikeName": "??三水",
+                        "WxOpenID": "oJ6oq66kPZOH_JrM6PWHDEaoQwxY",
+                        "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/AFgJTzf4Jot633IjSpqiclwInrO5CuaicsOeMGCKjKTibIAQjwScEzquw5KTmCN4r4oOHbyia3GXxYG7LiaM31XYMMg/132",
+                        "YN_VIP": 0,
+                        "Type_VIP": -1,
+                        "BeOverdue_VIP": "2000-01-01 00:00:00",
+                        "Free_Second": 500
+                    }, {
+                        "ID": 26,
+                        "Stamp": "2023-02-13 19:55:31",
+                        "Tel": null,
+                        "NikeName": "吴",
+                        "WxOpenID": "oJ6oq65CeVlZaBK4Og-IoosXbCLY",
+                        "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/UXHJn1yic5NfYmmaMwCjKhgL4d3elzjicGfByrwUWvwSoPctz2lMLtAUr0mmSbd8eAVYDs0GeQG6coAK6V5pDA1Q/132",
+                        "YN_VIP": 0,
+                        "Type_VIP": -1,
+                        "BeOverdue_VIP": "2000-01-01 00:00:00",
+                        "Free_Second": 20
+                    }]
+                };
+            },
+            methods: {
+                setText() {
+                    this.text = '李四';
+                    alert(this.text);
+                }
+            },
+            created: function () {
+
+            },
+            mounted: function () {
+                alert(this.text);
+            }
+        })
+    </script>
+    <script>
+        //ShowList();
+        function ShowList() {
+            var Json = [{
+                "ID": 17,
+                "Stamp": "2023-02-13 19:08:02",
+                "Tel": null,
+                "NikeName": "AI机器人定制",
+                "WxOpenID": "oJ6oq630Dctpq-dzjR4by3PvNSGc",
+                "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/NEUCAvtSXGdmstbV4dI1WTiaUHOrUuSQf2OLiaEibIu4C6Ekfqvdd6Kiah9nsdUheodMiaGn2LOa2agzUbSiapsNYJ1g/132",
+                "YN_VIP": 0,
+                "Type_VIP": -1,
+                "BeOverdue_VIP": "2000-01-01 00:00:00",
+                "Free_Second": 463
+            }, {
+                "ID": 18,
+                "Stamp": "2023-02-13 19:15:19",
+                "Tel": null,
+                "NikeName": "鑫灿科技-古月",
+                "WxOpenID": "oJ6oq61zZBNht8X5kJdtKuxLV8iY",
+                "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eqxVUtT0EuJM3HAakUSIr7BDzdl5ia3YnwRz3JXSP2FViaZjWbT8vvbwI5f2dFa0bIEq7qou9lqjdkg/132",
+                "YN_VIP": 0,
+                "Type_VIP": -1,
+                "BeOverdue_VIP": "2000-01-01 00:00:00",
+                "Free_Second": 478
+            }, {
+                "ID": 19,
+                "Stamp": "2023-02-13 19:21:53",
+                "Tel": null,
+                "NikeName": "太阳",
+                "WxOpenID": "oJ6oq6yTvussPQHt5RUANSQbKqS4",
+                "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/H98wJNdPaVs18ClMC6UDbkibSARzptymPT539NdBKgIHIaZ4lE2r0vQXrnY3bibBdL0FOEKwFQ1vqMwomLGuq9Vw/132",
+                "YN_VIP": 0,
+                "Type_VIP": -1,
+                "BeOverdue_VIP": "2000-01-01 00:00:00",
+                "Free_Second": 3
+            }, {
+                "ID": 20,
+                "Stamp": "2023-02-13 19:27:34",
+                "Tel": null,
+                "NikeName": "刘双",
+                "WxOpenID": "oJ6oq60loNits4YgIPyPHgRTAcuU",
+                "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/HHPWm2UZdIvdkibfzlLwibrYpQGPVBZGXqzRYnlrBcC9spNrI6FCUfPERiacDFD6b16SiadAHGU5Mw7BKloKa6X1eQ/132",
+                "YN_VIP": 0,
+                "Type_VIP": -1,
+                "BeOverdue_VIP": "2000-01-01 00:00:00",
+                "Free_Second": 8
+            }, {
+                "ID": 21,
+                "Stamp": "2023-02-13 19:30:10",
+                "Tel": null,
+                "NikeName": "我迪迦在东北??",
+                "WxOpenID": "oJ6oq6zC2RTZuT3zloPGpNQxRrP4",
+                "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKjLDMXX5RvCOnY5JqpAcAOk6iba5sn7Efva5ZfnFvhUgbdIP3u81mAjb53ibvrHN6AHJVicsR0OTa1A/132",
+                "YN_VIP": 0,
+                "Type_VIP": -1,
+                "BeOverdue_VIP": "2000-01-01 00:00:00",
+                "Free_Second": 18
+            }, {
+                "ID": 22,
+                "Stamp": "2023-02-13 19:32:43",
+                "Tel": null,
+                "NikeName": "思思",
+                "WxOpenID": "oJ6oq64TBVE9DCZ8MWORq3CAOu-U",
+                "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/G1QxMbLdkRId68wDQ8xooz5RDxgJG1icXxfbmRI6INXic7BOibCkliaswZNzLXkYuNhd4CfCHFTLcaZ2BBhlJAXB0w/132",
+                "YN_VIP": 0,
+                "Type_VIP": -1,
+                "BeOverdue_VIP": "2000-01-01 00:00:00",
+                "Free_Second": 0
+            }, {
+                "ID": 23,
+                "Stamp": "2023-02-13 19:36:27",
+                "Tel": null,
+                "NikeName": "糖醋排骨",
+                "WxOpenID": "oJ6oq67c8NVNTk7NyCV2Yu1detLc",
+                "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/LssnVfpCrJX41JcrZcmz9gle6HoQqhhKpNtkdC0Un61hoX0LaTEmoicNbKtPW5uib7Cpen7MzhV6V3VXPfgqKB4A/132",
+                "YN_VIP": 0,
+                "Type_VIP": -1,
+                "BeOverdue_VIP": "2000-01-01 00:00:00",
+                "Free_Second": 500
+            }, {
+                "ID": 24,
+                "Stamp": "2023-02-13 19:45:18",
+                "Tel": null,
+                "NikeName": "ivy",
+                "WxOpenID": "oJ6oq61ga_eFXjVoYcqnfE2qwSRw",
+                "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/d9u2mN4UQibQ3orND2esico7gvichX1ia78l8xcN4icuUGRwettA8iaN4tFNWsVaRllc3fABDiatl25sO2ObQ2aUtX0zA/132",
+                "YN_VIP": 0,
+                "Type_VIP": -1,
+                "BeOverdue_VIP": "2000-01-01 00:00:00",
+                "Free_Second": 9
+            }, {
+                "ID": 25,
+                "Stamp": "2023-02-13 19:45:20",
+                "Tel": null,
+                "NikeName": "??三水",
+                "WxOpenID": "oJ6oq66kPZOH_JrM6PWHDEaoQwxY",
+                "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/AFgJTzf4Jot633IjSpqiclwInrO5CuaicsOeMGCKjKTibIAQjwScEzquw5KTmCN4r4oOHbyia3GXxYG7LiaM31XYMMg/132",
+                "YN_VIP": 0,
+                "Type_VIP": -1,
+                "BeOverdue_VIP": "2000-01-01 00:00:00",
+                "Free_Second": 500
+            }, {
+                "ID": 26,
+                "Stamp": "2023-02-13 19:55:31",
+                "Tel": null,
+                "NikeName": "吴",
+                "WxOpenID": "oJ6oq65CeVlZaBK4Og-IoosXbCLY",
+                "WxHeadUrl": "https://thirdwx.qlogo.cn/mmopen/vi_32/UXHJn1yic5NfYmmaMwCjKhgL4d3elzjicGfByrwUWvwSoPctz2lMLtAUr0mmSbd8eAVYDs0GeQG6coAK6V5pDA1Q/132",
+                "YN_VIP": 0,
+                "Type_VIP": -1,
+                "BeOverdue_VIP": "2000-01-01 00:00:00",
+                "Free_Second": 20
+            }];
+            var str = '';
+            for (var i = 0; i < Json.length; i++) {
+                str += '<h1>' + Json[i].NikeName + '</h1>'
+            }
+            document.getElementById('content').innerHTML = str;
+        }
+    </script>
+</body>
+</html>

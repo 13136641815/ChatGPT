@@ -1,10 +1,8 @@
 ﻿using ChatGPT_Mapper;
 using ChatGPT_Model.AppModel;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 
 namespace ChatGPT_Wx.Areas.ChatGPT.Controllers

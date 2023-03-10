@@ -359,8 +359,8 @@
                     this.messages = [];
                 }
             },
-            Signalr(APIKEY, sendMsg, context) {
-                this.connection.invoke("SendMessage", APIKEY, this.Bot.ID, sendMsg).catch(function (err) {
+            Signalr(sendMsg, context) {
+                this.connection.invoke("SendMessage", this.Bot.ID, sendMsg).catch(function (err) {
                     console.error(err);
                     vant.Dialog.confirm({
                         title: '异常',
@@ -404,7 +404,7 @@
                         role: "assistant",
                         content: 'loding'
                     };//为了后期修改，做浅拷贝
-                    this.Signalr(res, Messages, context);
+                    this.Signalr(Messages, context);
                     this.text = '';//清空文本框
                     this.messages.push(context);//发送AI的咯顶
                     setTimeout(() => {

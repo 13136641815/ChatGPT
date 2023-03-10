@@ -15,6 +15,7 @@
   <ItemGroup>
     <Folder Include="Areas\ChatGPT\Data\" />
     <Folder Include="Areas\ChatGPT\Models\" />
+    <Folder Include="Controllers\" />
   </ItemGroup>
 
   <ItemGroup>

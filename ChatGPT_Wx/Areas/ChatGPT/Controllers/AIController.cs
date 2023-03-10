@@ -7,6 +7,7 @@ using ChatGPT_Service.ChatGPT;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using System;
 
 namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
 {
@@ -91,6 +92,67 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             RES.CODE = ResultCode.Empty;
             RES.DATA = "本地API接口异常";
             RES.MSG = "本地API接口异常";
+            return Json(RES);
+        }
+        /// <summary>
+        /// 获取校验权限，流式返回
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<JsonResult> Check([FromForm] string Text)
+        {
+            Result RES = new Result();
+            Tools.WordSearch appc = new Tools.WordSearch();
+            bool isok = appc.Filter(Text);//校验关键字
+            if (isok)
+            {
+                GetCookiesController Capp = new GetCookiesController(_httpContextAccessor);
+                Mapper_GPT_User app = new Mapper_GPT_User();
+                var model = await Capp.GetInfoModelFromCookies();
+                //1.判断是不是会员
+                if (model.YN_VIP == 1)
+                {
+                    //是会员，会员是否到期
+                    if (DateTime.Now < model.BeOverdue_VIP)
+                    {
+                        //未到期，直接发送
+                        RES.CODE = ResultCode.Success;
+                    }
+                    else
+                    {
+                        //已到期，提示充值
+                        RES.CODE = ResultCode.Empty;
+                        RES.MSG = "您的会员已到期，请续费后再使用";
+                        return Json(RES);
+                    }
+                }
+                else
+                {
+                    //非会员，查看免费次数
+                    if (model.Free_Second > 0)
+                    {
+                        //有次数，发送成功后次数--
+                        //次数--
+                        RES.CODE = ResultCode.Success;
+                        RES.DATA = "";
+                        model.Free_Second--;
+                        await app.Free_SecondAsync(model);
+                    }
+                    else
+                    {
+                        //没次数了，提示非会员
+                        RES.CODE = ResultCode.Empty;
+                        RES.MSG = "免费次数已用尽，请开通会员后再使用";
+                        return Json(RES);
+                    }
+                }
+            }
+            else
+            {
+                //非法文字
+                RES.CODE = ResultCode.Empty;
+                RES.MSG = "您的询问内容包含敏感词汇，请修改后再尝试。";
+            }
             return Json(RES);
         }
     }

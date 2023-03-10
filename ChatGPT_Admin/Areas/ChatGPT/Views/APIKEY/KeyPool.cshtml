@@ -143,12 +143,13 @@
             el: '#app',
             data: function () {
                 return {
+                    fileList: [],
                     tableData: [],
                     PageParams: {
                         PageSizeList: window.PageSizeList,
                         PageNum: 1,
                         PageSize: 10,
-                        Total: 0
+                        Total: 0,
                     },
                     model: {
                         Enable: null,

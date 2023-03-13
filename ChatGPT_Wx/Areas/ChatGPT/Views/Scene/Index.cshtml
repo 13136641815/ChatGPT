@@ -10,20 +10,25 @@
     <link rel="stylesheet" href="/lib/vant/css/index.css" />
     <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
     <title></title>
-     <style>
-         .van-image--round img {
-             background-color: #e0f0ff;
-         }
-     </style>
+    <style>
+        body {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+        }
+        .van-image--round img {
+            background-color: #e0f0ff;
+        }
+    </style>
 </head>
 <body>
     <div id="app" v-cloak>
         <div style="width:100%;float:left;">
             <div style="width:25%;float:left;" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)">
                 <van-image round
-                           width="90%"
-                           height="90%"
-                           style="padding:5%;"
+                           width="70%"
+                           height="70%"
+                           style="padding: 15%; padding-bottom: 2%;"
                            :src="Item.Img"></van-image>
                 <p style="text-align:center;margin:0px;">{{Item.Name}}</p>
             </div>

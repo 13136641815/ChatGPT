@@ -3,17 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32802.440
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_Wx", "ChatGPT_Wx\ChatGPT_Wx.csproj", "{D2D761B0-6586-4302-BC9B-4E2F454FB56E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGPT_Wx", "ChatGPT_Wx\ChatGPT_Wx.csproj", "{D2D761B0-6586-4302-BC9B-4E2F454FB56E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_Admin", "ChatGPT_Admin\ChatGPT_Admin.csproj", "{63AE38E0-1A20-41FE-8ADD-B3CA277B8C30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGPT_Admin", "ChatGPT_Admin\ChatGPT_Admin.csproj", "{63AE38E0-1A20-41FE-8ADD-B3CA277B8C30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_Mapper", "ChatGPT_Mapper\ChatGPT_Mapper.csproj", "{E56FB57D-76E2-4FEB-A287-36D5F4793802}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGPT_Mapper", "ChatGPT_Mapper\ChatGPT_Mapper.csproj", "{E56FB57D-76E2-4FEB-A287-36D5F4793802}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_Service", "ChatGPT_Service\ChatGPT_Service.csproj", "{3E0FFF76-F68A-437B-AF84-7301AA9C1C95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGPT_Service", "ChatGPT_Service\ChatGPT_Service.csproj", "{3E0FFF76-F68A-437B-AF84-7301AA9C1C95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_Model", "ChatGPT_Model\ChatGPT_Model.csproj", "{F8EC881B-7144-4120-ACB9-25BB3345CDF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGPT_Model", "ChatGPT_Model\ChatGPT_Model.csproj", "{F8EC881B-7144-4120-ACB9-25BB3345CDF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT_WebAPI", "ChatGPT_WebAPI\ChatGPT_WebAPI.csproj", "{CD8161F6-F9C5-4367-8523-F359B66C36D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGPT_WebAPI", "ChatGPT_WebAPI\ChatGPT_WebAPI.csproj", "{CD8161F6-F9C5-4367-8523-F359B66C36D4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "文档", "文档", "{EB373833-72F5-4E89-970F-C70C1E358561}"
+	ProjectSection(SolutionItems) = preProject
+		文档\数据字典.docx = 文档\数据字典.docx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

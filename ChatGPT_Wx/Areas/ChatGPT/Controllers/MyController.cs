@@ -78,16 +78,21 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             var CookiesModel = JsonConvert.DeserializeObject<H5Cookie>(Tools.AES.staticKeyTo_DecryptAES(value));//获取COOKIE身份
             TencentQrCode app = new TencentQrCode();
             string ticket = await app.GetQRCodeTicket(CookiesModel.UserInfo.openid);
-            var QrCodeUrl = "";
-            var CODE = ResultCode.Empty;
-            if (!string.IsNullOrEmpty(ticket))
+            var CODE = ResultCode.Success;
+            var Base64QR = await app.UrlToImage("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + HttpUtility.UrlEncode(ticket));
+            var Base64Heard = await app.UrlToImage(CookiesModel.UserInfo.headimgurl);
+            if (string.IsNullOrEmpty(ticket))
             {
-                CODE = ResultCode.Success;
-                QrCodeUrl = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + HttpUtility.UrlEncode(ticket);
+                CODE = ResultCode.Empty;
             }
             return Json(new Result()
             {
-                DATA = QrCodeUrl
+                CODE = CODE,
+                DATA = new Base64Img()
+                {
+                    Base64QR = Base64QR,
+                    Base64Heard = Base64Heard
+                }
             });
         }
         [HttpPut]

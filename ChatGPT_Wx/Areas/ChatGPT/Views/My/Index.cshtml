@@ -24,6 +24,7 @@
     </style>
 </head>
 <body>
+
     <div id="app" v-cloak>
         <div class="div_top">
             <div class="Img">
@@ -98,11 +99,36 @@
                 </van-form>
             </van-cell-group>
         </van-popup>
+        <van-popup v-model="QRCode.show" position="bottom" :style="{ height: '85%' }" closeable>
+            <div style="width:100%; height:85%;margin-top:5%; text-align:center;background-color:#fff;" id="QRImg">
+                <img style="height:75%;object-fit: contain;" src="/ChatGPT_Wx/Img/TG.jpg"/>
+                @*<van-image fit="contain"
+                           style="width:auto;height:75%;"
+                           src="/ChatGPT_Wx/Img/TG.jpg"></van-image>*@
+                <div style="height:20%;width:100%;">
+                    <van-row>
+                        <van-col span="4"></van-col>
+                        <van-col span="8" style="position: relative;">
+                            <img crossorigin="anonymous" width="30" height="30" style="margin-top: 47.5px; margin-left: 47.5px;position:absolute;z-index:1;" :src="'data:image/png;base64,'+QRCode.Base64Heard" />
+                            <img width="125" height="125" :src="'data:image/png;base64,'+QRCode.Base64QR" />
+                        </van-col>
+                        <van-col span="8">
+                            <p style="font-size: 1rem; color: #646464;font-family:FangSong;">{{UserInfo.NikeName}}</p>
+                            <p style="font-size: 1rem; color: #646464;font-family:FangSong;">邀请你体验</p>
+                        </van-col>
+                        <van-col span="4"></van-col>
+                    </van-row>
+                </div>
+            </div>
+            <van-button type="info" block @@click="OpenImg" style=" position: absolute; bottom: 0;">生成图片</van-button>
+        </van-popup>
     </div>
     <script src="/lib/vue/vue.js"></script>
     <script src="/lib/vant/js/vant.js"></script>
     <script src="/lib/axios/axios.js"></script>
-    <script src="/ChatGPT_Wx/Script/script.js"></script>
+    <script src="/lib/JQ/jquery.min.js"></script>
+    <script src="/ChatGPT_Wx/Script/html2canvas.min.js"></script>
+    @*<script src="/ChatGPT_Wx/Script/script.js"></script>*@
     <script>
         // 在 #app 标签下渲染一个按钮组件
         new Vue({
@@ -120,8 +146,32 @@
                 actions: [{ name: '分销说明' }, { name: '推广码' }, { name: '佣金明细' }, { name: '收款账户' }],
                 RemarkShow: false,
                 FormShow: false,
+                QRCode: {
+                    show: false,
+                    Base64QR: '',
+                    Base64Heard: ''
+                }
             },
             methods: {
+                OpenImg() {
+                    let canvas2 = document.createElement("canvas");
+                    let _canvas = document.querySelector('#QRImg');
+                    var w = parseInt(window.getComputedStyle(_canvas).width);
+                    var h = parseInt(window.getComputedStyle(_canvas).height);
+                    //将canvas画布放大若干倍，然后盛放在较小的容器内，就显得不模糊了
+                    canvas2.width = w * 4;
+                    canvas2.height = h * 4;
+                    canvas2.style.width = w + "px";
+                    canvas2.style.height = h + "px";
+                    var scale = 4; //定义任意放大倍数 支持小数
+                    let context = canvas2.getContext("2d").scale(scale, scale);;
+                    html2canvas(document.getElementById('QRImg'), {
+                        onrendered: function (canvas) {
+                            let URL = canvas.toDataURL();
+                            vant.ImagePreview([URL]);
+                        }
+                    })
+                },
                 onSubmit(values) {
                     axios({
                         method: 'put',
@@ -143,6 +193,10 @@
                     if (item.name == '分销说明') {
                         this.RemarkShow = true;
                     } else if (item.name == '推广码') {
+                        if (this.QRCode.Base64QR && this.QRCode.Base64Heard) {
+                            this.QRCode.show = true;
+                            return;
+                        }
                         axios({
                             method: 'get',
                             url: '/ChatGPT/My/GetMyQrCode',
@@ -150,7 +204,9 @@
                                 'Content-Type': 'application/json; charset=UTF-8'
                             },
                         }).then(res => {
-                            vant.ImagePreview([res]);
+                            this.QRCode.Base64QR = res.Base64QR;
+                            this.QRCode.Base64Heard = res.Base64Heard;
+                            this.QRCode.show = true;
                         }).catch(err => {
 
                         })

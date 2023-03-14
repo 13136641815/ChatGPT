@@ -1,10 +1,12 @@
 ﻿using ChatGPT_Model.AppModel;
 using ChatGPT_Model.Tencent;
 using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ChatGPT_Service.Home
 {
@@ -23,6 +25,14 @@ namespace ChatGPT_Service.Home
                 return Modelaccess_token.access_token;
             }
             return "";
+        }
+        public async Task<string> UrlToImage(string url)
+        {
+            using var client = new HttpClient();
+            var response = await client.GetAsync(url);
+            var bytes = await response.Content.ReadAsByteArrayAsync();
+            var base64 = Convert.ToBase64String(bytes);
+            return base64;
         }
         /// <summary>
         /// 根据Opneid获取本人的推广二维码

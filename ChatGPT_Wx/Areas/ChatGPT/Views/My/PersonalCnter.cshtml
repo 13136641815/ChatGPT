@@ -11,14 +11,151 @@
     <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
     <title></title>
     <style>
+        body {
+            background-color: #f5f6f7;
+        }
+
         p {
             text-align: center;
+        }
+
+        .van-cell .van-cell__left-icon {
+            font-size: 20px;
+            color: #1989fa;
+        }
+
+        .DivHeardBg {
+            width: 100%;
+            padding: 1rem 0 2rem 0;
+            background: linear-gradient(to right, #3cabec, #634bf6);
+            margin-bottom: 20px;
+        }
+
+        .DivHeard {
+            display: flex;
+            -webkit-box-align: center;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+        }
+
+        .HeardImg {
+            width: 50px;
+            height: 50px;
+            border-radius: 100%;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.7);
+            margin-right: 0.5rem;
+        }
+
+        .HeardName {
+            flex: 1;
+            min-width: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+            .HeardName h2 {
+                color: rgba(255,255,255,0.9);
+                font-weight: normal;
+                font-size: 1.1rem;
+            }
+
+        .DivCard {
+            background-size: 100%;
+            background-repeat: no-repeat;
+            width: 94%;
+            margin: -4rem auto 0.9rem;
+            border-radius: 10px;
+            background-color: #424242;
+        }
+
+        .CardContent {
+            padding: 10px 15px;
+            display: flex;
+            -webkit-box-align: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .CardContentText {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            flex: 1;
+            min-width: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+            .CardContentText h3 {
+                color: #f1debd;
+                font-size: 1.0rem;
+                position: relative;
+                width: 68%;
+                margin: 0;
+            }
+
+            .CardContentText p {
+                color: #f1debd;
+                font-size: 0.9rem;
+                margin: 0;
+                text-align:left;
+            }
+        .tops {
+            width: 50px;
+            font-size: 24px;
+            color: #fff;
+            font-weight: 900;
+            position: absolute;
+            top: 0.7rem;
+            right: 2rem;
         }
     </style>
 </head>
 <body>
     <div id="app" v-cloak>
-        
+        <div class="DivHeardBg">
+            <div class="DivHeard">
+                <div class="HeardImg">
+                    <van-image width="100%"
+                               height="100%"
+                               :src="UserInfo.WxHeadUrl"></van-image>
+                </div>
+                <div class="HeardName">
+                    <h2 style="margin-bottom: 0px;">ID：{{UserInfo.ID}}</h2>
+                    <h2 style="margin-top: 5px;">{{UserInfo.NikeName}}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="DivCard">
+            <div class="CardContent">
+                <div class="CardContentText">
+                    <h3 v-if="UserInfo.IsShowTime">会员</h3>
+                    <h3 v-else>游客</h3>
+                    <p v-if="UserInfo.IsShowTime">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
+                    <p v-else>剩余体验次数{{UserInfo.Free_Second}}</p>
+                    <div class="tops" style="color:#f1debd;" v-if="UserInfo.IsShowTime">VIP</div>
+                    <div class="tops" style="color:#f1debd;" v-else>Visitor</div>
+                </div>
+            </div>
+        </div>
+        <van-cell-group inset>
+            <van-cell title="会员充值" size="large" is-link>
+                <template #icon>
+                    <van-icon name="gem" class="van-cell__left-icon"></van-icon>
+                </template>
+            </van-cell>
+            <van-cell title="推广赚钱" size="large" is-link>
+                <template #icon>
+                    <van-icon name="gold-coin" class="van-cell__left-icon"></van-icon>
+                </template>
+            </van-cell>
+            <van-cell title="卡密兑换" size="large" is-link>
+                <template #icon>
+                    <van-icon name="vip-card" class="van-cell__left-icon"></van-icon>
+                </template>
+            </van-cell>
+        </van-cell-group>
     </div>
     <script src="/lib/vue/vue.js"></script>
     <script src="/lib/vant/js/vant.js"></script>
@@ -27,16 +164,44 @@
         new Vue({
             el: '#app',
             data: {
-
+                active: 0,
+                route: [],
+                Index: 0,
+                TabbarShow: false,
+                isHaveBill: false,
+                UserInfo: {},
+                show: false,
+                inputCard: '',
+                showPopup: false,
+                actions: [{ name: '分销说明' }, { name: '推广码' }, { name: '佣金明细' }, { name: '收款账户' }],
+                RemarkShow: false,
+                FormShow: false,
+                QRCode: {
+                    show: false,
+                    Base64QR: '',
+                    Base64Heard: ''
+                }
             },
             methods: {
+                GetUserInfo() {
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/My/GetInfoModel',
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        this.UserInfo = res;
+                    }).catch(err => {
 
+                    })
+                },
             },
             created() {
 
             },
             mounted() {
-
+                this.GetUserInfo();
             }
         })
     </script>

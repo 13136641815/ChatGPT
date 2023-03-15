@@ -99,8 +99,9 @@
                 color: #f1debd;
                 font-size: 0.9rem;
                 margin: 0;
-                text-align:left;
+                text-align: left;
             }
+
         .tops {
             width: 50px;
             font-size: 24px;
@@ -108,7 +109,7 @@
             font-weight: 900;
             position: absolute;
             top: 0.7rem;
-            right: 2rem;
+            right: 3rem;
         }
     </style>
 </head>
@@ -131,23 +132,18 @@
             <div class="CardContent">
                 <div class="CardContentText">
                     <h3 v-if="UserInfo.IsShowTime">会员</h3>
-                    <h3 v-else>游客</h3>
+                    <h3 v-else style="color: #cdcdcd;">游客</h3>
                     <p v-if="UserInfo.IsShowTime">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
-                    <p v-else>剩余体验次数{{UserInfo.Free_Second}}</p>
+                    <p v-else style="color: #cdcdcd;">剩余体验次数{{UserInfo.Free_Second}}</p>
                     <div class="tops" style="color:#f1debd;" v-if="UserInfo.IsShowTime">VIP</div>
-                    <div class="tops" style="color:#f1debd;" v-else>Visitor</div>
+                    <div class="tops" style="color:#cdcdcd;" v-else>Visitor</div>
                 </div>
             </div>
         </div>
-        <van-cell-group inset>
+        <van-cell-group inset title="充值权益">
             <van-cell title="会员充值" size="large" is-link>
                 <template #icon>
                     <van-icon name="gem" class="van-cell__left-icon"></van-icon>
-                </template>
-            </van-cell>
-            <van-cell title="推广赚钱" size="large" is-link>
-                <template #icon>
-                    <van-icon name="gold-coin" class="van-cell__left-icon"></van-icon>
                 </template>
             </van-cell>
             <van-cell title="卡密兑换" size="large" is-link>
@@ -156,9 +152,32 @@
                 </template>
             </van-cell>
         </van-cell-group>
+        <van-cell-group inset title="推广赚钱">
+            <van-cell title="推广说明" size="large" is-link>
+                <template #icon>
+                    <van-icon name="comment-o" class="van-cell__left-icon"></van-icon>
+                </template>
+            </van-cell>
+            <van-cell title="推广海报" size="large" is-link>
+                <template #icon>
+                    <van-icon name="qr" class="van-cell__left-icon"></van-icon>
+                </template>
+            </van-cell>
+            <van-cell title="提现账户" size="large" is-link>
+                <template #icon>
+                    <van-icon name="credit-pay" class="van-cell__left-icon"></van-icon>
+                </template>
+            </van-cell>
+            <van-cell title="分佣明细" size="large" is-link>
+                <template #icon>
+                    <van-icon name="gold-coin-o" class="van-cell__left-icon"></van-icon>
+                </template>
+            </van-cell>
+        </van-cell-group>
     </div>
     <script src="/lib/vue/vue.js"></script>
     <script src="/lib/vant/js/vant.js"></script>
+    <script src="/lib/axios/axios.js"></script>
     <script>
         // 在 #app 标签下渲染一个按钮组件
         new Vue({
@@ -175,12 +194,7 @@
                 showPopup: false,
                 actions: [{ name: '分销说明' }, { name: '推广码' }, { name: '佣金明细' }, { name: '收款账户' }],
                 RemarkShow: false,
-                FormShow: false,
-                QRCode: {
-                    show: false,
-                    Base64QR: '',
-                    Base64Heard: ''
-                }
+                FormShow: false
             },
             methods: {
                 GetUserInfo() {

@@ -51,28 +51,43 @@ namespace ChatGPT_Service.PayBack
         {
             Mapper_GPT_User UserApp = new Mapper_GPT_User();
             DateTime dt = DateTime.Now;
-            if (UserModel.YN_VIP == 0)
+            bool isok = false;
+            //次数还是天数
+            if (CommodityModel.CommodityType == 1)
             {
-                //非会员，从今天开始充值
-                UserModel.BeOverdue_VIP = dt.AddDays(double.Parse((31 * CommodityModel.Duration).ToString()));
+                //次数
+                UserModel.Free_Second = CommodityModel.Duration;
+                isok = await UserApp.Free_SecondAsync(UserModel, db);
             }
             else
             {
-                //是会员
-                if (DateTime.Now > UserModel.BeOverdue_VIP)
+                int TimeUnit = CommodityModel.CommodityType == 0 ? 31 : 1;//月就是31，天就是1
+                //时长
+                if (UserModel.YN_VIP == 0)
                 {
-                    //已过期，从今天开始充值
-                    UserModel.BeOverdue_VIP = dt.AddDays(double.Parse((31 * CommodityModel.Duration).ToString()));
+                    //非会员，从今天开始充值
+                    UserModel.BeOverdue_VIP = dt.AddDays(double.Parse((TimeUnit * CommodityModel.Duration).ToString()));
                 }
                 else
                 {
-                    //未过期，续费
-                    DateTime dn = DateTime.Parse(UserModel.BeOverdue_VIP.ToString());
-                    UserModel.BeOverdue_VIP = dn.AddDays(double.Parse((31 * CommodityModel.Duration).ToString()));
+                    //是会员
+                    if (DateTime.Now > UserModel.BeOverdue_VIP)
+                    {
+                        //已过期，从今天开始充值
+                        UserModel.BeOverdue_VIP = dt.AddDays(double.Parse((TimeUnit * CommodityModel.Duration).ToString()));
+                    }
+                    else
+                    {
+                        //未过期，续费
+                        DateTime dn = DateTime.Parse(UserModel.BeOverdue_VIP.ToString());
+                        UserModel.BeOverdue_VIP = dn.AddDays(double.Parse((TimeUnit * CommodityModel.Duration).ToString()));
+                    }
                 }
+                UserModel.YN_VIP = 1;
+                isok = await UserApp.RechargeAsync(UserModel, db);
             }
-            UserModel.YN_VIP = 1;
-            return await UserApp.RechargeAsync(UserModel, db);
+
+            return isok;
         }
     }
 }

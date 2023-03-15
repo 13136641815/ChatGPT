@@ -67,11 +67,20 @@
                                      label="分佣比例"
                                      width="80">
                     </el-table-column>
+                    <el-table-column prop="Explain"
+                                     label="会员类型"
+                                     width="120">
+                        <template slot-scope="scope">
+                            <el-tag effect="plain" size="smarll" v-if="scope.row.CommodityType==0">月</el-tag>
+                            <el-tag type="success" effect="plain" size="smarll" v-else-if="scope.row.CommodityType==2">天</el-tag>
+                            <el-tag type="warning" effect="plain" size="smarll" v-else>次</el-tag>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="Duration"
                                      label="充值时长"
                                      width="150">
                         <template slot-scope="scope">
-                            {{scope.row.Duration}}（个月）
+                            {{scope.row.Duration}}（{{scope.row.CommodityType==0?'月':scope.row.CommodityType==2?'天':'次'}}）
                         </template>
                     </el-table-column>
                     <el-table-column prop="Explain"
@@ -118,7 +127,7 @@
                                style="width:99%;">
                 </el-pagination>
             </el-footer>
-            <el-dialog :title="Dialog.Title" :visible.sync="Dialog.Show">
+            <el-dialog :title="Dialog.Title" :visible.sync="Dialog.Show" top="10px">
                 <el-form ref="SubForm" :model="Form" :label-width="labelwidth" :rules="Rule">
                     <el-form-item label="商品名称" prop="CommodityName">
                         <el-input v-model="Form.CommodityName"></el-input>
@@ -137,11 +146,16 @@
                     <el-form-item label="商品现价" prop="CommodityPresentPrice">
                         <el-input-number v-model="Form.CommodityPresentPrice" :min="0.01" :precision="2" :step="0.01" :max="3000"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="所购时长（月）" prop="Duration">
-                        <el-input-number v-model="Form.Duration" :min="1" :max="24"></el-input-number>
+                    <el-form-item label="类型" prop="CommodityType">
+                        <el-radio v-model="Form.CommodityType" :label="2">天</el-radio>
+                        <el-radio v-model="Form.CommodityType" :label="0">月</el-radio>
+                        <el-radio v-model="Form.CommodityType" :label="1">次</el-radio>
+                    </el-form-item>
+                    <el-form-item :label="Form.CommodityType==0?'充值月数':Form.CommodityType==2?'充值天数':'充值次数'" prop="Duration">
+                        <el-input-number v-model="Form.Duration" :min="1" :max="500"></el-input-number>
                     </el-form-item>
                     <el-form-item label="分佣比例" prop="ShareCommission">
-                        <el-input-number v-model="Form.ShareCommission"  :min="0.01" :precision="2" :step="0.01" :max="1"></el-input-number>
+                        <el-input-number v-model="Form.ShareCommission" :min="0.00" :precision="2" :step="0.01" :max="1"></el-input-number>
                     </el-form-item>
                     <el-form-item label="标签内容">
                         <el-input v-model="Form.Explain" type="textarea"
@@ -216,7 +230,7 @@
                         CommodityType: 0,
                         Duration: 1,
                         Explain: '',
-                        ShareCommission:0.2
+                        ShareCommission:0.0
                     },
                     thisRow: {},
                     Rule: {

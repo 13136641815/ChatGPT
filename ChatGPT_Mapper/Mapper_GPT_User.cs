@@ -133,6 +133,19 @@ namespace ChatGPT_Mapper
            .ExecuteCommandHasChangeAsync();
         }
         /// <summary>
+        /// 游客-免费次数
+        /// </summary>
+        /// <param name="Openid"></param>
+        /// <returns></returns>
+        public async Task<bool> Free_SecondAsync(GPT_User model, SqlSugarScope db)
+        {
+            return await db.Updateable(model).UpdateColumns(it => new
+            {
+                it.Free_Second,
+            }).Where(it => it.ID == model.ID)
+           .ExecuteCommandHasChangeAsync();
+        }
+        /// <summary>
         /// 充值会员
         /// </summary>
         /// <param name="model"></param>

@@ -71,7 +71,7 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             };
             var OCID = await OCApp.AddAsync(OrderCommodityModel, db);
             //下单时判断此人是不是被推荐的，需要将商品返利一并下单
-            if (!string.IsNullOrEmpty(model.PushOpenID) && model.PushOpenID != "0")
+            if (!string.IsNullOrEmpty(model.PushOpenID) && model.PushOpenID != "0" && ComModel.ShareCommission !> decimal.Parse("0.00"))
             {
                 Mapper_GPT_User userApp = new Mapper_GPT_User();
                 var PushModel = await userApp.GetModelFirstAsync(model.PushOpenID);//分佣者

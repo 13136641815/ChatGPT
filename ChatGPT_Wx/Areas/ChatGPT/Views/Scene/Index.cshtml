@@ -16,6 +16,7 @@
             top: 0;
             bottom: 0;
         }
+
         .van-image--round img {
             background-color: #e0f0ff;
         }
@@ -57,6 +58,14 @@
                             'Content-Type': 'application/json; charset=UTF-8'
                         },
                     }).then((res) => {
+                        //res.forEach(img => {//图片预加载
+                        //    let imgObj = new Image(); // 创建图片对象
+                        //    imgObj.src = img.Img;
+
+                        //    imgObj.addEventListener('load', function () { // 这里没有考虑error，实际上要考虑
+                        //        this.list.push(img);//将加载好的图片放入到渲染集合中
+                        //    }, false);
+                        //})
                         this.list = res;
                     }).catch(err => {
 

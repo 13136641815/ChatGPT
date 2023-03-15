@@ -9,8 +9,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <link rel="stylesheet" type="text/css" href="/ChatGPT_Wx/statics/css/style.css" />
     <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
-    <script src="/ChatGPT_Wx/statics/js/flexible.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/ChatGPT_Wx/statics/js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
     <style>
         [v-cloak] {
             display: none;
@@ -21,80 +19,7 @@
 
 <body>
     <div id="app" v-cloak>
-        <div class="top">
-            <!--标题-->
-            <div class="title">
-                <h3>会员中心</h3>
-                <span class="more" @@click="more"></span>
-                <div class="more-box" v-show="showMore">
-                    <a @@click="onClickLeft">返回</a>
-                </div>
-            </div>
-            <!--类型-->
-            <div class="type">
-                <ul>
-                    <li class="active">精选</li>
-                </ul>
-            </div>
-            <!--状态-->
-            <div class="status">
-                <span>{{UserInfo.IsShowTime?'可续费':'未开通'}}</span>
-                <p>*开通会员无限畅聊</p>
-            </div>
-        </div>
-        <!--精选会员卡列表-->
-        <div class="card-list active">
-            <div class="cate">
-                <p class="active"><i></i>超级会员</p>
-            </div>
-            <div class="list">
-                <ul class="active">
-                    <van-radio-group v-model="radio" style="display: flex;">
-                        <li :class="radio==Item.ID?'active':''" v-for="(Item,Index) in CommodityList" :key="Index">
-                            <van-radio :name="Item.ID" shape="square" >
-                                <div class="title">{{Item.CommodityName}}</div>
-                                <div class="desc">
-                                    <p class="yh" v-show="Item.Explain">{{Item.Explain}}</p>
-                                    <p class="money"><i>¥</i><span>{{(Item.CommodityPresentPrice/100).toFixed(2)}}</span></p>
-                                    <p class="old">原价¥{{(Item.CommodityOriginalPrice/100).toFixed(2)}}</p>
-                                </div>
-                            </van-radio>
-                        </li>
-                    </van-radio-group>
-                </ul>
 
-            </div>
-        </div>
-        <!--特权-->
-        <div class="tequan">
-            <ul>
-                <li>
-                    <img src="/ChatGPT_Wx/statics/images/icon-meilizhi.png" />
-                    <p>服务</p>
-                    <span>一对一客服</span>
-                </li>
-                <li>
-                    <img src="/ChatGPT_Wx/statics/images/icon-huiyuanjia.png" />
-                    <p>接口</p>
-                    <span>独享接口对话</span>
-                </li>
-                <li>
-                    <img src="/ChatGPT_Wx/statics/images/icon-huiyuanri.png" />
-                    <p>畅聊</p>
-                    <span>享无任何限时</span>
-                </li>
-                <li>
-                    <img src="/ChatGPT_Wx/statics/images/icon-shengri.png" />
-                    <p>极速</p>
-                    <span>无等待回复</span>
-                </li>
-            </ul>
-        </div>
-        <!--开通会员-->
-        <div class="submit">
-            <van-button type="success" @@click="Pay" :disabled="ButtonEnable">立即{{UserInfo.YN_VIP==1&&UserInfo.BeOverdue_VIP>new Date().toLocaleString()?'续费':'开通'}}</van-button>
-        </div>
-        <p class="tip" style="font-size: 14px;text-align: center; color: #b7b7b7;">会员服务为虚拟商品，支付成功后不支持退款</p>
     </div>
 </body>
 
@@ -106,142 +31,12 @@
     new Vue({
         el: '#app',
         data: {
-            radio: 1,
-            UserInfo: {},
-            CommodityList: [],
-            ButtonEnable: false,
-            showMore: false,
         },
         methods: {
-            more() {
-                this.showMore = !this.showMore;
-            },
-            onClickLeft() {
-                history.back();
-            },
-            Pay() {
-                const that = this;
-                that.ButtonEnable = true;
-                axios({
-                    method: 'post',
-                    url: '/ChatGPT/Pay/DownOrder',
-                    data: {
-                        ComID: this.radio
-                    },
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'No-Loding': true
-                    },
-                }).then(res => {
-                    //模拟支付成功
-                    //vant.Toast.loading({
-                    //    message: '支付模拟中...',
-                    //    forbidClick: true,
-                    //    overlay: true,
-                    //    forbidClick: true,
-                    //    duration: 0
-                    //});
-                    //axios({
-                    //    method: 'get',
-                    //    url: '/ChatGPT/PayBack/TestBack',
-                    //    params: {
-                    //        No: res.OrderNo,
-                    //        Openid: that.UserInfo.WxOpenID
-                    //    },
-                    //    headers: {
-                    //        'Content-Type': 'application/json; charset=UTF-8',
-                    //        'No-Loding': true
-                    //    },
-                    //}).then(res => {
-                    //    setTimeout(() => {
-                    //        vant.Toast.success('支付成功');
-                    //        setTimeout(() => {
-                    //            vant.Toast.clear();
-                    //            history.back();
-                    //        }, 2000)
-                    //    }, 3000)
-                    //}).catch(err => {
-                    //    vant.Toast.fail('模拟失败，请重试');
-                    //    setTimeout(() => {
-                    //        vant.Toast.clear();
-                    //    }, 2000)
-                    //})
-                    //订单校验成功，唤起支付
-                    const PayData = res.PayData;
-                    const PayConfig = res.PayConfig;
-                    axios({
-                        method: 'post',
-                        url: `/WeChatHome/Pay`,
-                        data: {
-                            PayData: PayData,
-                            PayConfig: PayConfig
-                        },
-                        headers: {
-                            'Content-Type': 'application/json; charset=UTF-8'
-                        },
-                    }).then(function (res) {
-                        const PayJson = JSON.parse(res);
-                        WeixinJSBridge.invoke(
-                            'getBrandWCPayRequest', PayJson,//josn串
-                            function (res) {
-                                if (res.err_msg == "get_brand_wcpay_request:ok") {
-                                    //支付成功
-                                    history.back();
-                                } else if (res.err_msg == "get_brand_wcpay_request:cancel") {
-                                    vant.Notify({ type: 'primary', message: '支付取消' });
-                                    that.ButtonEnable = false;
-                                } else {
-                                    that.ButtonEnable = false;
-                                    vant.Notify({ type: 'warning', message: '支付失败' + res.err_msg });
-                                }
-                            }
-                        );
-                    }).catch(function (err) {
-                        setTimeout(() => {
-                            vant.Toast({
-                                icon: 'cross',
-                                type: 'fail',
-                                message: err,
-                                duration: 0,
-                                forbidClick: true
-                            });
-                        }, 600)
-                    });
-                }).catch(err => {
-                    //下单失败
-                    alert(err);
-                })
-            }, GetUserInfo() {
-                axios({
-                    method: 'get',
-                    url: '/ChatGPT/My/GetInfoModel',
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8'
-                    },
-                }).then(res => {
-                    this.UserInfo = res;
-                }).catch(err => {
 
-                })
-            },
-            GetCommodityList() {
-                axios({
-                    method: 'get',
-                    url: '/ChatGPT/PayPage/GetCommodityList',
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8'
-                    },
-                }).then(res => {
-                    this.CommodityList = res;
-                    this.radio = res[0].ID
-                }).catch(err => {
-
-                })
-            }
         },
         created() {
-            this.GetUserInfo();
-            this.GetCommodityList();
+
         },
         mounted() {
 

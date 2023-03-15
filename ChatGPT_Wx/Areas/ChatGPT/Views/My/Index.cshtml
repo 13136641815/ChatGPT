@@ -193,23 +193,24 @@
                     if (item.name == '分销说明') {
                         this.RemarkShow = true;
                     } else if (item.name == '推广码') {
-                        if (this.QRCode.Base64QR && this.QRCode.Base64Heard) {
-                            this.QRCode.show = true;
-                            return;
-                        }
-                        axios({
-                            method: 'get',
-                            url: '/ChatGPT/My/GetMyQrCode',
-                            headers: {
-                                'Content-Type': 'application/json; charset=UTF-8'
-                            },
-                        }).then(res => {
-                            this.QRCode.Base64QR = res.Base64QR;
-                            this.QRCode.Base64Heard = res.Base64Heard;
-                            this.QRCode.show = true;
-                        }).catch(err => {
+                        parent.window.HomeVue.HomeHref('/ChatGPT/QR/QRCode');
+                        //if (this.QRCode.Base64QR && this.QRCode.Base64Heard) {
+                        //    this.QRCode.show = true;
+                        //    return;
+                        //}
+                        //axios({
+                        //    method: 'get',
+                        //    url: '/ChatGPT/My/GetMyQrCode',
+                        //    headers: {
+                        //        'Content-Type': 'application/json; charset=UTF-8'
+                        //    },
+                        //}).then(res => {
+                        //    this.QRCode.Base64QR = res.Base64QR;
+                        //    this.QRCode.Base64Heard = res.Base64Heard;
+                        //    this.QRCode.show = true;
+                        //}).catch(err => {
 
-                        })
+                        //})
                     } else if (item.name == '佣金明细') {
                         this.GoUrl('/ChatGPT/Commission/Index')
                     } else {

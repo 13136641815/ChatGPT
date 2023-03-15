@@ -48,9 +48,9 @@
 
         .AIsquare {
             position: relative;
-            background: #ededed;
-            margin-left: 20px;
-            padding: 5px;
+            background: #f4f4f5;
+            margin-left: 10px;
+            padding: 10px;
             border-radius: 5px;
         }
 
@@ -97,7 +97,7 @@
         .POsquare {
             position: relative;
             background-color: #1989fa;
-            padding: 5px;
+            padding: 10px;
             color: #fff;
             border-radius: 5px;
             width: 100%;
@@ -117,10 +117,12 @@
             font-size: 0;
             line-height: 0;
         }
-
+        .AIsquare .potext {
+            color: #606266;
+        }
         .potext {
-            line-height: 24px;
-            font-size: 15px;
+            line-height: 28px;
+            font-size: 16px;
             margin: 0;
             width: 100%;
             word-wrap: break-word;
@@ -131,7 +133,7 @@
         }
 
         .van-image--round img {
-            background-color: #e0f0ff;
+            background-color: #1989fa;
         }
 
         .van-cell__value--alone {
@@ -147,8 +149,9 @@
             position: fixed;
             width: 100%;
             height: 60px;
-            background-color: #f3f3f3;
             bottom: 50px;
+            background-color: rgb(255 255 255);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
         }
     </style>
 </head>
@@ -165,7 +168,7 @@
                 </div>
                 <div class="AI_Msg">
                     <div class="AIsquare">
-                        <p class="AItriangle"></p>
+                        @*<p class="AItriangle"></p>*@
                         <div style="max-width: 100%; min-width: 28px;">
                             <div class="potext">{{Bot.Greetings}}</div>
                         </div>
@@ -177,7 +180,7 @@
                 <div class="div_Player" v-if="item.role=='user'">
                     <div class="Player_Msg">
                         <div class="POsquare">
-                            <p class="POtriangle"></p>
+                            @*<p class="POtriangle"></p>*@
                             <div class="potext">
                                 {{item.content}}
                             </div>
@@ -186,13 +189,14 @@
                 </div>
                 <div class="div_AI" v-if="item.role=='assistant'">
                     <div class="AI_Img">
-                        <van-image width="100%"
+                        <van-image round
+                                   width="100%"
                                    height="100%"
                                    :src="Bot.Img"></van-image>
                     </div>
                     <div class="AI_Msg">
                         <div class="AIsquare">
-                            <p class="AItriangle"></p>
+                            @*<p class="AItriangle"></p>*@
                             <div style="max-width: 100%; min-width: 28px;">
                                 <van-loading color="#000000" style="display: inline; line-height: 24px; margin-left: 7px;" size="16px" v-if="item.content==='loding'">
                                 </van-loading>
@@ -204,7 +208,7 @@
                 </div>
             </div>
             <div class="bottom">
-                <div class="van-cell van-cell--center van-field" style="background-color: #f3f3f3;">
+                <div class="van-cell van-cell--center van-field">
                     <div class="van-cell__value van-cell__value--alone van-field__value">
                         <div class="van-field__body">
                             <van-button :icon="switchicon" size="small" style="font-size: 15px; border-radius: 50px; margin-right: 5px;"

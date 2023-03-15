@@ -361,13 +361,14 @@
                 },
                 Add() {
                     const that = this;
-                    that.Form.CommodityOriginalPrice = that.Form.CommodityOriginalPrice * 100;
-                    that.Form.CommodityPresentPrice = that.Form.CommodityPresentPrice * 100;
+                    let PostFrom = JSON.parse(JSON.stringify(that.Form));
+                    PostFrom.CommodityOriginalPrice = that.Form.CommodityOriginalPrice.toFixed(2) * 100;
+                    PostFrom.CommodityPresentPrice = that.Form.CommodityPresentPrice.toFixed(2) * 100;
                     console.log(that.Form);
                     axios({
                         method: 'post',
                         url: '/ChatGPT/Commodity/Add',
-                        data: that.Form,
+                        data: PostFrom,
                         headers: {
                             'Content-Type': 'application/json; charset=UTF-8'
                         },
@@ -384,25 +385,26 @@
                 },
                 Update() {
                     const that = this;
-                    that.Form.CommodityOriginalPrice = that.Form.CommodityOriginalPrice * 100;
-                    that.Form.CommodityPresentPrice = that.Form.CommodityPresentPrice * 100;
+                    let PostFrom = JSON.parse(JSON.stringify(that.Form));
+                    PostFrom.CommodityOriginalPrice = that.Form.CommodityOriginalPrice.toFixed(2)  * 100;
+                    PostFrom.CommodityPresentPrice = that.Form.CommodityPresentPrice.toFixed(2) * 100;
                     axios({
                         method: 'put',
                         url: '/ChatGPT/Commodity/Update',
-                        data: that.Form,
+                        data: PostFrom,
                         headers: {
                             'Content-Type': 'application/json; charset=UTF-8'
                         },
                     }).then(function (res) {
-                        that.thisRow.Enable = that.Form.Enable;
-                        that.thisRow.Discount = that.Form.Discount;
-                        that.thisRow.CommodityName = that.Form.CommodityName;
-                        that.thisRow.CommodityOriginalPrice = that.Form.CommodityOriginalPrice;
-                        that.thisRow.CommodityPresentPrice = that.Form.CommodityPresentPrice;
-                        that.thisRow.CommodityType = that.Form.CommodityType;
-                        that.thisRow.Duration = that.Form.Duration;
-                        that.thisRow.Explain = that.Form.Explain;
-                        that.thisRow.ShareCommission = that.Form.ShareCommission
+                        that.thisRow.Enable = PostFrom.Enable;
+                        that.thisRow.Discount = PostFrom.Discount;
+                        that.thisRow.CommodityName = PostFrom.CommodityName;
+                        that.thisRow.CommodityOriginalPrice = PostFrom.CommodityOriginalPrice;
+                        that.thisRow.CommodityPresentPrice = PostFrom.CommodityPresentPrice;
+                        that.thisRow.CommodityType = PostFrom.CommodityType;
+                        that.thisRow.Duration = PostFrom.Duration;
+                        that.thisRow.Explain = PostFrom.Explain;
+                        that.thisRow.ShareCommission = PostFrom.ShareCommission
                         that.$message({
                             message: '更新成功！',
                             type: 'success'

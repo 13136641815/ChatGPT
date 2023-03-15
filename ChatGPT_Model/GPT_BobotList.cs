@@ -22,5 +22,6 @@ namespace ChatGPT_Model
         [SqlSugar.SugarColumn(ColumnDataType = "varchar(4000)" /*可以设置类型*/, IsJson = true)]
         public ChatGPT_Model.GPT3_5.Body APIJson { get; set; }
         public string Ccene { get; set; }
+        public int Sort { get; set; }
     }
 }

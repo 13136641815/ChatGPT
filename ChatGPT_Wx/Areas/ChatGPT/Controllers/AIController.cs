@@ -83,15 +83,7 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             Result RES = new Result();
             Mapper_GPT_Setup setApp = new Mapper_GPT_Setup();
             var setmodel = await setApp.GetFirstAsync();
-            string API_URL = setmodel.ApiUrl;
-            if (API_URL != null && API_URL != "")
-            {
-                RES.DATA = API_URL;
-                return Json(RES);
-            }
-            RES.CODE = ResultCode.Empty;
-            RES.DATA = "本地API接口异常";
-            RES.MSG = "本地API接口异常";
+            RES.DATA = setmodel;
             return Json(RES);
         }
         /// <summary>

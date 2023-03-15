@@ -90,6 +90,10 @@
                             <el-tag type="info" effect="plain" size="smarll" v-if="scope.row.Explain">{{scope.row.Explain}}</el-tag>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="Sort"
+                                     label="排序"
+                                     width="50">
+                    </el-table-column>
                     <el-table-column label="是否启用"
                                      align="center"
                                      width="70">
@@ -161,6 +165,9 @@
                         <el-input v-model="Form.Explain" type="textarea"
                                   :rows="4"></el-input>
                     </el-form-item>
+                    <el-form-item label="排序" prop="Sort">
+                        <el-input-number v-model="Form.Sort" :min="1" :max="500" label="排序"></el-input-number>
+                    </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @@click="SubForm('SubForm')">保存</el-button>
                     </el-form-item>
@@ -230,7 +237,8 @@
                         CommodityType: 0,
                         Duration: 1,
                         Explain: '',
-                        ShareCommission:0.0
+                        ShareCommission: 0.0,
+                        Sort: 1
                     },
                     thisRow: {},
                     Rule: {
@@ -250,6 +258,9 @@
                 };
             },
             methods: {
+                up(a, b) {
+                    return a.Sort - b.Sort
+                },
                 //元转分
                 YuanToFen(fen) {
                     var num = fen;
@@ -378,6 +389,7 @@
                             message: '添加成功！',
                             type: 'success'
                         });
+                        that.tableData.sort(that.up);
                         that.Dialog.Show = false;
                     }).catch(function (err) {
                         that.$message.error(err);
@@ -386,7 +398,7 @@
                 Update() {
                     const that = this;
                     let PostFrom = JSON.parse(JSON.stringify(that.Form));
-                    PostFrom.CommodityOriginalPrice = that.Form.CommodityOriginalPrice.toFixed(2)  * 100;
+                    PostFrom.CommodityOriginalPrice = that.Form.CommodityOriginalPrice.toFixed(2) * 100;
                     PostFrom.CommodityPresentPrice = that.Form.CommodityPresentPrice.toFixed(2) * 100;
                     axios({
                         method: 'put',
@@ -405,10 +417,12 @@
                         that.thisRow.Duration = PostFrom.Duration;
                         that.thisRow.Explain = PostFrom.Explain;
                         that.thisRow.ShareCommission = PostFrom.ShareCommission
+                        that.thisRow.Sort = PostFrom.Sort
                         that.$message({
                             message: '更新成功！',
                             type: 'success'
                         });
+                        that.tableData.sort(that.up);
                         that.Dialog.Show = false;
                     }).catch(function (err) {
                         that.$message.error(err);

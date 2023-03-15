@@ -112,6 +112,12 @@
             right: 3rem;
         }
     </style>
+    <style>
+        .notice-swipe {
+            height: 40px;
+            line-height: 40px;
+        }
+    </style>
 </head>
 <body>
     <div id="app" v-cloak>
@@ -140,40 +146,69 @@
                 </div>
             </div>
         </div>
-        <van-cell-group inset title="充值权益">
-            <van-cell title="会员充值" size="large" is-link>
+        <van-cell-group inset title="充值卡密">
+            <van-cell title="会员充值" size="large" is-link @@click="GoUrl('/ChatGPT/Pay/PayMember')">
                 <template #icon>
-                    <van-icon name="gem" class="van-cell__left-icon"></van-icon>
+                    <van-icon name="gem" class="van-cell__left-icon" color="#ffca6e"></van-icon>
                 </template>
             </van-cell>
-            <van-cell title="卡密兑换" size="large" is-link>
+            <van-cell title="卡密兑换" size="large" is-link @@click="show=true">
                 <template #icon>
                     <van-icon name="vip-card" class="van-cell__left-icon"></van-icon>
                 </template>
             </van-cell>
         </van-cell-group>
         <van-cell-group inset title="推广赚钱">
-            <van-cell title="推广说明" size="large" is-link>
+            <van-cell title="推广说明" size="large" is-link @@click="RemarkShow = true;">
                 <template #icon>
                     <van-icon name="comment-o" class="van-cell__left-icon"></van-icon>
                 </template>
             </van-cell>
-            <van-cell title="推广海报" size="large" is-link>
+            <van-cell title="推广海报" size="large" is-link @@click="GoUrl('/ChatGPT/QR/QRCode')">
                 <template #icon>
                     <van-icon name="qr" class="van-cell__left-icon"></van-icon>
                 </template>
             </van-cell>
-            <van-cell title="提现账户" size="large" is-link>
+            <van-cell title="提现账户" size="large" is-link @@click="FormShow = true">
                 <template #icon>
                     <van-icon name="credit-pay" class="van-cell__left-icon"></van-icon>
                 </template>
             </van-cell>
-            <van-cell title="分佣明细" size="large" is-link>
+            <van-cell title="分佣明细" size="large" is-link @@click="GoUrl('/ChatGPT/Commission/Index')">
                 <template #icon>
                     <van-icon name="gold-coin-o" class="van-cell__left-icon"></van-icon>
                 </template>
             </van-cell>
         </van-cell-group>
+        <van-dialog v-model="RemarkShow" title="分销说明">
+            <div style="line-height: 25px; padding: 10px;white-space:pre-wrap;word-break: break-all;">@ViewBag.CommissionRemark</div>
+        </van-dialog>
+        <van-dialog v-model="show" title="卡密兑换" show-cancel-button @@confirm="confirmCard" @@cancel="show=false;inputCard=''">
+            <van-cell-group>
+                <van-field v-model="inputCard" placeholder="请输入卡密"></van-field>
+            </van-cell-group>
+        </van-dialog>
+        <van-popup v-model="FormShow" position="top" :style="{ height: '230px' }">
+            <van-cell-group style="margin-top:30px;">
+                <van-form @@submit="onSubmit">
+                    <van-field name="radio" label="账户类型">
+                        <template #input>
+                            <van-radio-group v-model="UserInfo.AccountType" direction="horizontal">
+                                <van-radio name="微信">微信</van-radio>
+                                <van-radio name="支付宝">支付宝</van-radio>
+                            </van-radio-group>
+                        </template>
+                    </van-field>
+                    <van-field v-model="UserInfo.AccountNum" label="收款账户"
+                               name="AccountNum"
+                               placeholder="请填写收款账户"
+                               :rules="[{ required: true, message: '请填写账户' }]"></van-field>
+                    <div style="margin: 16px;">
+                        <van-button round block type="info" native-type="submit">提交</van-button>
+                    </div>
+                </van-form>
+            </van-cell-group>
+        </van-popup>
     </div>
     <script src="/lib/vue/vue.js"></script>
     <script src="/lib/vant/js/vant.js"></script>
@@ -192,11 +227,51 @@
                 show: false,
                 inputCard: '',
                 showPopup: false,
-                actions: [{ name: '分销说明' }, { name: '推广码' }, { name: '佣金明细' }, { name: '收款账户' }],
                 RemarkShow: false,
                 FormShow: false
             },
             methods: {
+                GoUrl(url) {
+                    window.parent.HomeVue.HomeHref(url);
+                },
+                confirmCard() {
+                    if (!this.inputCard) {
+                        vant.Notify({ type: 'danger', message: '请输入卡密' });
+                        return;
+                    }
+                    axios({
+                        method: 'put',
+                        url: '/ChatGPT/My/ExchangeCDK',
+                        data: {
+                            CDK: this.inputCard
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        this.show = false;
+                        vant.Notify({ type: 'success', message: res, duration: 5000 });
+                        this.inputCard = '';
+                        this.GetUserInfo();
+                    }).catch(err => {
+                        vant.Notify({ type: 'danger', message: err });
+                    })
+                },
+                onSubmit(values) {
+                    axios({
+                        method: 'put',
+                        url: '/ChatGPT/My/UpdateAccountNum',
+                        data: this.UserInfo,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(res => {
+                        vant.Notify({ type: 'success', message: '保存成功', duration: 3000 });
+                    }).catch(err => {
+                        vant.Notify({ type: 'danger', message: err, duration: 2000 });
+                    })
+                    this.FormShow = false;
+                },
                 GetUserInfo() {
                     axios({
                         method: 'get',

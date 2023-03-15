@@ -19,6 +19,7 @@ namespace ChatGPT_Mapper
         {
             return await SugarConfig.CretClient().Queryable<GPT_BobotList>()
                 .WhereIF(model.Openid != null && model.Openid != "", it => it.Openid.Contains(model.Openid))
+                .OrderBy(it => it.Sort)
                 .ToPageListAsync(Page.PageNum, Page.PageSize, DataCount);
         }
         /// <summary>
@@ -75,10 +76,11 @@ namespace ChatGPT_Mapper
         {
             var list1 = await SugarConfig.CretClient().Queryable<GPT_BobotList>()
                 .Where(it => it.Type == 1 && it.State == 1)
-                .OrderBy(it=>it.Stamp)
+                .OrderBy(it=>it.Sort)
                 .ToListAsync();
             var list2 = await SugarConfig.CretClient().Queryable<GPT_BobotList>()
                 .Where(it => it.Openid == openid && it.State == 1 && it.Type == 0)
+                .OrderBy(it => it.Sort)
                 .ToListAsync();
             foreach (var item in list2)
             {

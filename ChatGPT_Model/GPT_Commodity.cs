@@ -87,6 +87,7 @@ namespace ChatGPT_Model
         /// </summary>           
         public string Explain { get; set; }
         public decimal? ShareCommission { get; set; }
+        public int Sort { get; set; }
 
     }
 }

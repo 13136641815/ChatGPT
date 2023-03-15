@@ -9,6 +9,7 @@
           content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="/lib/vant/css/index.css" />
     <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
+    <link href="/ChatGPT_Wx/Css/prism.css" rel="stylesheet" />
     @*<script src="/lib/eruda/eruda.min.js"></script>
         <script>eruda.init();</script>*@
     <style>
@@ -117,9 +118,11 @@
             font-size: 0;
             line-height: 0;
         }
+
         .AIsquare .potext {
             color: #606266;
         }
+
         .potext {
             line-height: 28px;
             font-size: 16px;
@@ -143,6 +146,9 @@
         .van-slider {
             width: 95%;
         }
+        code {
+            white-space:normal;
+        }
     </style>
     <style>
         .bottom {
@@ -159,6 +165,8 @@
 <body>
     <div id="app" v-cloak>
         <div id="scroll" style="width: 100%; float: left; max-height: 100%;" class="scroll-container">
+            <van-notice-bar left-icon="volume-o" mode="closeable" :text="setup.Notice"></van-notice-bar>
+            <van-divider style="margin-top: 10px; margin-bottom: 5px; font-size: 10px; color: #ceccca;">您正在使用OpenAI官方【{{Bot.Name}}】</van-divider>
             <div class="div_AI">
                 <div class="AI_Img">
                     <van-image round
@@ -280,7 +288,9 @@
 <script src="/ChatGPT_Wx/Script/script.js"></script>
 <script src="/lib/signalr/signalr.min.js"></script>
 <script src="/ChatGPT_Wx/Script/recorder.js"></script>
+<script src="/ChatGPT_Wx/Script/prism.js"></script>
 <script>
+    Prism.highlightAll();
     // 在 #app 标签下渲染一个按钮组件
     window.MyVue = new Vue({
         el: '#app',
@@ -318,12 +328,13 @@
             connection: null,
             NowContext: {},
             Bot: {
+                Name: '通用模型',
                 ID: 0,
                 Greetings: '你好！我是最强人工智能ChatGPT 3.5，我能回答你的所有问题，请和我聊天吧。',
                 Img: '/ChatGPT_Wx/Img/ChatGPT.png'
             },
             scroll: null,
-            apiUrl: '',
+            setup: {},
             /////////////////////////////
             switchicon: 'volume',
             VoiceText: '按住 说话',
@@ -345,9 +356,7 @@
                     },
                 }).then((res) => {
                     if (res) {
-                        this.Bot.ID = res.ID;
-                        this.Bot.Greetings = res.Greetings;
-                        this.Bot.Img = res.Img;
+                        this.Bot = res;
                     }
                 }).catch(err => {
 
@@ -379,8 +388,8 @@
                     },
                 }).then((res) => {
                     const that = this;
-                    that.apiUrl = res;
-                    that.connection = new signalR.HubConnectionBuilder().withUrl(res + '/chatHub3_5').build();
+                    that.setup = res;
+                    that.connection = new signalR.HubConnectionBuilder().withUrl(res.ApiUrl + '/chatHub3_5').build();
                     that.connection.on("ReceiveMessage", function (botID, message) {
                         if (that.NowContext.content === 'loding') {
                             that.NowContext.content = message.replace(/[\r\n]/g, "");
@@ -457,7 +466,7 @@
                 this.NowContext = context;
             },
             Send() {
-                if (this.readFirst){
+                if (this.readFirst) {
                     this.readFirst = false;
                     this.read('');
                 }

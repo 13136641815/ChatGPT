@@ -37,8 +37,18 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             }
             return View();
         }
-        public IActionResult PersonalCnter()
+        public async Task<IActionResult> PersonalCnter()
         {
+            Mapper_GPT_Setup setApp = new Mapper_GPT_Setup();
+            var setmodel = await setApp.GetFirstAsync();
+            ViewBag.CommissionRemark = setmodel.CommissionRemark;
+            _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("H5COOKIES", out string value);
+            if (value != null && value != "")
+            {
+                var model = JsonConvert.DeserializeObject<H5Cookie>(Tools.AES.staticKeyTo_DecryptAES(value));//获取COOKIE身份
+                ChatGPT_Service.Home.Mapper_HomeController app = new ChatGPT_Service.Home.Mapper_HomeController();
+                var isok = await app.CheckedInfo(model.UserInfo);
+            }
             return View();
         }
 

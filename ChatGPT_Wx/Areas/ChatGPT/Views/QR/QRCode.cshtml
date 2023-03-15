@@ -27,7 +27,7 @@
             <div style="height:20%;width:100%;">
                 <van-row>
                     <van-col span="4"></van-col>
-                    <van-col span="8" style="position: relative;">
+                    <van-col span="8" style="position: relative;" v-show="ImgIsOk">
                         <img crossorigin="anonymous" width="30" height="30" style="margin-top: 47.5px; margin-left: 47.5px;position:absolute;z-index:1;" :src="'data:image/png;base64,'+QRCode.Base64Heard" />
                         <img width="125" height="125" :src="'data:image/png;base64,'+QRCode.Base64QR" />
                     </van-col>
@@ -60,7 +60,8 @@
             QRCode: {
                 show: false,
                 Base64QR: '',
-                Base64Heard: ''
+                Base64Heard: '',
+                ImgIsOk: false
             }
         },
         methods: {
@@ -109,6 +110,7 @@
                 }).then(res => {
                     this.QRCode.Base64QR = res.Base64QR;
                     this.QRCode.Base64Heard = res.Base64Heard;
+                    this.ImgIsOk = true;
                 }).catch(err => {
 
                 })

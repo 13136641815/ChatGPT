@@ -22,5 +22,6 @@ namespace ChatGPT_Model
         public string CommissionRemark { get; set; }
         public int Free_Second { get; set; }
         public decimal? DoorJe { get; set; }
+        public string Notice { get; set; }
     }
 }

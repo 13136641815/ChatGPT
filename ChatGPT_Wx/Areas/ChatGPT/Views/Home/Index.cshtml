@@ -53,8 +53,10 @@
             methods: {
                 ChangeAI(botID) {
                     this.route[0].url = `/ChatGPT/AI/GPT3_5Voice?botID=${botID}`;
-                    this.active = 0;
                     this.tabChange(0);
+                    this.active = 0;
+                    this.route[1].transition = 'van-slide-right';
+                    this.route[0].transition = 'van-slide-left';
                 },
                 HomeHref(url) {
                     console.log(this.Index);
@@ -77,6 +79,7 @@
                             //vant.Toast.clear();
                         }, 500)
                     }
+                    console.log(this.Index, name);
                     if (this.Index < name) {
                         this.route[name].transition = 'van-slide-right';
                         this.route[this.Index].transition = 'van-slide-left';

@@ -76,6 +76,10 @@
                             <el-tag :type="scope.row.State==1?'success':'danger'">{{scope.row.State==1?'启用':'停用'}}</el-tag>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="Sort"
+                                     label="排序"
+                                     width="50">
+                    </el-table-column>
                     <el-table-column fixed="right"
                                      label="操作"
                                      width="150">
@@ -136,6 +140,9 @@
                     <el-form-item label="情景设定">
                         <el-input v-model="Form.Ccene" type="textarea"
                                   :rows="8"></el-input>
+                    </el-form-item>
+                    <el-form-item label="排序" prop="Sort">
+                        <el-input-number v-model="Form.Sort" :min="1" :max="500" label="排序"></el-input-number>
                     </el-form-item>
                     <el-divider>API参数</el-divider>
                     <el-form-item label="model">
@@ -242,7 +249,8 @@
                             top_p: 1,
                             presence_penalty: 0.00
                         },
-                        Ccene: ''
+                        Ccene: '',
+                        Sort:1
                     },
                     imagesfileList: [],
                     thisRow: {},
@@ -260,6 +268,9 @@
                 };
             },
             methods: {
+                up(a, b) {
+                    return a.Sort - b.Sort
+                },
                 //元转分
                 YuanToFen(fen) {
                     var num = fen;
@@ -345,6 +356,7 @@
                             message: '添加成功！',
                             type: 'success'
                         });
+                        that.tableData.sort(that.up);
                         that.Dialog.Show = false;
                     }).catch(function (err) {
                         that.$message.error(err);
@@ -368,10 +380,12 @@
                         that.thisRow.Greetings = that.Form.Greetings;
                         that.thisRow.APIJson = that.Form.APIJson;
                         that.thisRow.Ccene = that.Form.Ccene;
+                        that.thisRow.Sort = that.Form.Sort;
                         that.$message({
                             message: '更新成功！',
                             type: 'success'
                         });
+                        that.tableData.sort(that.up);
                         that.Dialog.Show = false;
                     }).catch(function (err) {
                         that.$message.error(err);

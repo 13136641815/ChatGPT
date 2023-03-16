@@ -47,9 +47,7 @@
 </body>
 
 </html>
-<script src="/lib/vue/vue.js"></script>
-<script src="/lib/vant/js/vant.js"></script>
-<script src="/lib/axios/axios.js"></script>
+<script src="/ChatGPT_Wx/Global.js"></script>
 <script src="/lib/JQ/jquery.min.js"></script>
 <script src="/ChatGPT_Wx/Script/html2canvas.min.js"></script>
 <script>
@@ -87,39 +85,22 @@
             onClickLeft() {
                 window.history.go(-1);
             },
-            GetUserInfo() {
-                axios({
-                    method: 'get',
-                    url: '/ChatGPT/My/GetInfoModel',
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8'
-                    },
-                }).then(res => {
-                    this.UserInfo = res;
-                }).catch(err => {
-
-                })
-            },
             GetImg() {
-                axios({
-                    method: 'get',
-                    url: '/ChatGPT/My/GetMyQrCode',
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8'
-                    },
-                }).then(res => {
-                    this.QRCode.Base64QR = res.Base64QR;
-                    this.QRCode.Base64Heard = res.Base64Heard;
-                    this.ImgIsOk = true;
-                }).catch(err => {
+                AxiosAsync('/ChatGPT/My/GetMyQrCode', 'get', {})
+                    .then(res => {
+                        this.QRCode.Base64QR = res.Base64QR;
+                        this.QRCode.Base64Heard = res.Base64Heard;
+                        this.ImgIsOk = true;
+                    }).catch(err => {
 
-                })
+                    })
             }
         },
         created() {
 
         },
-        mounted() {
+        async mounted() {
+            this.UserInfo = await window.APP_GetUserInfoAsync();
             this.GetUserInfo();
             this.GetImg();
         }

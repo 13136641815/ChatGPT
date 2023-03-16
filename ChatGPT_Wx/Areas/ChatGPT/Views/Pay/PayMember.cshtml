@@ -99,9 +99,7 @@
 </body>
 
 </html>
-<script src="/lib/vue/vue.js"></script>
-<script src="/lib/vant/js/vant.js"></script>
-<script src="/lib/axios/axios.js"></script>
+<script src="/ChatGPT_Wx/Global.js"></script>
 <script>
     new Vue({
         el: '#app',
@@ -119,132 +117,57 @@
             onClickLeft() {
                 history.back();
             },
-            Pay() {
-                const that = this;
-                that.ButtonEnable = true;
-                axios({
-                    method: 'post',
-                    url: '/ChatGPT/Pay/DownOrder',
-                    data: {
+            async Pay() {
+                try {
+                    const that = this;
+                    that.ButtonEnable = true;
+                    const res = await AxiosPromise('/ChatGPT/Pay/DownOrder', 'post', {
                         ComID: this.radio
-                    },
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'No-Loding': true
-                    },
-                }).then(res => {
-                    //模拟支付成功
-                    //vant.Toast.loading({
-                    //    message: '支付模拟中...',
-                    //    forbidClick: true,
-                    //    overlay: true,
-                    //    forbidClick: true,
-                    //    duration: 0
-                    //});
-                    //axios({
-                    //    method: 'get',
-                    //    url: '/ChatGPT/PayBack/TestBack',
-                    //    params: {
-                    //        No: res.OrderNo,
-                    //        Openid: that.UserInfo.WxOpenID
-                    //    },
-                    //    headers: {
-                    //        'Content-Type': 'application/json; charset=UTF-8',
-                    //        'No-Loding': true
-                    //    },
-                    //}).then(res => {
-                    //    setTimeout(() => {
-                    //        vant.Toast.success('支付成功');
-                    //        setTimeout(() => {
-                    //            vant.Toast.clear();
-                    //            history.back();
-                    //        }, 2000)
-                    //    }, 3000)
-                    //}).catch(err => {
-                    //    vant.Toast.fail('模拟失败，请重试');
-                    //    setTimeout(() => {
-                    //        vant.Toast.clear();
-                    //    }, 2000)
-                    //})
-                    //订单校验成功，唤起支付
+                    }, true);
                     const PayData = res.PayData;
                     const PayConfig = res.PayConfig;
-                    axios({
-                        method: 'post',
-                        url: `/WeChatHome/Pay`,
-                        data: {
-                            PayData: PayData,
-                            PayConfig: PayConfig
-                        },
-                        headers: {
-                            'Content-Type': 'application/json; charset=UTF-8'
-                        },
-                    }).then(function (res) {
-                        const PayJson = JSON.parse(res);
-                        WeixinJSBridge.invoke(
-                            'getBrandWCPayRequest', PayJson,//josn串
-                            function (res) {
-                                if (res.err_msg == "get_brand_wcpay_request:ok") {
-                                    //支付成功
-                                    history.back();
-                                } else if (res.err_msg == "get_brand_wcpay_request:cancel") {
-                                    vant.Notify({ type: 'primary', message: '支付取消' });
-                                    that.ButtonEnable = false;
-                                } else {
-                                    that.ButtonEnable = false;
-                                    vant.Notify({ type: 'warning', message: '支付失败' + res.err_msg });
-                                }
-                            }
-                        );
-                    }).catch(function (err) {
-                        setTimeout(() => {
-                            vant.Toast({
-                                icon: 'cross',
-                                type: 'fail',
-                                message: err,
-                                duration: 0,
-                                forbidClick: true
-                            });
-                        }, 600)
+                    const PayRes = await AxiosPromise('/WeChatHome/Pay', 'post', {
+                        PayData: PayData,
+                        PayConfig: PayConfig
                     });
-                }).catch(err => {
-                    //下单失败
-                    alert(err);
-                })
-            }, GetUserInfo() {
-                axios({
-                    method: 'get',
-                    url: '/ChatGPT/My/GetInfoModel',
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8'
-                    },
-                }).then(res => {
-                    this.UserInfo = res;
-                }).catch(err => {
-
-                })
+                    const PayJson = JSON.parse(PayRes);
+                    WeixinJSBridge.invoke(
+                        'getBrandWCPayRequest', PayJson,//josn串
+                        function (res) {
+                            if (res.err_msg == "get_brand_wcpay_request:ok") {
+                                //支付成功
+                                history.back();
+                            } else if (res.err_msg == "get_brand_wcpay_request:cancel") {
+                                vant.Notify({ type: 'primary', message: '支付取消' });
+                                that.ButtonEnable = false;
+                            } else {
+                                that.ButtonEnable = false;
+                                vant.Notify({ type: 'warning', message: '支付失败' + res.err_msg });
+                            }
+                        }
+                    );
+                } catch (err) {
+                    setTimeout(() => {
+                        vant.Toast({
+                            icon: 'cross',
+                            type: 'fail',
+                            message: err,
+                            duration: 0,
+                            forbidClick: true
+                        });
+                    }, 600)
+                }
             },
-            GetCommodityList() {
-                axios({
-                    method: 'get',
-                    url: '/ChatGPT/PayPage/GetCommodityList',
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8'
-                    },
-                }).then(res => {
-                    this.CommodityList = res;
-                    this.radio = res[0].ID
-                }).catch(err => {
-
-                })
+            async GetCommodityList() {
+                return await AxiosPromise('/ChatGPT/PayPage/GetCommodityList', 'get');
             }
         },
         created() {
-            this.GetUserInfo();
-            this.GetCommodityList();
-        },
-        mounted() {
 
+        },
+        async mounted() {
+            this.UserInfo = await window.APP_GetUserInfoAsync();
+            this.CommodityList = await this.GetCommodityList();
         }
     })
 </script>

@@ -159,6 +159,8 @@
     <script src="/lib/vue/vue.js"></script>
     <script src="/lib/vant/js/vant.js"></script>
     <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/axios/PromiseAxios.js"></script>
+    <script src="/ChatGPT_Wx/APPJS/App.js"></script>
     <script>
         // 在 #app 标签下渲染一个按钮组件
         new Vue({
@@ -266,39 +268,17 @@
                         alert(err);
                     })
                 },
-                GetUserInfo() {
-                    axios({
-                        method: 'get',
-                        url: '/ChatGPT/My/GetInfoModel',
-                        headers: {
-                            'Content-Type': 'application/json; charset=UTF-8'
-                        },
-                    }).then(res => {
-                        this.UserInfo = res;
-                    }).catch(err => {
-
-                    })
-                },
-                GetCommodityList() {
-                    axios({
-                        method: 'get',
-                        url: '/ChatGPT/PayPage/GetCommodityList',
-                        headers: {
-                            'Content-Type': 'application/json; charset=UTF-8'
-                        },
-                    }).then(res => {
-                        this.CommodityList = res;
-                    }).catch(err => {
-
-                    })
+                async GetCommodityList() {
+                    return await AxiosPromise('/ChatGPT/PayPage/GetCommodityList', 'get');
                 }
             },
             created() {
                 this.GetUserInfo();
                 this.GetCommodityList();
             },
-            mounted() {
-
+            async mounted() {
+                this.UserInfo = await window.APP_GetUserInfoAsync();
+                this.CommodityList = await GetCommodityList();
             }
         })
     </script>

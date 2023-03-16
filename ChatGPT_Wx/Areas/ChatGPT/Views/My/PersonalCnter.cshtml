@@ -210,9 +210,7 @@
             </van-cell-group>
         </van-popup>
     </div>
-    <script src="/lib/vue/vue.js"></script>
-    <script src="/lib/vant/js/vant.js"></script>
-    <script src="/lib/axios/axios.js"></script>
+    <script src="/ChatGPT_Wx/Global.js"></script>
     <script>
         // 在 #app 标签下渲染一个按钮组件
         new Vue({
@@ -239,15 +237,8 @@
                         vant.Notify({ type: 'danger', message: '请输入卡密' });
                         return;
                     }
-                    axios({
-                        method: 'put',
-                        url: '/ChatGPT/My/ExchangeCDK',
-                        data: {
-                            CDK: this.inputCard
-                        },
-                        headers: {
-                            'Content-Type': 'application/json; charset=UTF-8'
-                        },
+                    AxiosAsync('/ChatGPT/My/ExchangeCDK', 'put', {
+                        CDK: this.inputCard
                     }).then(res => {
                         this.show = false;
                         vant.Notify({ type: 'success', message: res, duration: 5000 });
@@ -258,39 +249,20 @@
                     })
                 },
                 onSubmit(values) {
-                    axios({
-                        method: 'put',
-                        url: '/ChatGPT/My/UpdateAccountNum',
-                        data: this.UserInfo,
-                        headers: {
-                            'Content-Type': 'application/json; charset=UTF-8'
-                        },
-                    }).then(res => {
-                        vant.Notify({ type: 'success', message: '保存成功', duration: 3000 });
-                    }).catch(err => {
-                        vant.Notify({ type: 'danger', message: err, duration: 2000 });
-                    })
+                    AxiosAsync('/ChatGPT/My/UpdateAccountNum', 'put', this.UserInfo)
+                        .then(res => {
+                            vant.Notify({ type: 'success', message: '保存成功', duration: 3000 });
+                        }).catch(err => {
+                            vant.Notify({ type: 'danger', message: err, duration: 2000 });
+                        })
                     this.FormShow = false;
-                },
-                GetUserInfo() {
-                    axios({
-                        method: 'get',
-                        url: '/ChatGPT/My/GetInfoModel',
-                        headers: {
-                            'Content-Type': 'application/json; charset=UTF-8'
-                        },
-                    }).then(res => {
-                        this.UserInfo = res;
-                    }).catch(err => {
-
-                    })
-                },
+                }
             },
             created() {
 
             },
-            mounted() {
-                this.GetUserInfo();
+            async mounted() {
+                this.UserInfo = await window.APP_GetUserInfoAsync();
             }
         })
     </script>

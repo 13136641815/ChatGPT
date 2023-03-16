@@ -146,8 +146,9 @@
         .van-slider {
             width: 95%;
         }
+
         code {
-            white-space:normal;
+            white-space: normal;
         }
     </style>
     <style>
@@ -284,9 +285,7 @@
     </div>
 </body>
 <!-- 引入 Vue 和 Vant 的 JS 文件 -->
-<script src="/lib/vue/vue.js"></script>
-<script src="/lib/vant/js/vant.js"></script>
-<script src="/lib/axios/axios.js"></script>
+<script src="/ChatGPT_Wx/Global.js"></script>
 <script src="/ChatGPT_Wx/Script/script.js"></script>
 <script src="/lib/signalr/signalr.min.js"></script>
 <script src="/ChatGPT_Wx/Script/recorder.js"></script>
@@ -346,23 +345,10 @@
             ////////////////////////////
         },
         methods: {
-            GetBot(ID) {
-                axios({
-                    method: 'get',
-                    url: '/ChatGPT/AI/GetBot',
-                    params: {
-                        ID: ID
-                    },
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8'
-                    },
-                }).then((res) => {
-                    if (res) {
-                        this.Bot = res;
-                    }
-                }).catch(err => {
-
-                })
+            async GetBot(ID) {
+                return await AxiosPromise('/ChatGPT/AI/GetBot', 'get', {
+                    ID: ID
+                }, false);
             },
             copy(content) {
                 const copyToClipboard = str => {
@@ -381,9 +367,8 @@
                 speaker.rate = this.Speak.rate;
                 speaker.text = val;
                 window.speechSynthesis.speak(speaker);
-                vant.Notify({ type: 'success', message: '开始朗读' });
             },
-            contion() {
+            async contion() {
                 vant.Toast.loading({
                     message: 'AI服务链接中...',
                     forbidClick: true,
@@ -391,14 +376,8 @@
                     forbidClick: true
                 });
                 //获取API地址，然后创建连接
-                axios({
-                    method: 'get',
-                    url: '/ChatGPT/AI/GetAPI_Url',//
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'No-Loding': true
-                    },
-                }).then((res) => {
+                try {
+                    let res = await AxiosPromise('/ChatGPT/AI/GetAPI_Url', 'get', {}, true);
                     const that = this;
                     that.setup = res;
                     that.connection = new signalR.HubConnectionBuilder().withUrl(res.ApiUrl + '/chatHub3_5').build();
@@ -449,9 +428,9 @@
                     }).catch(function (err) {
                         return console.error(err.toString());
                     });
-                }).catch((err) => {
+                } catch (err) {
                     vant.Toast.fail(err);
-                })
+                }
             },
             //气泡选择事件
             onSelect(val) {
@@ -477,7 +456,7 @@
                 });
                 this.NowContext = context;
             },
-            Send() {
+            async Send() {
                 if (this.readFirst) {
                     this.readFirst = false;
                     this.read('');
@@ -489,16 +468,8 @@
                 //先校验权限是否允许发送
                 let formData = new FormData();
                 formData.append('Text', this.text);
-                axios({
-                    method: 'post',
-                    url: '/ChatGPT/AI/Check',
-                    data: formData,
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'No-Loding': true
-                    },
-                }).then((res) => {
-                    //this.ButLoding = true;
+                try {
+                    await AxiosPromise('/ChatGPT/AI/Check', 'post', formData, true);
                     let msg = document.getElementById('scroll'); // 获取对象
                     //调用请求
                     this.messages.push({
@@ -516,8 +487,7 @@
                     setTimeout(() => {
                         SmoothVerticalScrolling(msg, 500, "center");
                     }, 200);
-                }).catch((err) => {
-                    console.log(err);
+                } catch (err) {
                     if (err.indexOf('会员') != -1) {
                         //会员充值提示
                         vant.Dialog.confirm({
@@ -539,7 +509,7 @@
                             // on close
                         });
                     }
-                })
+                }
             },
             //切换输入模式
             switchCh() {
@@ -570,14 +540,15 @@
             },
         },
         created() {
-            this.contion();
+
+        },
+        async mounted() {
+            this.scroll = document.getElementById('scroll'); // 获取对象
+            await this.contion();
             var parms = getURLParams();
             if (parms.botID) {
-                this.GetBot(parms.botID);
+                this.Bot = await this.GetBot(parms.botID);
             }
-        },
-        mounted() {
-            this.scroll = document.getElementById('scroll'); // 获取对象
         }
     });
     function SmoothVerticalScrolling(e, time, where) {
@@ -734,20 +705,13 @@
                 let form = new FormData();
                 form.append("formFiles", wavBlob, "recorder.wav");
                 vant.Toast.clear();
-                axios({
-                    method: 'post',
-                    url: window.MyVue.apiUrl + '/api/Values',//调用接口语音转文字
-                    data: form,
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8'
-                    },
-                }).then((res) => {
+                AxiosAsync(window.MyVue.apiUrl + '/api/Values', 'post', form).then(res => {
                     //res文字，发送到页面上
                     window.MyVue.text = res;
                     window.MyVue.Send();
-                }).catch((err) => {
-
-                })
+                }).catch(err => {
+                    console.error(err);
+                });
             } else {
                 vant.Toast.clear();
                 vant.Toast({

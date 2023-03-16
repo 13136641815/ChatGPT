@@ -101,10 +101,10 @@
         </van-popup>
         <van-popup v-model="QRCode.show" position="bottom" :style="{ height: '85%' }" closeable>
             <div style="width:100%; height:85%;margin-top:5%; text-align:center;background-color:#fff;" id="QRImg">
-                <img style="height:75%;object-fit: contain;" src="/ChatGPT_Wx/Img/TG.jpg"/>
+                <img style="height:75%;object-fit: contain;" src="/ChatGPT_Wx/Img/TG.jpg" />
                 @*<van-image fit="contain"
-                           style="width:auto;height:75%;"
-                           src="/ChatGPT_Wx/Img/TG.jpg"></van-image>*@
+                    style="width:auto;height:75%;"
+                    src="/ChatGPT_Wx/Img/TG.jpg"></van-image>*@
                 <div style="height:20%;width:100%;">
                     <van-row>
                         <van-col span="4"></van-col>
@@ -126,8 +126,11 @@
     <script src="/lib/vue/vue.js"></script>
     <script src="/lib/vant/js/vant.js"></script>
     <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/axios/PromiseAxios.js"></script>
+    <script src="/ChatGPT_Wx/APPJS/App.js"></script>
     <script src="/lib/JQ/jquery.min.js"></script>
     <script src="/ChatGPT_Wx/Script/html2canvas.min.js"></script>
+
     @*<script src="/ChatGPT_Wx/Script/script.js"></script>*@
     <script>
         // 在 #app 标签下渲染一个按钮组件
@@ -328,10 +331,14 @@
                 }
             },
             created() {
-                this.GetUserInfo();
+                //this.GetUserInfo();
             },
-            mounted() {
-
+            async mounted() {
+                try {
+                    let res = await window.APP_GetUserInfoAsync();
+                } catch (err) {
+                    vant.Notify({ type: 'danger', message: err });
+                }
             }
         })
     </script>

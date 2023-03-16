@@ -55,11 +55,11 @@
         el: '#app',
         data: {
             UserInfo: {},
+            ImgIsOk: false,
             QRCode: {
                 show: false,
                 Base64QR: '',
-                Base64Heard: '',
-                ImgIsOk: false
+                Base64Heard: ''
             }
         },
         methods: {
@@ -101,7 +101,6 @@
         },
         async mounted() {
             this.UserInfo = await window.APP_GetUserInfoAsync();
-            this.GetUserInfo();
             this.GetImg();
         }
     })

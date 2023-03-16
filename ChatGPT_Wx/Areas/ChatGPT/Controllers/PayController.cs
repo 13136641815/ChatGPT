@@ -31,6 +31,10 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             ViewBag.Title = setmodel.Title;
             return View();
         }
+        public IActionResult PayVIP()
+        {
+            return View();
+        }
         public class order
         {
             public int ComID { get; set; }

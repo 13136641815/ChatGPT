@@ -125,5 +125,10 @@ namespace ChatGPT_Mapper
                 .WhereIF(Time.TimeEnd != null && Time.TimeEnd != "", it => it.BackStamp <= DateTime.Parse(Time.TimeEnd + " 23:59:59"))
                 .ToPageListAsync(Page.PageNum, Page.PageSize, DataCount);
         }
+        public async Task<List<GPT_Commission>> GetListAll_byOpenID(string Openid)
+        {
+            return await SugarConfig.CretClient().Queryable<GPT_Commission>()
+                .Where(it => it.Push_WxOpenID == Openid && it.State == 1).ToListAsync();
+        }
     }
 }

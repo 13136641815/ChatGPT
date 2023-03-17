@@ -80,7 +80,6 @@
                     this.route[0].transition = 'van-slide-left';
                 },
                 HomeHref(url) {
-                    console.log(this.Index);
                     sessionStorage.setItem("Index", this.Index);
                     window.location.href = url;
                 },
@@ -91,7 +90,6 @@
                     const url = dom.contentWindow.location.href;
                     if (url != 'about:blank') {
                         this.route.forEach(item => {
-                            console.log(url, item.url);
                             if (url.indexOf(item.url) != -1) {
                                 this.TabbarShow = true;
                                 IzOk = true;
@@ -114,7 +112,6 @@
                             //vant.Toast.clear();
                         }, 500)
                     }
-                    console.log(this.Index, name);
                     if (this.Index < name) {
                         this.route[name].transition = 'van-slide-right';
                         this.route[this.Index].transition = 'van-slide-left';
@@ -143,7 +140,6 @@
                             that.Index = Number.parseInt(maodianID);
                         }
                         const Storage = sessionStorage.getItem("Index");
-                        console.log('Storage', Storage);
                         if (Storage) {
                             that.active = Number.parseInt(Storage);
                             that.Index = Number.parseInt(Storage);

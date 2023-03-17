@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using System.Web;
@@ -127,6 +128,26 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             {
                 CODE = isok ? ResultCode.Success : ResultCode.Empty,
                 MSG = isok ? "成功" : "提交失败",
+            });
+        }
+        [HttpGet]
+        public async Task<JsonResult> GetMoneyType()
+        {
+            _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("H5COOKIES", out string value);
+            var CookiesModel = JsonConvert.DeserializeObject<H5Cookie>(Tools.AES.staticKeyTo_DecryptAES(value));//获取COOKIE身份
+            Mapper_GPT_Commission app = new Mapper_GPT_Commission();
+            var list = await app.GetListAll_byOpenID(CookiesModel.UserInfo.openid);
+            decimal? JeA = list.Where(it => it.CheckState == 0).Sum(it => it.Commission);
+            decimal? JeB = list.Where(it => it.CheckState == 2).Sum(it => it.Commission);
+            decimal? JeC = list.Where(it => it.CheckState == 1).Sum(it => it.Commission);
+            return Json(new Result()
+            {
+                DATA = new CommissionMoneyType()
+                {
+                    JeA = JeA,
+                    JeB = JeB,
+                    JeC = JeC,
+                }
             });
         }
     }

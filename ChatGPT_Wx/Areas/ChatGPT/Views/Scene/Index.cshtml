@@ -37,7 +37,7 @@
                                width="50%"
                                height="50%"
                                style="padding: 10%; padding-bottom: 2%;"
-                               :src="Item.Img"></van-image>
+                               :src="Item.Img" v-show="Item.show"></van-image>
                     <p style="text-align: center; margin: 0px; color: #606266;">{{Item.Name}}</p>
                 </div>
             </div>
@@ -77,10 +77,12 @@
                         },
                     }).then((res) => {
                         res.forEach(img => {//图片预加载
+                            img.show = false;
+                            that.list.push(img);//加入到集合中
                             let imgObj = new Image(); // 创建图片对象
                             imgObj.src = img.Img;
                             imgObj.addEventListener('load', function () { // 这里没有考虑error，实际上要考虑
-                                that.list.push(img);//将加载好的图片放入到渲染集合中
+                                img.show = true;
                             }, false);
                         })
                     }).catch(err => {

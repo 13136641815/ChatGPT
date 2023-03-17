@@ -147,7 +147,7 @@
             </div>
         </div>
         <van-cell-group inset title="充值卡密">
-            <van-cell title="会员充值" size="large" is-link @@click="GoUrl('/ChatGPT/Pay/PayMember')">
+            <van-cell title="会员充值" size="large" is-link @@click="GO('/ChatGPT/Pay/PayMember')">
                 <template #icon>
                     <van-icon name="gem" class="van-cell__left-icon" color="#ffca6e"></van-icon>
                 </template>
@@ -164,7 +164,7 @@
                     <van-icon name="comment-o" class="van-cell__left-icon"></van-icon>
                 </template>
             </van-cell>
-            <van-cell title="推广海报" size="large" is-link @@click="GoUrl('/ChatGPT/QR/QRCode')">
+            <van-cell title="推广海报" size="large" is-link @@click="GO('/ChatGPT/QR/QRCode')">
                 <template #icon>
                     <van-icon name="qr" class="van-cell__left-icon"></van-icon>
                 </template>
@@ -174,7 +174,12 @@
                     <van-icon name="credit-pay" class="van-cell__left-icon"></van-icon>
                 </template>
             </van-cell>
-            <van-cell title="推广提现" size="large" is-link @@click="GoUrl('/ChatGPT/Commission/Index')">
+            <van-cell title="推广对象" size="large" is-link @@click="GO('/ChatGPT/PushTeam/TeamList')">
+                <template #icon>
+                    <van-icon name="friends-o" class="van-cell__left-icon"></van-icon>
+                </template>
+            </van-cell>
+            <van-cell title="推广提现" size="large" is-link @@click="GO('/ChatGPT/Commission/Index')">
                 <template #icon>
                     <van-icon name="gold-coin-o" class="van-cell__left-icon"></van-icon>
                 </template>
@@ -229,6 +234,9 @@
                 FormShow: false
             },
             methods: {
+                GO(url) {
+                    window.location.href = url;
+                },
                 GoUrl(url) {
                     window.parent.HomeVue.HomeHref(url);
                 },

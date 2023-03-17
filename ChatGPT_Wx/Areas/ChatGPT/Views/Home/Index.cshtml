@@ -12,20 +12,41 @@
     <title>@ViewBag.Title</title>
     <style>
         iframe {
-            width: 100%;
+            /*            width: 100%;
             height: 100%;
             position: fixed;
             top: 0px;
-            bottom: 50px;
+            bottom: 50px;*/
+            height: 100%;
+            width: 100%;
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            top: 0;
+            -webkit-overflow-scrolling: touch;
+            overflow-y: scroll;
         }
+
+        .scroll-wrapper {
+            -webkit-overflow-scrolling: touch;
+            overflow-y: scroll;
+            /* 提示: 请在此处加上需要设置的大小(dimensions)或位置(positioning)信息! */
+        }
+
+            .scroll-wrapper iframe {
+                /* 你自己指定的样式 */
+            }
     </style>
 </head>
 
 <body>
     <div id="app" v-cloak>
-        <transition :name="item.transition" v-for="(item,index) in route" :key="index">
-            <iframe :src="item.islode==true?item.url:''" v-show="index==active" data-scrolltop="0" frameborder="0" onload="Lode()"></iframe>
-        </transition>
+        <div class="scroll-wrapper">
+            <transition :name="item.transition" v-for="(item,index) in route" :key="index">
+                <iframe ref="IFRAME" :src="item.islode==true?item.url:''" v-show="index==active" data-scrolltop="0" frameborder="0" onload="Lode(this)"></iframe>
+            </transition>
+        </div>
         <van-tabbar v-show="TabbarShow" v-model="active" safe-area-inset-bottom fixed @@change="tabChange" :before-change="beforeChange">
             <van-tabbar-item v-for="(item,index) in route" :key="index" :icon="item.icon" :dot="item.dot">{{item.name}}</van-tabbar-item>
         </van-tabbar>
@@ -35,8 +56,8 @@
     <script src="/lib/vue/vue.js"></script>
     <script src="/lib/vant/js/vant.js"></script>
     <script>
-        function Lode() {
-            window.HomeVue.iframeLode();
+        function Lode(dom) {
+            window.HomeVue.iframeLode(dom);
         }
     </script>
     <script>
@@ -64,8 +85,22 @@
                     window.location.href = url;
                 },
                 //iframe加载完成事件
-                iframeLode() {
+                iframeLode(dom) {
                     vant.Toast.clear();
+                    let IzOk = false;
+                    const url = dom.contentWindow.location.href;
+                    if (url != 'about:blank') {
+                        this.route.forEach(item => {
+                            console.log(url, item.url);
+                            if (url.indexOf(item.url) != -1) {
+                                this.TabbarShow = true;
+                                IzOk = true;
+                            }
+                        });
+                        if (!IzOk) {
+                            this.TabbarShow = false;
+                        }
+                    }
                 },
                 beforeChange(name) {
                     if (!this.route[name].islode) {
@@ -91,7 +126,7 @@
                 },
                 tabChange(index) {
                     this.Index = index;
-                    window.location.hash= `#${index}`;
+                    window.location.hash = `#${index}`;
                 },
             },
             mounted() {

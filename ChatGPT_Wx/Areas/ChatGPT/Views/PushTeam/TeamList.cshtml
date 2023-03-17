@@ -10,10 +10,50 @@
     <link rel="stylesheet" href="/lib/vant/css/index.css" />
     <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
     <title></title>
+    <style>
+        body {
+            background-color: #f5f6f7;
+        }
+
+        .Card {
+            width: 100%;
+            float:left;
+            margin-top:1rem;
+        }
+
+        .HeardImg {
+            width: 20%;
+            float: left;
+            padding-left: 5%;
+        }
+
+        .NikeName {
+            width: 70%;
+            float: left;
+            line-height: 4rem;
+            padding-left: 5%;
+        }
+    </style>
 </head>
 <body>
     <div id="app" v-cloak>
-
+        <van-nav-bar title="推广对象"
+                     left-text="返回"
+                     left-arrow
+                     @@click-left="onClickLeft"></van-nav-bar>
+        <van-cell-group inset :title="'推广人数 '+list.length" style="padding-bottom:1rem;">
+            <div class="Card" v-for="(item,index) in list" :key="index">
+                <div class="HeardImg">
+                    <van-image round
+                               width="4rem"
+                               height="4rem"
+                               :src="item.WxHeadUrl"></van-image>
+                </div>
+                <div class="NikeName">
+                    {{item.NikeName}}
+                </div>
+            </div>
+        </van-cell-group>
     </div>
     <script src="/ChatGPT_Wx/Global.js"></script>
     <script>
@@ -21,16 +61,25 @@
         new Vue({
             el: '#app',
             data: {
-
+                list: []
             },
             methods: {
+                onClickLeft() {
+                    window.history.go(-1);
+                },
+                GetList() {
+                    AxiosAsync('/ChatGPT/Commission/GetUserListPage', 'get', {}).then(res => {
+                        this.list = res;
+                    }).catch(err => {
 
+                    })
+                }
             },
             created() {
 
             },
             mounted() {
-
+                this.GetList();
             }
         })
     </script>

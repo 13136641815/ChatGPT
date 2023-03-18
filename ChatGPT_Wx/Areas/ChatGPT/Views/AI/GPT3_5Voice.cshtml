@@ -530,9 +530,11 @@
             this.scroll = document.getElementById('scroll'); // 获取对象
             await this.contion();
             var parms = getURLParams();
+            let botID = 0;
             if (parms.botID) {
-                this.Bot = await this.GetBot(parms.botID);
+                botID = parms.botID;
             }
+            this.Bot = await this.GetBot(botID);
         }
     });
     function SmoothVerticalScrolling(e, time, where) {

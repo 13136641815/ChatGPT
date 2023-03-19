@@ -160,13 +160,25 @@
             background-color: rgb(255 255 255);
             box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
         }
+        .notice-swipe {
+            height: 40px;
+            line-height: 40px;
+        }
     </style>
 </head>
 
 <body>
     <div id="app" v-cloak>
         <div id="scroll" style="width: 100%; float: left; max-height: 100%;" class="scroll-container">
-            <van-notice-bar left-icon="volume-o" mode="closeable" :text="setup.Notice"></van-notice-bar>
+            <van-notice-bar left-icon="volume-o" mode="closeable" :text="setup.Notice">
+                <van-swipe vertical
+                           class="notice-swipe"
+                           :autoplay="15000"
+                           :show-indicators="false">
+                    <van-swipe-item v-for="(item,index) in Notice" :key="index">{{item}}</van-swipe-item>
+                </van-swipe>
+                    
+            </van-notice-bar>
             <van-divider style="margin-top: 10px; margin-bottom: 5px; font-size: 10px; color: #ceccca;">您正在使用OpenAI官方【{{Bot.Name}}】</van-divider>
             <div class="div_AI">
                 <div class="AI_Img">
@@ -320,6 +332,7 @@
             },
             scroll: null,
             setup: {},
+            Notice:[],
             /////////////////////////////
             switchicon: 'volume',
             VoiceText: '按住 说话',
@@ -364,6 +377,7 @@
                     let res = await AxiosPromise('/ChatGPT/AI/GetAPI_Url', 'get', {}, true);
                     const that = this;
                     that.setup = res;
+                    that.Notice = res.Notice.split('|')
                     that.connection = new signalR.HubConnectionBuilder().withUrl(res.ApiUrl + '/chatHub3_5').build();
                     that.connection.on("ReceiveMessage", function (botID, message) {
                         if (that.NowContext.content === 'loding') {

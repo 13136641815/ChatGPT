@@ -36,21 +36,23 @@
         .flontBtn {
             position: fixed;
             background-color: #1989fa;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 30px;
             z-index: 2;
             color: #ffffff;
-            border-radius: 38px;
             line-height: 16px;
-            right: 10px;
+            right: 0px;
             top: 97px;
             font-size: 14px;
+            border-top-left-radius: 15px;
+            border-bottom-left-radius: 15px;
+            padding-left: 5px;
         }
     </style>
 </head>
 <body>
     <div id="app" v-cloak>
-        <div class="flontBtn"><div style="width: 29px; margin: 0 auto; margin-top: 8px;" @@click="TX">佣金提现</div></div>
+        <div class="flontBtn"><div style="line-height: 30px;" @@click="TX">佣金提现</div></div>
         <van-nav-bar title="分佣详情"
                      left-text="返回"
                      right-text="推广对象"

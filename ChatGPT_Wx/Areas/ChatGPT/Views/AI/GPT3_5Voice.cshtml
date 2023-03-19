@@ -83,15 +83,20 @@
         }
     </style>
     <style>
+        .Player_Img {
+            width: 40px;
+            height: 40px;
+            float: right;
+        }
         .div_Player {
             margin: 8px;
             float: right;
-            width: 80%;
+            width: 100%;
         }
 
         .Player_Msg {
-            max-width: 100%;
-            margin-right: 23px;
+            max-width: 70%;
+            margin-right: 30px;
             float: right;
         }
 
@@ -200,6 +205,12 @@
             </div>
             <div v-for="(item,index) in messages" :key="index">
                 <div class="div_Player" v-if="item.role=='user'">
+                    <div class="Player_Img">
+                        <van-image round
+                                   width="100%"
+                                   height="100%"
+                                   :src="UserInfo.WxHeadUrl"></van-image>
+                    </div>
                     <div class="Player_Msg">
                         <div class="POsquare">
                             @*<p class="POtriangle"></p>*@
@@ -308,6 +319,7 @@
     window.MyVue = new Vue({
         el: '#app',
         data: {
+            UserInfo: {},
             Speak: {
                 show: false,
                 rate: 1,//语速
@@ -549,6 +561,7 @@
                 botID = parms.botID;
             }
             this.Bot = await this.GetBot(botID);
+            this.UserInfo = await window.APP_GetUserInfoAsync();
         }
     });
     function SmoothVerticalScrolling(e, time, where) {

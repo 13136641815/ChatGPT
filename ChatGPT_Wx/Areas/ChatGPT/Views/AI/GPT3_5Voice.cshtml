@@ -403,6 +403,7 @@
                         }, 200);
                     });
                     that.connection.on("EndMessage", function (botID, message) {
+                        console.log("对话结束：", message);
                         setTimeout(() => {
                             if (that.Speak.checked) {
                                 that.read(that.NowContext.content);

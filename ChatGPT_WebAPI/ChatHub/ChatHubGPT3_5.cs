@@ -89,7 +89,6 @@ namespace ChatGPT_WebAPI.ChatHub
                         // 逐行读取文本内容
                         while (!reader.EndOfStream)
                         {
-                            Thread.Sleep(20);
                             string line = await reader.ReadLineAsync();
                             // 在这里对每一行文本进行处理
                             if (line.Contains("[DONE]"))

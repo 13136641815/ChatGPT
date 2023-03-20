@@ -89,6 +89,7 @@ namespace ChatGPT_WebAPI.ChatHub
                         // 逐行读取文本内容
                         while (!reader.EndOfStream)
                         {
+                            Thread.Sleep(15);
                             string line = await reader.ReadLineAsync();
                             // 在这里对每一行文本进行处理
                             if (line.Contains("[DONE]"))
@@ -125,7 +126,7 @@ namespace ChatGPT_WebAPI.ChatHub
                             var ErrModel = JsonConvert.DeserializeObject<ChatGPT_Model.GPT3_5.ErrorBody>(Error.Trim(' '));
                             if (ErrModel.error.type == "access_terminated"|| ErrModel.error.type == "insufficient_quota")
                             {
-                                ApiKeyCacheTime.RemvoCache(APIKEY);
+                               await ApiKeyCacheTime.RemvoCache(APIKEY);
                             }
                             DiLog.Add("5.", DateTime.Now.ToString() + "|接收异常:[代码:" + ErrModel.error.type + "][内容:" + ErrModel.error.message + "]");
                             await Clients.Caller.SendAsync("ErrMessage", "", ErrModel.error.message);//异常回复

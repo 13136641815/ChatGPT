@@ -75,10 +75,17 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             };
             var OCID = await OCApp.AddAsync(OrderCommodityModel, db);
             //下单时判断此人是不是被推荐的，需要将商品返利一并下单
-            if (!string.IsNullOrEmpty(model.PushOpenID) && model.PushOpenID != "0" && ComModel.ShareCommission !> decimal.Parse("0.00"))
+            if (!string.IsNullOrEmpty(model.PushOpenID) && model.PushOpenID != "0" && ComModel.ShareCommission! > decimal.Parse("0.00"))
             {
+                decimal ShareCommission = (decimal)ComModel.ShareCommission;//分佣比例
                 Mapper_GPT_User userApp = new Mapper_GPT_User();
                 var PushModel = await userApp.GetModelFirstAsync(model.PushOpenID);//分佣者
+                #region 此人是不是特殊分佣者，如果有特殊分佣比例就属于特殊分佣者，走特定的分佣比例
+                if (PushModel.ShareCommission != null && PushModel.ShareCommission > decimal.Parse("0.00"))
+                {
+                    ShareCommission = (decimal)PushModel.ShareCommission;
+                }
+                #endregion
                 Mapper_GPT_Commission CommissionAPP = new Mapper_GPT_Commission();//需要将返利一起下单
                 int CI = await CommissionAPP.AddAsync(new GPT_Commission()
                 {
@@ -92,9 +99,9 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
                     Buy_NikeName = model.NikeName,
                     OrderNumber = OrderModel.OrderNumber,
                     CommodityName = ComModel.CommodityName,
-                    ShareCommission = ComModel.ShareCommission,
+                    ShareCommission = ShareCommission,
                     OrderAmountYuan = OrderModel.OrderAmountYuan,
-                    Commission = Math.Round(((decimal)OrderModel.OrderAmountYuan * (decimal)ComModel.ShareCommission), 2)
+                    Commission = Math.Round(((decimal)OrderModel.OrderAmountYuan * ShareCommission), 2)
                 }, db);
             }
             if (ID > 0 && OCID > 0)

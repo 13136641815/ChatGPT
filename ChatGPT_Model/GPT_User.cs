@@ -89,6 +89,6 @@ namespace ChatGPT_Model
         public string PushOpenID { get; set; }
         public string AccountType { get; set; }
         public string AccountNum { get; set; }
-
+        public decimal? ShareCommission { get; set; } = null;
     }
 }

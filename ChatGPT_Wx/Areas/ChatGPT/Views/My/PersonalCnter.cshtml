@@ -159,11 +159,14 @@
         <div class="DivCard">
             <div class="CardContent">
                 <div class="CardContentText">
-                    <h3 v-if="UserInfo.IsShowTime">会员</h3>
+                    <h3 v-if="UserInfo.VIP_Type==1">超级会员</h3>
+                    <h3 v-else-if="UserInfo.VIP_Type==0" style="color: #ffffff;">普通会员</h3>
                     <h3 v-else style="color: #cdcdcd;">游客</h3>
-                    <p v-if="UserInfo.IsShowTime">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
-                    <p v-else style="color: #cdcdcd;">剩余体验次数{{UserInfo.Free_Second}}</p>
-                    <div class="tops" style="color:#f1debd;" v-if="UserInfo.IsShowTime">VIP</div>
+                    <p v-if="UserInfo.VIP_Type==-1" style="color:#cdcdcd;">剩余体验次数{{UserInfo.Free_Second}}</p>
+                    <p v-else-if="UserInfo.VIP_Type==1" style="color: #f1debd; ">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
+                    <p v-else style="color: #ffffff; ">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
+                    <div class="tops" style="color: #f1debd; text-shadow: 5px 5px 1px #ffffff59;" v-if="UserInfo.VIP_Type==1">SVIP</div>
+                    <div class="tops" style="color: #ffffff; text-shadow: 5px 5px 1px #ffffff59; " v-else-if="UserInfo.VIP_Type==0">VIP</div>
                     <div class="tops" style="color:#cdcdcd;" v-else>Visitor</div>
                 </div>
             </div>

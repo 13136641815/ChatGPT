@@ -28,6 +28,7 @@ namespace ChatGPT_Mapper
         {
             return await SugarConfig.CretClient().Queryable<GPT_Commodity>()
                 .WhereIF(model.CommodityName != null && model.CommodityName != "", it => it.CommodityName.Contains(model.CommodityName))
+                .Where(it => it.Type == model.Type)
                 .OrderBy(it => it.Sort)
                 .ToPageListAsync(Page.PageNum, Page.PageSize, DataCount);
         }

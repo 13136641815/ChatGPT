@@ -56,10 +56,9 @@
         }
 
         .van-radio-group {
-            width: 315px;
+            width: 100%;
             float: left;
             position: relative;
-            left: -50%;
         }
 
         .van-radio__icon {
@@ -156,11 +155,7 @@
             <van-divider>会员服务为虚拟商品，支付成功后不支持退款</van-divider>
         </div>
     </div>
-    <script src="/lib/vue/vue.js"></script>
-    <script src="/lib/vant/js/vant.js"></script>
-    <script src="/lib/axios/axios.js"></script>
-    <script src="/lib/axios/PromiseAxios.js"></script>
-    <script src="/ChatGPT_Wx/APPJS/App.js"></script>
+    <script src="/ChatGPT_Wx/Global.js"></script>
     <script>
         // 在 #app 标签下渲染一个按钮组件
         new Vue({
@@ -273,12 +268,11 @@
                 }
             },
             created() {
-                this.GetUserInfo();
-                this.GetCommodityList();
+
             },
             async mounted() {
                 this.UserInfo = await window.APP_GetUserInfoAsync();
-                this.CommodityList = await GetCommodityList();
+                this.CommodityList = await this.GetCommodityList();
             }
         })
     </script>

@@ -18,7 +18,7 @@ namespace ChatGPT_WebAPI.ChatHub
 {
     public class ChatHubGPT3_5 : Hub
     {
-        public async Task SendMessage(int botID, string message)
+        public async Task SendMessage(int botID, string message, int VIPTYPE)
         {
             Dictionary<string, string> DiLog = new Dictionary<string, string>();
             try
@@ -70,7 +70,11 @@ namespace ChatGPT_WebAPI.ChatHub
                 }
                 Body.messages = messages;
                 #endregion
-
+                if (VIPTYPE == 0)
+                {
+                    //普通会员限制最大字数为200字 200*4=800 tokens
+                    Body.max_tokens = 800;
+                }
                 //请求开始
                 var client = new HttpClient();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -124,9 +128,9 @@ namespace ChatGPT_WebAPI.ChatHub
                         if (Error.Contains("error"))
                         {
                             var ErrModel = JsonConvert.DeserializeObject<ChatGPT_Model.GPT3_5.ErrorBody>(Error.Trim(' '));
-                            if (ErrModel.error.type == "access_terminated"|| ErrModel.error.type == "insufficient_quota")
+                            if (ErrModel.error.type == "access_terminated" || ErrModel.error.type == "insufficient_quota")
                             {
-                               await ApiKeyCacheTime.RemvoCache(APIKEY);
+                                await ApiKeyCacheTime.RemvoCache(APIKEY);
                             }
                             DiLog.Add("5.", DateTime.Now.ToString() + "|接收异常:[代码:" + ErrModel.error.type + "][内容:" + ErrModel.error.message + "]");
                             await Clients.Caller.SendAsync("ErrMessage", "", ErrModel.error.message);//异常回复

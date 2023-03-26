@@ -18,6 +18,7 @@
         .van-image--round img {
             background-color: #1989fa;
         }
+
         .bot {
             width: 30%;
             padding: 1%;
@@ -30,6 +31,7 @@
 </head>
 <body>
     <div id="app" v-cloak>
+        <van-notice-bar scrollable text="以下情景机器人为SVIP会员专享"></van-notice-bar>
         <div style="width: 100%; float: left; padding-left: 2%;padding-top:2%;">
             <div class="bot" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)" v-show="Item.show">
                 <div style="width: 100%; background-color: #ffffff; padding-bottom: 10%;">
@@ -42,30 +44,44 @@
                 </div>
             </div>
             @*<div style="width:25%;float:left;" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)">
-                <van-image round
-                           width="70%"
-                           height="70%"
-                           style="padding: 15%; padding-bottom: 2%;"
-                           :src="Item.Img"></van-image>
-                <p style="text-align: center; margin: 0px; color: #606266;">{{Item.Name}}</p>
-            </div>*@
+                    <van-image round
+                               width="70%"
+                               height="70%"
+                               style="padding: 15%; padding-bottom: 2%;"
+                               :src="Item.Img"></van-image>
+                    <p style="text-align: center; margin: 0px; color: #606266;">{{Item.Name}}</p>
+                </div>*@
         </div>
         <div style="height:50px;float:left;width:100%"></div>
     </div>
-    <script src="/lib/vue/vue.js"></script>
-    <script src="/ChatGPT_Wx/Script/script.js"></script>
-    <script src="/lib/axios/axios.js"></script>
-    <script src="/lib/vant/js/vant.js"></script>
+    <script src="/ChatGPT_Wx/Global.js"></script>
     <script>
         // 在 #app 标签下渲染一个按钮组件
         new Vue({
             el: '#app',
             data: {
-                list: []
+                list: [],
+                UserInfo: {}
             },
             methods: {
                 Jump(BotID) {
-                    parent.HomeVue.ChangeAI(BotID);
+                    //校验是否SVIP
+                    //const res = await window.APP_GetUserInfoAsync();
+                    if (this.UserInfo.VIP_Type != 1) {
+                        //会员充值提示
+                        vant.Dialog.confirm({
+                            title: '提示',
+                            message: '此项服务为SVIP会员专用！',
+                            confirmButtonText: '开通SVIP',
+                            cancelButtonText: '取消',
+                        }).then(() => {
+                            parent.window.HomeVue.HomeHref('/ChatGPT/Pay/PayMember');
+                        }).catch(() => {
+                            // on cancel
+                        });
+                    } else {
+                        parent.HomeVue.ChangeAI(BotID);
+                    }
                 },
                 GetList() {
                     const that = this;
@@ -91,10 +107,11 @@
                 }
             },
             created() {
-                this.GetList();
-            },
-            mounted() {
 
+            },
+            async mounted() {
+                this.GetList();
+                this.UserInfo = await window.APP_GetUserInfoAsync();
             }
         })
     </script>

@@ -22,6 +22,12 @@
                     <div class="InputContainer">
                         <el-input v-model="model.CommodityName" placeholder="商品名称" clearable></el-input>
                     </div>
+                    <div class="SelectContainerMid">
+                        <el-select v-model="model.Type" placeholder="商品类型" style="width:100%;" @@change="change">
+                            <el-option label="超级会员" :value="1"></el-option>
+                            <el-option label="普通会员" :value="0"></el-option>
+                        </el-select>
+                    </div>
                     <div class="ButtonContainer">
                         <el-button type="primary" icon="el-icon-search" @@click="Select">搜索</el-button>
                     </div>
@@ -140,6 +146,10 @@
                         <el-radio v-model="Form.Enable" :label="1">启用</el-radio>
                         <el-radio v-model="Form.Enable" :label="0">停用</el-radio>
                     </el-form-item>
+                    <el-form-item label="会员类型">
+                        <el-radio v-model="Form.Type" :label="0" disabled>普通VIP</el-radio>
+                        <el-radio v-model="Form.Type" :label="1" disabled>超级VIP</el-radio>
+                    </el-form-item>
                     <el-form-item label="是否折扣">
                         <el-radio v-model="Form.Discount" :label="1">是</el-radio>
                         <el-radio v-model="Form.Discount" :label="0">否</el-radio>
@@ -219,7 +229,8 @@
                         Total: 0
                     },
                     model: {
-                        CommodityName: ''
+                        CommodityName: '',
+                        Type: 1
                     },
                     Dialog: {
                         Title: '',
@@ -229,6 +240,7 @@
                     Form: {
                         ID: 0,
                         Stamp: '',
+                        Type: 1,
                         Enable: 1,
                         Discount: 1,
                         CommodityName: '',
@@ -258,6 +270,10 @@
                 };
             },
             methods: {
+                change(val) {
+                    this.Form.Type = val;
+                    this.GetListPage();
+                },
                 up(a, b) {
                     return a.Sort - b.Sort
                 },
@@ -408,6 +424,7 @@
                             'Content-Type': 'application/json; charset=UTF-8'
                         },
                     }).then(function (res) {
+                        that.thisRow.Type = PostFrom.Type;
                         that.thisRow.Enable = PostFrom.Enable;
                         that.thisRow.Discount = PostFrom.Discount;
                         that.thisRow.CommodityName = PostFrom.CommodityName;
@@ -456,6 +473,7 @@
                         url: '/ChatGPT/Commodity/GetListPage',
                         params: {
                             CommodityName: that.model.CommodityName,
+                            Type: that.model.Type,
                             PageNum: that.PageParams.PageNum,
                             PageSize: that.PageParams.PageSize,
                         },

@@ -79,6 +79,8 @@ namespace ChatGPT_Model
         /// Nullable:True
         /// </summary>           
         public DateTime? BeOverdue_VIP { get; set; }
+        public int? YN_PVIP { get; set; }
+        public DateTime? BeOverdue_PVIP { get; set; }
 
         /// <summary>
         /// Desc:

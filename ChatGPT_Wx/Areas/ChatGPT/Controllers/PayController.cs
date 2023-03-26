@@ -66,6 +66,7 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
                 Stamp = DateTime.Now,
                 OrderNumber = OrderModel.OrderNumber,
                 Discount = ComModel.Discount,
+                Type = ComModel.Type,
                 CommodityName = ComModel.CommodityName,
                 CommodityOriginalPrice = ComModel.CommodityOriginalPrice,
                 CommodityPresentPrice = ComModel.CommodityPresentPrice,

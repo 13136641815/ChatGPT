@@ -38,19 +38,21 @@
             </div>
             <!--状态-->
             <div class="status">
-                <span>{{UserInfo.IsShowTime?'可续费':'未开通'}}</span>
-                <p>*开通会员无限畅聊</p>
+                <span>&nbsp;</span>
+                <p style="padding-top: 0.03rem;">*VIP：不限次数+单次对话字数200字以内+无上下文关联</p>
+                <p style="padding-top:0px;padding-right:.5rem">*SVIP：不限次数+单次对话字数1000字左右+上下文关联+多款情景机器人</p>
             </div>
         </div>
         <!--精选会员卡列表-->
         <div class="card-list active">
             <div class="cate">
                 <p class="active"><i></i>超级会员</p>
+                <p><i></i>普通会员</p>
             </div>
             <div class="list">
                 <ul class="active">
                     <van-radio-group v-model="radio" style="display: flex;">
-                        <li :class="radio==Item.ID?'active':''" v-for="(Item,Index) in CommodityList" :key="Index">
+                        <li :class="radio==Item.ID?'active':''" v-for="(Item,Index) in CommodityList1" :key="Index">
                             <van-radio :name="Item.ID" shape="square">
                                 <div class="title">{{Item.CommodityName}}</div>
                                 <div class="desc">
@@ -62,7 +64,20 @@
                         </li>
                     </van-radio-group>
                 </ul>
-
+                <ul>
+                    <van-radio-group v-model="radio" style="display: flex;">
+                        <li :class="radio==Item.ID?'active':''" v-for="(Item,Index) in CommodityList0" :key="Index">
+                            <van-radio :name="Item.ID" shape="square">
+                                <div class="title">{{Item.CommodityName}}</div>
+                                <div class="desc">
+                                    <p class="yh" v-show="Item.Explain">{{Item.Explain}}</p>
+                                    <p class="money"><i>¥</i><span>{{(Item.CommodityPresentPrice/100).toFixed(2)}}</span></p>
+                                    <p class="old">原价¥{{(Item.CommodityOriginalPrice/100).toFixed(2)}}</p>
+                                </div>
+                            </van-radio>
+                        </li>
+                    </van-radio-group>
+                </ul>
             </div>
         </div>
         <!--特权-->
@@ -91,8 +106,8 @@
             </ul>
         </div>
         <!--开通会员-->
-        <div class="submit">
-            <van-button type="success" @@click="Pay" :disabled="ButtonEnable">立即{{UserInfo.YN_VIP==1&&UserInfo.BeOverdue_VIP>new Date().toLocaleString()?'续费':'开通'}}</van-button>
+        <div class="submit">'
+            <van-button type="success" @@click="Pay" :disabled="ButtonEnable">立即开通</van-button>
         </div>
         <p class="tip" style="font-size: 14px; text-align: center; color: red;">会员服务为虚拟商品，支付成功后不支持退款</p>
     </div>
@@ -101,12 +116,16 @@
 </html>
 <script src="/ChatGPT_Wx/Global.js"></script>
 <script>
+    
+</script>
+<script>
     new Vue({
         el: '#app',
         data: {
             radio: 1,
             UserInfo: {},
-            CommodityList: [],
+            CommodityList1: [],
+            CommodityList0: [],
             ButtonEnable: false,
             showMore: false,
         },
@@ -166,8 +185,21 @@
 
         },
         async mounted() {
+            // 超级会员，普通会员切换
+            $('.card-list .cate p').click(function () {
+                var index = $(this).index();
+                $(this).addClass('active').siblings().removeClass('active');
+                $(this).parents('.card-list').find('ul').removeClass('active').eq(index).addClass('active');
+            })
             this.UserInfo = await window.APP_GetUserInfoAsync();
-            this.CommodityList = await this.GetCommodityList();
+            const ResList = await this.GetCommodityList();
+            ResList.forEach(item => {
+                if (item.Type == 0) {
+                    this.CommodityList0.push(item);
+                } else {
+                    this.CommodityList1.push(item);
+                }
+            })
         }
     })
 </script>

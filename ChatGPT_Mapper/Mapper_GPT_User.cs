@@ -146,7 +146,7 @@ namespace ChatGPT_Mapper
            .ExecuteCommandHasChangeAsync();
         }
         /// <summary>
-        /// 充值会员
+        /// 充值会员SVIP
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -156,6 +156,49 @@ namespace ChatGPT_Mapper
             {
                 it.YN_VIP,
                 it.BeOverdue_VIP
+            }).Where(it => it.ID == model.ID)
+              .ExecuteCommandHasChangeAsync();
+        }
+        /// <summary>
+        /// 延后超级VIP的时间
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public async Task<bool> longSvip(GPT_User model, SqlSugarScope db) 
+        {
+            return await db.Updateable(model).UpdateColumns(it => new
+            {
+                it.BeOverdue_VIP
+            }).Where(it => it.ID == model.ID)
+                  .ExecuteCommandHasChangeAsync();
+        }
+        /// <summary>
+        /// 延后普通VIP的时间
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public async Task<bool> longPvip(GPT_User model, SqlSugarScope db)
+        {
+            return await db.Updateable(model).UpdateColumns(it => new
+            {
+                it.YN_PVIP,
+                it.BeOverdue_PVIP
+            }).Where(it => it.ID == model.ID)
+                  .ExecuteCommandHasChangeAsync();
+        }
+        /// <summary>
+        /// 充值会员VIP
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<bool> RechargePVIPAsync(GPT_User model, SqlSugarScope db)
+        {
+            return await db.Updateable(model).UpdateColumns(it => new
+            {
+                it.YN_PVIP,
+                it.BeOverdue_PVIP
             }).Where(it => it.ID == model.ID)
               .ExecuteCommandHasChangeAsync();
         }

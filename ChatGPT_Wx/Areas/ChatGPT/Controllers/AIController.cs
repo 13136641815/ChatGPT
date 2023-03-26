@@ -94,6 +94,8 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
         public async Task<JsonResult> Check([FromForm] string Text)
         {
             Result RES = new Result();
+            Mapper_GPT_Setup setup = new Mapper_GPT_Setup();
+            var setupModel = await setup.GetFirstAsync();
             Tools.WordSearch appc = new Tools.WordSearch();
             bool isok = appc.Filter(Text);//校验关键字
             if (isok)
@@ -104,10 +106,34 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
                 //1.判断是不是会员
                 if (model.YN_VIP == 1)
                 {
+                    //超级会员
                     //是会员，会员是否到期
                     if (DateTime.Now < model.BeOverdue_VIP)
                     {
                         //未到期，直接发送
+                        RES.CODE = ResultCode.Success;
+                    }
+                    else
+                    {
+                        //已到期，提示充值
+                        RES.CODE = ResultCode.Empty;
+                        RES.MSG = "您的会员已到期，请续费后再使用";
+                        return Json(RES);
+                    }
+                }
+                else if (model.YN_PVIP == 1)
+                {
+                    //普通会员
+                    //是会员，会员是否到期
+                    if (DateTime.Now < model.BeOverdue_PVIP)
+                    {
+                        //未到期验证字数
+                        if (Text.Length > setupModel.VIP_NumberWords)
+                        {
+                            RES.CODE = ResultCode.Empty;
+                            RES.MSG = $"普通会员对话输入字长度不得超过{setupModel.VIP_NumberWords}个字";
+                            return Json(RES);
+                        }
                         RES.CODE = ResultCode.Success;
                     }
                     else

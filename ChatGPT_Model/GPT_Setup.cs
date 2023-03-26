@@ -23,5 +23,6 @@ namespace ChatGPT_Model
         public int Free_Second { get; set; }
         public decimal? DoorJe { get; set; }
         public string Notice { get; set; }
+        public int VIP_NumberWords { get; set; }
     }
 }

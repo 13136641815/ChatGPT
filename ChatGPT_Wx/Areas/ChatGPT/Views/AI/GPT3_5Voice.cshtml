@@ -88,6 +88,7 @@
             height: 40px;
             float: right;
         }
+
         .div_Player {
             margin: 8px;
             float: right;
@@ -165,6 +166,7 @@
             background-color: rgb(255 255 255);
             box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
         }
+
         .notice-swipe {
             height: 40px;
             line-height: 40px;
@@ -182,7 +184,7 @@
                            :show-indicators="false">
                     <van-swipe-item v-for="(item,index) in Notice" :key="index">{{item}}</van-swipe-item>
                 </van-swipe>
-                    
+
             </van-notice-bar>
             <van-divider style="margin-top: 10px; margin-bottom: 5px; font-size: 10px; color: #ceccca;">您正在使用【{{Bot.Name}}】</van-divider>
             <div class="div_AI">
@@ -344,13 +346,14 @@
             },
             scroll: null,
             setup: {},
-            Notice:[],
+            Notice: [],
             /////////////////////////////
             switchicon: 'volume',
             VoiceText: '按住 说话',
             Voice: false,
             First: true,//首次切换
-            readFirst: true,//首次朗读
+            readFirst: true,//首次朗读,
+            apiUrl:''
             ////////////////////////////
         },
         methods: {
@@ -390,6 +393,7 @@
                     const that = this;
                     that.setup = res;
                     that.Notice = res.Notice.split('|')
+                    that.apiUrl = res.ApiUrl;
                     that.connection = new signalR.HubConnectionBuilder().withUrl(res.ApiUrl + '/chatHub3_5').build();
                     that.connection.on("ReceiveMessage", function (botID, message) {
                         if (that.NowContext.content === 'loding') {
@@ -451,8 +455,8 @@
                     this.Speak.show = true;
                 }
             },
-            Signalr(sendMsg, context) {
-                this.connection.invoke("SendMessage", this.Bot.ID, sendMsg).catch(function (err) {
+            Signalr(sendMsg, context,VIPTYPE) {
+                this.connection.invoke("SendMessage", this.Bot.ID, sendMsg, VIPTYPE).catch(function (err) {
                     console.error(err);
                     vant.Dialog.confirm({
                         title: '异常',
@@ -488,11 +492,17 @@
                         content: this.text
                     });//发送用户的输入
                     let Messages = JSON.stringify(this.messages);
+                    if (this.UserInfo.VIP_Type == 0) {
+                        Messages = JSON.stringify([{
+                            role: "user",
+                            content: this.text
+                        }]);
+                    }
                     let context = {
                         role: "assistant",
                         content: 'loding'
                     };//为了后期修改，做浅拷贝
-                    this.Signalr(Messages, context);
+                    this.Signalr(Messages, context, this.UserInfo.VIP_Type);
                     this.text = '';//清空文本框
                     this.messages.push(context);//发送AI的咯顶
                     setTimeout(() => {

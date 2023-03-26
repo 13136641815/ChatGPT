@@ -43,6 +43,9 @@
                             <el-form-item label="佣金提现门槛金额" prop="DoorJe">
                                 <el-input-number v-model="GPT_Setup.DoorJe" :min="1" :max="3000" label="提现门槛金额"></el-input-number>
                             </el-form-item>
+                            <el-form-item label="普通会员输入字数限制" prop="VIP_NumberWords">
+                                <el-input-number v-model="GPT_Setup.VIP_NumberWords" :min="1" :max="50" label="字数限制"></el-input-number>
+                            </el-form-item>
                             <el-form-item label="分销说明" prop="CommissionRemark">
                                 <el-input type="textarea"
                                           :rows="8" v-model="GPT_Setup.CommissionRemark"></el-input>
@@ -86,6 +89,9 @@
                         ],
                         Free_Second: [
                             { required: true, message: '请输入新用户体验次数', trigger: 'blur' }
+                        ],
+                        VIP_NumberWords: [
+                            { required: true, message: '请输入限制字数', trigger: 'blur' }
                         ],
                         DoorJe: [
                             { required: true, message: '请输入门槛金额', trigger: 'blur' }

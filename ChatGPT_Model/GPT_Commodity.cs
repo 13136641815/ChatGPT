@@ -30,6 +30,7 @@ namespace ChatGPT_Model
         /// Nullable:True
         /// </summary>           
         public DateTime? Stamp { get; set; } = DateTime.Now;
+        public int? Type { get; set; }
 
         /// <summary>
         /// Desc:

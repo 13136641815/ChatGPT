@@ -39,8 +39,10 @@ namespace ChatGPT_Service.Home
                     WxOpenID = UserInfo.openid,
                     WxHeadUrl = UserInfo.headimgurl,
                     YN_VIP = 0,
+                    YN_PVIP=0,
                     Type_VIP = -1,
                     BeOverdue_VIP = DateTime.Parse("2000/01/01"),
+                    BeOverdue_PVIP = DateTime.Parse("2000/01/01"),
                     Free_Second = setmodel.Free_Second,
                     PushOpenID = pushopenid == UserInfo.openid ? "0" : pushopenid
                 };

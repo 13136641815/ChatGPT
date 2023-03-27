@@ -15,6 +15,15 @@
         [v-cloak] {
             display: none;
         }
+        .top .status {
+            padding-top: 2.5rem;
+        }
+        .VIPtext {
+            color: #b88f34;
+            font-size: 14px;
+            text-indent: 2em;
+            padding: 5px;
+        }
     </style>
     <title>@ViewBag.Title</title>
 </head>
@@ -39,15 +48,15 @@
             <!--状态-->
             <div class="status">
                 <span>&nbsp;</span>
-                <p style="padding-top: 0.03rem;">*VIP：不限次数+单次对话字数200字以内+无上下文关联</p>
-                <p style="padding-top:0px;padding-right:.5rem">*SVIP：不限次数+单次对话字数1000字左右+上下文关联+多款情景机器人</p>
+                @*<p style="padding-top: 0.03rem;">*VIP：不限次数+单次对话字数200字以内+无上下文关联</p>
+                <p style="padding-top:0px;padding-right:.5rem">*SVIP：不限次数+单次对话字数1000字左右+上下文关联+多款情景机器人</p>*@
             </div>
         </div>
         <!--精选会员卡列表-->
         <div class="card-list active">
             <div class="cate">
-                <p class="active"><i></i>超级会员</p>
-                <p><i></i>普通会员</p>
+                <p class="active"><i></i>SVIP超级会员</p>
+                <p><i></i>VIP会员</p>
             </div>
             <div class="list">
                 <ul class="active">
@@ -81,32 +90,10 @@
             </div>
         </div>
         <!--特权-->
-        <div class="tequan">
-            <ul>
-                <li>
-                    <img src="/ChatGPT_Wx/statics/images/icon-meilizhi.png" />
-                    <p>服务</p>
-                    <span>一对一客服</span>
-                </li>
-                <li>
-                    <img src="/ChatGPT_Wx/statics/images/icon-huiyuanjia.png" />
-                    <p>接口</p>
-                    <span>独享接口对话</span>
-                </li>
-                <li>
-                    <img src="/ChatGPT_Wx/statics/images/icon-huiyuanri.png" />
-                    <p>畅聊</p>
-                    <span>享无任何限时</span>
-                </li>
-                <li>
-                    <img src="/ChatGPT_Wx/statics/images/icon-shengri.png" />
-                    <p>极速</p>
-                    <span>官方稳定回复</span>
-                </li>
-            </ul>
-        </div>
+        <p class="VIPtext">*VIP：不限次数+单次对话字数200字以内+无上下文关联</p>
+        <p class="VIPtext">*SVIP：不限次数+单次对话字数1000字左右+上下文关联+多款情景机器人</p>
         <!--开通会员-->
-        <div class="submit">'
+        <div class="submit">
             <van-button type="success" @@click="Pay" :disabled="ButtonEnable">立即开通</van-button>
         </div>
         <p class="tip" style="font-size: 14px; text-align: center; color: red;">会员服务为虚拟商品，支付成功后不支持退款</p>

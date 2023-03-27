@@ -31,7 +31,9 @@
 </head>
 <body>
     <div id="app" v-cloak>
-        <van-notice-bar scrollable text="以下情景机器人为SVIP会员专享"></van-notice-bar>
+        <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }">
+            以下情景机器人为SVIP会员专享
+        </van-divider>
         <div style="width: 100%; float: left; padding-left: 2%;padding-top:2%;">
             <div class="bot" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)" v-show="Item.show">
                 <div style="width: 100%; background-color: #ffffff; padding-bottom: 10%;">
@@ -44,13 +46,13 @@
                 </div>
             </div>
             @*<div style="width:25%;float:left;" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)">
-                    <van-image round
-                               width="70%"
-                               height="70%"
-                               style="padding: 15%; padding-bottom: 2%;"
-                               :src="Item.Img"></van-image>
-                    <p style="text-align: center; margin: 0px; color: #606266;">{{Item.Name}}</p>
-                </div>*@
+                <van-image round
+                           width="70%"
+                           height="70%"
+                           style="padding: 15%; padding-bottom: 2%;"
+                           :src="Item.Img"></van-image>
+                <p style="text-align: center; margin: 0px; color: #606266;">{{Item.Name}}</p>
+            </div>*@
         </div>
         <div style="height:50px;float:left;width:100%"></div>
     </div>

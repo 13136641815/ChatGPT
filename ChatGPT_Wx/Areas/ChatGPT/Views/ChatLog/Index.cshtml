@@ -51,49 +51,55 @@
 </head>
 <body>
     <div id="app" v-cloak>
-        @*<van-list v-model="loading"
-            direction="up"
-            :finished="finished"
-            finished-text="没有更多了"
-            @@load="onLoad">*@
-        <div v-for="(item,index) in list" :key="index">
-            <van-sticky v-if="item.Time">
-                <van-notice-bar color="#1989fa" background="#ecf9ff" left-icon="clock-o">
-                    {{GetDateShow(item.Time)}}
-                </van-notice-bar>
-            </van-sticky>
-            <div class="list">
-                <div class="User">
-                    <van-row>
-                        <van-col span="3">
-                            <van-image round
-                                       width="2.5rem"
-                                       height="2.5rem"
-                                       src="https://thirdwx.qlogo.cn/mmopen/vi_32/ZjS8iaWplN1uibmWRyfdfmLIHd8S5JEiah6LTqABxbjjkNZlf5ia2YZ076kib260Bzdp6jeWZ9BqWEsTQEibqGchtLEg/132"></van-image>
-                        </van-col>
-                        <van-col span="21">
-                            <div class="Time">{{item.Time}}</div>
-                            <div class="Message">{{item.UserMessage}}</div>
-                        </van-col>
-                    </van-row>
-                </div>
-                <div class="AI">
-                    <van-row>
-                        <van-col span="3">
-                            <van-image round
-                                       width="2.5rem"
-                                       height="2.5rem"
-                                       src="https://ai.833586.com:8090/ChatGPT/UploadImages/720ee31b-3270-4b0a-bae0-1e6dfe8eebba.png"></van-image>
-                        </van-col>
-                        <van-col span="21">
-                            <div class="Time">{{item.Time}}</div>
-                            <div class="Message">{{item.AIMessage}}</div>
-                        </van-col>
-                    </van-row>
+        <van-nav-bar title="聊天记录"
+                     left-text="返回"
+                     left-arrow
+                     @@click-left="onClickLeft"></van-nav-bar>
+        <van-search v-model="value"
+                    shape="round"
+                    placeholder="请输入搜索关键词"></van-search>
+        <van-list v-model="loading"
+                  :finished="finished"
+                  finished-text="没有更多了"
+                  @@load="onLoad">
+            <div v-for="(item,index) in list" :key="index">
+                <van-sticky v-if="item.Time">
+                    <van-notice-bar color="#1989fa" background="#ecf9ff" left-icon="clock-o">
+                        {{GetDateShow(item.Time)}}
+                    </van-notice-bar>
+                </van-sticky>
+                <div class="list">
+                    <div class="User">
+                        <van-row>
+                            <van-col span="3">
+                                <van-image round
+                                           width="2.5rem"
+                                           height="2.5rem"
+                                           src="https://thirdwx.qlogo.cn/mmopen/vi_32/ZjS8iaWplN1uibmWRyfdfmLIHd8S5JEiah6LTqABxbjjkNZlf5ia2YZ076kib260Bzdp6jeWZ9BqWEsTQEibqGchtLEg/132"></van-image>
+                            </van-col>
+                            <van-col span="21">
+                                <div class="Time">{{item.Time}}</div>
+                                <div class="Message">{{item.UserMessage}}</div>
+                            </van-col>
+                        </van-row>
+                    </div>
+                    <div class="AI">
+                        <van-row>
+                            <van-col span="3">
+                                <van-image round
+                                           width="2.5rem"
+                                           height="2.5rem"
+                                           src="https://ai.833586.com:8090/ChatGPT/UploadImages/720ee31b-3270-4b0a-bae0-1e6dfe8eebba.png"></van-image>
+                            </van-col>
+                            <van-col span="21">
+                                <div class="Time">{{item.Time}}</div>
+                                <div class="Message">{{item.AIMessage}}</div>
+                            </van-col>
+                        </van-row>
+                    </div>
                 </div>
             </div>
-        </div>
-        @*</van-list>*@
+        </van-list>
     </div>
     <script src="/ChatGPT_Wx/Global.js"></script>
     <script>
@@ -111,6 +117,9 @@
                 Times: []
             },
             methods: {
+                onClickLeft() {
+                    window.history.go(-1);
+                },
                 GetDateShow(Time) {
                     if (Time) {
                         let date = new Date(Time);
@@ -132,28 +141,27 @@
                                 UserMessage: '你好' + i,
                                 AIMessage: '你好！我是人工智能Chat机器人，我能回答你的所有问题，请和我聊天吧。'
                             };
-                            if (i==9) {
+                            if (i == 9) {
                                 Item = {
                                     Time: '2023-05-31 19:59',
                                     UserMessage: '你好' + i,
                                     AIMessage: '你好！我是人工智能Chat机器人，我能回答你的所有问题，请和我聊天吧。'
                                 };
                             }
-                           
                             if (this.Times.indexOf(Item.Time) != -1) {
                                 //存在
                                 Item.Time = '';
                             } else {
                                 this.Times.push(Item.Time);
                             }
-                            this.list.unshift(Item);
+                            this.list.push(Item);
                         }
 
                         // 加载状态结束
                         this.loading = false;
 
                         // 数据全部加载完成
-                        if (this.list.length >= 80) {
+                        if (this.list.length >= 20) {
                             this.finished = true;
                         }
                     }, 1000);

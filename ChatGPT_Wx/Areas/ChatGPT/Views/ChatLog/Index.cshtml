@@ -55,9 +55,14 @@
                      left-text="返回"
                      left-arrow
                      @@click-left="onClickLeft"></van-nav-bar>
-        <van-search v-model="value"
-                    shape="round"
-                    placeholder="请输入搜索关键词"></van-search>
+        <van-search v-model="model.UserMessage"
+                    show-action
+                    placeholder="请输入搜索关键词"
+                    @@search="onSearch">
+            <template #action>
+                <div @@click="onSearch" style="color: #1989fa">搜索</div>
+            </template>
+        </van-search>
         <van-list v-model="loading"
                   :finished="finished"
                   finished-text="没有更多了"
@@ -75,11 +80,11 @@
                                 <van-image round
                                            width="2.5rem"
                                            height="2.5rem"
-                                           src="https://thirdwx.qlogo.cn/mmopen/vi_32/ZjS8iaWplN1uibmWRyfdfmLIHd8S5JEiah6LTqABxbjjkNZlf5ia2YZ076kib260Bzdp6jeWZ9BqWEsTQEibqGchtLEg/132"></van-image>
+                                           :src="UserInfo.WxHeadUrl"></van-image>
                             </van-col>
                             <van-col span="21">
                                 <div class="Time">{{item.Time}}</div>
-                                <div class="Message">{{item.UserMessage}}</div>
+                                <div class="Message" style=" white-space: pre-wrap;">{{item.UserMessage}}</div>
                             </van-col>
                         </van-row>
                     </div>
@@ -89,11 +94,11 @@
                                 <van-image round
                                            width="2.5rem"
                                            height="2.5rem"
-                                           src="https://ai.833586.com:8090/ChatGPT/UploadImages/720ee31b-3270-4b0a-bae0-1e6dfe8eebba.png"></van-image>
+                                           src="/ChatGPT_Wx/Img/ChatGPT.png"></van-image>
                             </van-col>
                             <van-col span="21">
                                 <div class="Time">{{item.Time}}</div>
-                                <div class="Message">{{item.AIMessage}}</div>
+                                <div class="Message" style=" white-space: pre-wrap;">{{item.AIMessage}}</div>
                             </van-col>
                         </van-row>
                     </div>
@@ -107,22 +112,59 @@
         new Vue({
             el: '#app',
             data: {
-                list: [{
-                    Time: '2023-05-27 19:59',
-                    UserMessage: '你好',
-                    AIMessage: '你好！我是人工智能Chat机器人，我能回答你的所有问题，请和我聊天吧。'
-                }],
+                UserInfo: {},
+                list: [],
                 loading: false,
                 finished: false,
-                Times: []
+                Times: [],
+                model: {
+                    UserMessage: '',
+                },
+                PageParams: {
+                    PageSizeList: window.PageSizeList,
+                    PageNum: 0,
+                    PageSize: 10,
+                    Total: 0
+                },
             },
             methods: {
+                onSearch() {
+                    this.list = [];
+                    this.Times = [];
+                    this.PageParams.PageNum = 1;
+                    this.GetList();
+                },
+                GetList() {
+                    this.loading = true;
+                    AxiosAsync('/ChatGPT/ChatLog/GetListPage', 'get', {
+                        UserMessage: this.model.UserMessage,
+                        PageNum: this.PageParams.PageNum,
+                        PageSize: this.PageParams.PageSize,
+                    }).then(res => {
+                        this.loading = false;
+                        res.DATA.forEach(item => {
+                            let Time = this.GetDateShow(item.Time);
+                            if (this.Times.indexOf(Time) == -1) {
+                                this.Times.push(Time);
+                            } else {
+                                item.Time = '';
+                            }
+                            this.list.push(item);
+                        })
+                        if (res.DATA.length < this.PageParams.PageSize) {
+                            this.finished = true;
+                        }
+                    }).catch(err => {
+                        this.loading = false;
+                        console.error(err);
+                    });
+                },
                 onClickLeft() {
                     window.history.go(-1);
                 },
                 GetDateShow(Time) {
                     if (Time) {
-                        let date = new Date(Time);
+                        let date = new Date(Time.replace(/-/g, '/'));
                         const year = date.getFullYear() // 获取年
                         const month = date.getMonth() + 1 // 获取月
                         const strDate = date.getDate() // 获取日
@@ -132,46 +174,15 @@
                     return '';
                 },
                 onLoad() {
-                    // 异步更新数据
-                    // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-                    setTimeout(() => {
-                        for (let i = 0; i < 10; i++) {
-                            let Item = {
-                                Time: '2023-05-27 19:59',
-                                UserMessage: '你好' + i,
-                                AIMessage: '你好！我是人工智能Chat机器人，我能回答你的所有问题，请和我聊天吧。'
-                            };
-                            if (i == 9) {
-                                Item = {
-                                    Time: '2023-05-31 19:59',
-                                    UserMessage: '你好' + i,
-                                    AIMessage: '你好！我是人工智能Chat机器人，我能回答你的所有问题，请和我聊天吧。'
-                                };
-                            }
-                            if (this.Times.indexOf(Item.Time) != -1) {
-                                //存在
-                                Item.Time = '';
-                            } else {
-                                this.Times.push(Item.Time);
-                            }
-                            this.list.push(Item);
-                        }
-
-                        // 加载状态结束
-                        this.loading = false;
-
-                        // 数据全部加载完成
-                        if (this.list.length >= 20) {
-                            this.finished = true;
-                        }
-                    }, 1000);
+                    this.PageParams.PageNum++;
+                    this.GetList();
                 }
             },
             created() {
 
             },
-            mounted() {
-                this.onLoad();
+            async mounted() {
+                this.UserInfo = await window.APP_GetUserInfoAsync();
             }
         })
     </script>

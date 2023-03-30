@@ -48,6 +48,15 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             Mapper_GPT_OrderCommodity OCApp = new Mapper_GPT_OrderCommodity();
             var ComModel = await CommodityApp.GetCommodityFirstAsync(O.ComID);
             var model = await app.GetInfoModelFromCookies();
+            if (model.Block == 1)
+            {
+                return Json(new Result()
+                {
+                    CODE = ResultCode.Empty,
+                    DATA = "下单失败，网络异常，请稍后再试，或联系管理员",
+                    MSG = "下单失败，网络异常，请稍后再试，或联系管理员",
+                });
+            }
             var db = SugarConfig.CretClient();
             await db.BeginTranAsync();
             GPT_Order OrderModel = new GPT_Order()

@@ -17,8 +17,13 @@ namespace ChatGPT_Mapper
         /// <returns></returns>
         public async Task<List<GPT_ChatLog>> GetListPageAsync(PageParams Page, GPT_ChatLog model, DateTimeParams Time, RefAsync<int> DataCount)
         {
+            var exp = Expressionable.Create<GPT_ChatLog>();
+            exp.OrIF(!string.IsNullOrEmpty(model.UserMessage), it => it.UserMessage.Contains(model.UserMessage));
+            exp.OrIF(!string.IsNullOrEmpty(model.UserMessage), it => it.AIMessage.Contains(model.UserMessage));
             return await SugarConfig.CretClient().Queryable<GPT_ChatLog>()
+                .Where(exp.ToExpression())
                 .Where(it => it.Openid == model.Openid)
+                .OrderBy(it => it.Time, OrderByType.Desc)
                 .ToPageListAsync(Page.PageNum, Page.PageSize, DataCount);
         }
         /// <summary>

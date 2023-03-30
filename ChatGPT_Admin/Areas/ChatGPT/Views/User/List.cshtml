@@ -73,7 +73,8 @@
                                      width="180">
                     </el-table-column>
                     <el-table-column prop="WxOpenID"
-                                     label="微信标识openid">
+                                     label="微信标识openid"
+                                     width="250">
                     </el-table-column>
                     <el-table-column prop="WxHeadUrl"
                                      label="微信头像"
@@ -83,7 +84,14 @@
                             <div style="display:block;"><el-avatar shape="square" :src="scope.row.WxHeadUrl"></el-avatar></div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="VIP"
+                    <el-table-column label="是否拉黑"
+                                     align="center"
+                                     width="70">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.Block==1?'warning':'info'">{{scope.row.Block==1?'是':'否'}}</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="超级会员"
                                      align="center"
                                      width="70">
                         <template slot-scope="scope">
@@ -91,12 +99,29 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="BeOverdue_VIP"
-                                     label="VIP到期时间"
+                                     label="超级会员到期时间"
                                      width="300">
                         <template slot-scope="scope">
                             <div v-if="scope.row.YN_VIP==1">
                                 <span style="color:red;" v-if="CheckTime(scope.row.BeOverdue_VIP)">{{scope.row.BeOverdue_VIP}}（已过期）</span>
-                                <span v-else="{{scope.row.BeOverdue_VIP}}"></span>
+                                <span v-else>{{scope.row.BeOverdue_VIP}}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="普通会员"
+                                     align="center"
+                                     width="70">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.YN_PVIP==1?'warning':'info'">{{scope.row.YN_PVIP==1?'是':'否'}}</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="BeOverdue_PVIP"
+                                     label="普通会员到期时间"
+                                     width="300">
+                        <template slot-scope="scope">
+                            <div v-if="scope.row.YN_PVIP==1">
+                                <span style="color:red;" v-if="CheckTime(scope.row.BeOverdue_PVIP)">{{scope.row.BeOverdue_PVIP}}（已过期）</span>
+                                <span>{{scope.row.BeOverdue_PVIP}}</span>
                             </div>
 
                         </template>
@@ -130,6 +155,10 @@
             </el-footer>
             <el-dialog :title="Dialog.Title" :visible.sync="Dialog.Show">
                 <el-form ref="SubForm" :model="Form" :label-width="labelwidth" :rules="Rule">
+                    <el-form-item label="是否拉黑">
+                        <el-radio v-model="Form.Block" :label="0">否</el-radio>
+                        <el-radio v-model="Form.Block" :label="1">是</el-radio>
+                    </el-form-item>
                     <el-form-item label="用户ID">
                         <el-input v-model="Form.ID" disabled></el-input>
                     </el-form-item>
@@ -219,6 +248,7 @@
                     },
                     labelwidth: '35%',
                     Form: {
+                        Block: 0,
                         ID: 0,
                         Stamp: '',
                         Tel: 1,
@@ -228,7 +258,7 @@
                         YN_VIP: '',
                         BeOverdue_VIP: '',
                         Free_Second: '',
-                        ShareCommission:0.00
+                        ShareCommission: 0.00
                     },
                     thisRow: {},
                     Rule: {
@@ -300,6 +330,7 @@
                             'Content-Type': 'application/json; charset=UTF-8'
                         },
                     }).then(function (res) {
+                        that.thisRow.Block = that.Form.Block;
                         that.thisRow.Free_Second = that.Form.Free_Second;
                         that.thisRow.ShareCommission = that.Form.ShareCommission;
                         that.$message({

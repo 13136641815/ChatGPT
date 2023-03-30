@@ -353,7 +353,11 @@
             Voice: false,
             First: true,//首次切换
             readFirst: true,//首次朗读,
-            apiUrl:''
+            apiUrl: '',
+            ChatLog: {
+                UserMessage: '',
+                AIMessage: ''
+            }
             ////////////////////////////
         },
         methods: {
@@ -407,6 +411,12 @@
                         }, 200);
                     });
                     that.connection.on("EndMessage", function (botID, message) {
+                        try {
+                            that.ChatLog.AIMessage = that.NowContext.content;
+                            AxiosAsync('/ChatGPT/ChatLog/Add', 'post', that.ChatLog, true).then(res => { }).catch(err => { });
+                        } catch (e) {
+
+                        }
                         console.log("对话结束：", message);
                         setTimeout(() => {
                             if (that.Speak.checked) {
@@ -455,7 +465,7 @@
                     this.Speak.show = true;
                 }
             },
-            Signalr(sendMsg, context,VIPTYPE) {
+            Signalr(sendMsg, context, VIPTYPE) {
                 this.connection.invoke("SendMessage", this.Bot.ID, sendMsg, VIPTYPE).catch(function (err) {
                     console.error(err);
                     vant.Dialog.confirm({
@@ -491,6 +501,11 @@
                         role: "user",
                         content: this.text
                     });//发送用户的输入
+                    this.ChatLog = {
+                        UserMessage: '',
+                        AIMessage: ''
+                    }
+                    this.ChatLog.UserMessage = this.text;
                     let Messages = JSON.stringify(this.messages);
                     if (this.UserInfo.VIP_Type == 0) {
                         Messages = JSON.stringify([{

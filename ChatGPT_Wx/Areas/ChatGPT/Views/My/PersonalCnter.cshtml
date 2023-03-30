@@ -187,7 +187,7 @@
                 </van-col>
             </van-row>
         </div>
-        <van-cell-group inset title="充值卡密">
+        <van-cell-group inset title="会员信息">
             <van-cell title="会员充值" size="large" is-link @@click="GoUrl('/ChatGPT/Pay/PayMember')">
                 <template #icon>
                     <van-icon name="gem" class="van-cell__left-icon" color="#ffca6e"></van-icon>
@@ -196,6 +196,11 @@
             <van-cell title="卡密兑换" size="large" is-link @@click="show=true">
                 <template #icon>
                     <van-icon name="vip-card" class="van-cell__left-icon"></van-icon>
+                </template>
+            </van-cell>
+            <van-cell title="对话记录" size="large" is-link @@click="GO('/ChatGPT/ChatLog')">
+                <template #icon>
+                    <van-icon name="chat" class="van-cell__left-icon"></van-icon>
                 </template>
             </van-cell>
         </van-cell-group>

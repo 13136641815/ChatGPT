@@ -154,15 +154,7 @@
                         }
                     );
                 } catch (err) {
-                    setTimeout(() => {
-                        vant.Toast({
-                            icon: 'cross',
-                            type: 'fail',
-                            message: err,
-                            duration: 0,
-                            forbidClick: true
-                        });
-                    }, 600)
+                    alert(err);
                 }
             },
             async GetCommodityList() {
@@ -170,7 +162,7 @@
             }
         },
         created() {
-
+            
         },
         async mounted() {
             // 超级会员，普通会员切换

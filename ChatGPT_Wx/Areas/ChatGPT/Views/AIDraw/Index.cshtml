@@ -1,0 +1,403 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="/lib/vant/css/index.css" />
+    <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
+    <link href="/ChatGPT_Wx/Css/prism.css" rel="stylesheet" />
+    @*<script src="/lib/eruda/eruda.min.js"></script>
+        <script>eruda.init();</script>*@
+    <style>
+        .scroll-container {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        html {
+            background-color: #FFFFFF;
+        }
+    </style>
+    <style>
+        .div_AI {
+            margin: 8px;
+            float: left;
+            width: 98%;
+        }
+
+        .AI_Img {
+            width: 40px;
+            height: 40px;
+            float: left;
+        }
+
+        .AI_Msg {
+            max-width: 80%;
+            float: left;
+            /* min-width: 20%;*/
+        }
+
+        .AIPopou {
+            max-width: 80%;
+            float: left;
+            min-width: 20%;
+        }
+
+        .AIsquare {
+            position: relative;
+            background: #f4f4f5;
+            margin-left: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .AItriangle {
+            z-index: -10;
+            position: absolute;
+            top: 5px;
+            left: -20px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 5px;
+            border-right-width: 20px;
+            border-color: transparent #ededed transparent transparent;
+            font-size: 0;
+            line-height: 0;
+        }
+
+        .text {
+            text-indent: 1em;
+            line-height: 24px;
+            font-size: 15px;
+            margin: 0;
+            width: 100%;
+            word-wrap: break-word;
+            margin-top: 7px;
+            margin-bottom: 7px;
+            margin-right: 10px;
+        }
+    </style>
+    <style>
+        .Player_Img {
+            width: 40px;
+            height: 40px;
+            float: right;
+        }
+
+        .div_Player {
+            margin: 8px;
+            float: right;
+            width: 100%;
+        }
+
+        .Player_Msg {
+            max-width: 70%;
+            margin-right: 30px;
+            float: right;
+        }
+
+        .POsquare {
+            position: relative;
+            background-color: #1989fa;
+            padding: 10px;
+            color: #fff;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .POtriangle {
+            z-index: -10;
+            position: absolute;
+            top: 5px;
+            right: -17px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 5px;
+            border-left-width: 20px;
+            border-color: transparent transparent transparent #1989fa;
+            font-size: 0;
+            line-height: 0;
+        }
+
+        .AIsquare .potext {
+            color: #606266;
+        }
+
+        .potext {
+            line-height: 28px;
+            font-size: 16px;
+            margin: 0;
+            width: 100%;
+            word-wrap: break-word;
+            max-width: 100%;
+            min-width: 28px;
+            text-align: left;
+            /*white-space: pre-wrap;*/
+        }
+
+        .van-image--round img {
+            background-color: #1989fa;
+        }
+
+        .van-cell__value--alone {
+            height: 40px;
+        }
+
+        .van-slider {
+            width: 95%;
+        }
+
+        code {
+            white-space: normal;
+        }
+    </style>
+    <style>
+        .bottom {
+            position: fixed;
+            width: 100%;
+            height: 60px;
+            bottom: 49px;
+            background-color: rgb(255 255 255);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+        }
+
+        .notice-swipe {
+            height: 40px;
+            line-height: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <div id="scroll" style="width: 100%; float: left; max-height: 100%;" class="scroll-container">
+            <div class="div_AI">
+                <div class="AI_Img">
+                    <van-image round
+                               width="100%"
+                               height="100%"
+                               :src="Bot.Img"></van-image>
+                </div>
+                <div class="AI_Msg">
+                    <div class="AIsquare">
+                        <div style="max-width: 100%; min-width: 28px;">
+                            <div class="potext">{{Bot.Greetings}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-for="(item,index) in messages" :key="index">
+                <div class="div_Player" v-if="item.role=='user'">
+                    <div class="Player_Img">
+                        <van-image round
+                                   width="100%"
+                                   height="100%"
+                                   :src="UserInfo.WxHeadUrl"></van-image>
+                    </div>
+                    <div class="Player_Msg">
+                        <div class="POsquare">
+                            <div class="potext">
+                                {{item.content}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="div_AI" v-if="item.role=='assistant'">
+                    <div class="AI_Img">
+                        <van-image round
+                                   width="100%"
+                                   height="100%"
+                                   :src="Bot.Img"></van-image>
+                    </div>
+                    <div class="AI_Msg">
+                        <div class="AIsquare">
+                            <div style="max-width: 100%; min-width: 28px;">
+                                <van-loading color="#000000" style="display: inline; line-height: 24px; margin-left: 7px;" size="16px" v-if="item.content==='loding'">
+                                </van-loading>
+                                <div class="potext" v-else style="white-space: pre-wrap;">
+                                    <van-image @@click="ShowImgList(item.content,index)" fit="contain" v-for="(IItem,index) in item.content" :key="index" width="100" style="margin-right:10px;"
+                                               height="100"
+                                               :src="IItem"></van-image>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom">
+                <div class="van-cell van-cell--center van-field">
+                    <div class="van-cell__value van-cell__value--alone van-field__value">
+                        <div class="van-field__body">
+                            <input type="text" placeholder="请输入您要绘画的内容" class="van-field__control"
+                                   v-model="text" style="background-color: #fff; height: 32px; height: 40px;padding-left: 15px; " />
+                            <div class="van-field__button">
+                                <van-popover v-model="showPopover" trigger="click" :actions="actions"
+                                             @@select="onSelect" placement="top-end">
+                                    <template #reference>
+                                        <van-button size="small" type="info" icon="bars" plain>
+                                            菜单
+                                        </van-button>
+                                    </template>
+                                </van-popover>
+                                <transition name="van-slide-right">
+                                    <van-button size="small" type="info" style="width: 62px;"
+                                                icon="share" v-show="SendButVisible" @@click="Send">
+                                        发送
+                                    </van-button>
+                                </transition>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="height:110px;width:100%;float:left;"></div>
+        </div>
+        <van-popup v-model="Speak.show" position="top" :style="{ height:'80px' }">
+            <van-cell style="margin-top:20px;">
+                <!-- 使用 title 插槽来自定义标题 -->
+                <template #title>
+                    <span class="custom-title">绘制图片数量</span>
+                </template>
+                <template>
+                    <van-stepper v-model="Speak.n" integer min="1" max="10"></van-stepper>
+                </template>
+            </van-cell>
+            
+        </van-popup>
+    </div>
+</body>
+<!-- 引入 Vue 和 Vant 的 JS 文件 -->
+<script src="/ChatGPT_Wx/Global.js"></script>
+<script src="/ChatGPT_Wx/Script/script.js"></script>
+<script src="/lib/signalr/signalr.min.js"></script>
+<script src="/ChatGPT_Wx/Script/recorder.js"></script>
+<script src="/ChatGPT_Wx/Script/prism.js"></script>
+<script>
+    Prism.highlightAll();
+    // 在 #app 标签下渲染一个按钮组件
+    window.MyVue = new Vue({
+        el: '#app',
+        data: {
+            UserInfo: {},
+            Speak: {
+                show: false,
+                n:1,
+            },
+            SendButVisible: false,//文本框有文字后展示发送按钮
+            text: '',
+            context: [],
+            messages: [{
+                role: 'user',
+                content: '画一个哈士奇'
+            }, {
+                role: 'assistant',
+                content: ['https://img01.yzcdn.cn/vant/cat.jpeg', 'https://img01.yzcdn.cn/vant/cat.jpeg', 'https://img01.yzcdn.cn/vant/cat.jpeg']
+            }],
+            showPopover: false,
+            actions: [{ text: '绘画设置' }],
+            connection: null,
+            NowContext: {},
+            Bot: {
+                Name: '通用模型',
+                ID: 0,
+                Greetings: '你好！我是人工智能绘画模型，请说出你向描绘的内容。',
+                Img: '/ChatGPT_Wx/Img/ChatGPT.png'
+            },
+            scroll: null,
+            setup: {},
+            Notice: [],
+            /////////////////////////////
+            apiUrl: '',
+            ChatLog: {
+                UserMessage: '',
+                AIMessage: ''
+            }
+            ////////////////////////////
+        },
+        watch: {
+            text(val) {
+                if (val) {
+                    this.SendButVisible = true
+                } else {
+                    this.SendButVisible = false
+                }
+            },
+        },
+        methods: {
+            //查看图片组
+            ShowImgList(List, Index) {
+                vant.ImagePreview({
+                    images: List,
+                    startPosition: Index
+                });
+            },
+            async GetBot(ID) {
+                return await AxiosPromise('/ChatGPT/AI/GetBot', 'get', {
+                    ID: ID
+                }, false);
+            },
+            //气泡选择事件
+            onSelect(val) {
+                if (val.text === '重启话题') {
+                    this.messages = [];
+                } else if (val.text === '绘画设置') {
+                    this.Speak.show = true;
+                }
+            },
+            async Send() {
+                if (!this.text) {
+                    vant.Notify({ type: 'warning', message: '内容不得为空' });
+                    return;
+                }
+                //先校验权限是否允许发送
+                let formData = new FormData();
+                formData.append('Text', this.text);
+                try {
+                    await AxiosPromise('/ChatGPT/AI/Check', 'post', formData, true);
+                    let msg = document.getElementById('scroll'); // 获取对象
+                    this.messages.push({
+                        role: 'user',
+                        content: this.text
+                    });
+                    //发送消息
+                    this.text = '';
+                    //模拟收到数据
+                    this.messages.push({
+                        role: 'assistant',
+                        content: ['https://img01.yzcdn.cn/vant/cat.jpeg', 'https://img01.yzcdn.cn/vant/cat.jpeg', 'https://img01.yzcdn.cn/vant/cat.jpeg']
+                    });
+                    setTimeout(() => {
+                        SmoothVerticalScrolling(msg, 500, "center");
+                    }, 200);
+                } catch (err) {
+
+                }
+            },
+        },
+        created() {
+
+        },
+        async mounted() {
+            this.UserInfo = await window.APP_GetUserInfoAsync();
+        }
+    });
+    function SmoothVerticalScrolling(e, time, where) {
+        var eTop = where == "top" ? (e.getBoundingClientRect().top < 2000 ? e.getBoundingClientRect().top - 1000 : e.getBoundingClientRect().top) : (e.getBoundingClientRect().bottom > 2000 ? e.getBoundingClientRect().bottom + 1000 : e.getBoundingClientRect().bottom);
+        var eAmt = eTop / 100;
+        var curTime = 0;
+        while (curTime <= time) {
+            window.setTimeout(SVS_B, curTime, eAmt, where);
+            curTime += time / 100;
+        }
+    }
+    function SVS_B(eAmt, where) {
+        window.scrollBy(0, eAmt);
+    }
+</script>
+</html>

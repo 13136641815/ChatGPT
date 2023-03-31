@@ -307,9 +307,11 @@
                         CDK: this.inputCard
                     }).then(res => {
                         this.show = false;
-                        vant.Notify({ type: 'success', message: res, duration: 5000 });
                         this.inputCard = '';
-                        this.GetUserInfo();
+                        vant.Notify({ type: 'success', message: res, duration: 5000 });
+                        setTimeout(() => {
+                            window.location.reload();
+                        },2000)
                     }).catch(err => {
                         vant.Notify({ type: 'danger', message: err });
                     })

@@ -16,6 +16,7 @@ namespace ChatGPT_Model
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int ID { get; set; }
         public DateTime? Time { get; set; } = DateTime.Now;
+        public int Type { get; set; }
         public string UserMessage { get; set; }
         public string AIMessage { get; set; }
         public string Openid { get; set; }

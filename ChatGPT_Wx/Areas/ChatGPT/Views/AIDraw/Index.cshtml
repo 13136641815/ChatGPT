@@ -268,7 +268,7 @@
                     <van-stepper v-model="Speak.n" integer min="1" max="10"></van-stepper>
                 </template>
             </van-cell>
-            
+
         </van-popup>
     </div>
 </body>
@@ -287,7 +287,7 @@
             UserInfo: {},
             Speak: {
                 show: false,
-                n:1,
+                n: 1,
             },
             SendButVisible: false,//文本框有文字后展示发送按钮
             text: '',
@@ -313,8 +313,8 @@
             setup: {},
             Notice: [],
             /////////////////////////////
-            apiUrl: '',
             ChatLog: {
+                Type: 3,
                 UserMessage: '',
                 AIMessage: ''
             }
@@ -351,32 +351,55 @@
                 }
             },
             async Send() {
+                let res = await AxiosPromise('/ChatGPT/AI/GetAPI_Url', 'get', {}, true);
                 if (!this.text) {
                     vant.Notify({ type: 'warning', message: '内容不得为空' });
                     return;
                 }
+                let msg = document.getElementById('scroll'); // 获取对象
+                this.messages.push({
+                    role: 'user',
+                    content: this.text
+                });
+                setTimeout(() => {
+                    SmoothVerticalScrolling(msg, 500, "center");
+                }, 200);
                 //先校验权限是否允许发送
                 let formData = new FormData();
                 formData.append('Text', this.text);
                 try {
-                    await AxiosPromise('/ChatGPT/AI/Check', 'post', formData, true);
-                    let msg = document.getElementById('scroll'); // 获取对象
-                    this.messages.push({
-                        role: 'user',
-                        content: this.text
+                    let DrawRes = await AxiosPromise(res.ApiUrl + '/api/AIDraw/DrawImg', 'post', {
+                        prompt: this.text,
+                        n: this.Speak.n
                     });
+                    let Imglist = [];
+                    DrawRes.forEach(item => {
+                        Imglist.push(item.url);
+                    });
+                    this.ChatLog.UserMessage = this.text;
+                    this.ChatLog.AIMessage = JSON.stringify(DrawRes);
+                    AxiosAsync('/ChatGPT/ChatLog/AddDraw', 'post', this.ChatLog, true).then(res => { }).catch(err => { });
                     //发送消息
                     this.text = '';
                     //模拟收到数据
                     this.messages.push({
                         role: 'assistant',
-                        content: ['https://img01.yzcdn.cn/vant/cat.jpeg', 'https://img01.yzcdn.cn/vant/cat.jpeg', 'https://img01.yzcdn.cn/vant/cat.jpeg']
+                        content: Imglist
                     });
                     setTimeout(() => {
                         SmoothVerticalScrolling(msg, 500, "center");
                     }, 200);
                 } catch (err) {
-
+                    vant.Dialog.confirm({
+                        title: '异常',
+                        message: err,
+                        confirmButtonText: '重试',
+                        showCancelButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    }).catch(() => {
+                        // on cancel
+                    });
                 }
             },
         },

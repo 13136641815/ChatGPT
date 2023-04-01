@@ -1,0 +1,450 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <!-- Element CSS -->
+    <link rel="stylesheet" href="/lib/Element/css/index.css">
+    <!-- 全局通用样式 -->
+    <link rel="stylesheet" href="/lib/css/style.css" />
+    <title></title>
+    <style>
+        .el-upload--picture-card img {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <el-container>
+            <el-header height="40">
+                <div class="SelectDiv">
+                    <div class="InputContainer">
+                        <el-input v-model="model.Name" placeholder="应用名称" clearable></el-input>
+                    </div>
+                    <div class="SelectContainerLager">
+                        <el-select v-model="model.Type" placeholder="应用类型" style="width:100%;" clearable>
+                            <el-option :label="item.ItemValue" :value="item.ItemValue" v-for="(item,index) in DiyList" :key="index"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="ButtonContainer">
+                        <el-button type="primary" icon="el-icon-search" @@click="Select">搜索</el-button>
+                    </div>
+                    <div class="ButtonContainer">
+                        <el-button type="primary" icon="el-icon-edit" @@click="Create">添加</el-button>
+                    </div>
+                </div>
+            </el-header>
+            <el-main>
+                <el-table :data="tableData"
+                          size="mini"
+                          border
+                          max-height="700"
+                          row-key="ID"
+                          style="width: 100%;min-height:650px;">
+                    <el-table-column prop="ID"
+                                     label="ID"
+                                     width="50"
+                                     align="center">
+                    </el-table-column>
+                    <el-table-column prop="Stamp"
+                                     label="添加时间"
+                                     width="200">
+                    </el-table-column>
+                    <el-table-column prop="Name"
+                                     label="机器人名称">
+                    </el-table-column>
+                    <el-table-column prop="HeardImg"
+                                     label="应用图标"
+                                     width="150">
+                        <template slot-scope="scope">
+                            <el-avatar :src="scope.row.Img"></el-avatar>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="Sort"
+                                     label="应用分类"
+                                     align="center"
+                                     width="120">
+                    </el-table-column>
+                    <el-table-column label="状态"
+                                     align="center"
+                                     width="70">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.State==1?'success':'danger'">{{scope.row.State==1?'启用':'停用'}}</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="Sort"
+                                     label="排序"
+                                     width="50">
+                    </el-table-column>
+                    <el-table-column fixed="right"
+                                     label="操作"
+                                     width="150">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @@click="Edit(scope.row)">编辑</el-button>
+                            <el-popconfirm title="确定提交删除么？" @@confirm="Delete(scope.row.ID)" style="margin-left:10px;">
+                                <el-button type="text" size="small" slot="reference">删除</el-button>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-main>
+            <el-footer>
+                <el-pagination @@size-change="handleSizeChange"
+                               @@current-change="handleCurrentChange"
+                               :current-page="PageParams.PageNum"
+                               :page-sizes="PageParams.PageSizeList"
+                               :page-size="PageParams.PageSize"
+                               layout="total, sizes, prev, pager, next, jumper"
+                               :total="PageParams.Total"
+                               style="width:99%;">
+                </el-pagination>
+            </el-footer>
+            <el-dialog :title="Dialog.Title" :visible.sync="Dialog.Show" top="10px">
+                <el-form ref="SubForm" :model="Form" :label-width="labelwidth" :rules="Rule">
+                    <el-form-item label="应用名称" prop="Name">
+                        <el-input v-model="Form.Name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="应用类型" prop="Type">
+                        <el-select v-model="Form.Type" placeholder="应用类型" style="width:100%;" clearable>
+                            <el-option :label="item.ItemValue" :value="item.ItemValue" v-for="(item,index) in DiyList" :key="index"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="状态">
+                        <el-radio v-model="Form.State" :label="1">启用</el-radio>
+                        <el-radio v-model="Form.State" :label="0">停用</el-radio>
+                    </el-form-item>
+                    <el-form-item label="应用图标" prop="HeardImg">
+                        <el-upload action="/ChatGPT/Bot/UploedImg"
+                                   list-type="picture-card"
+                                   :show-file-list="false"
+                                   :on-preview="handlePictureCardPreview"
+                                   accept=".jpg,.png"
+                                   :on-exceed="handleExceed"
+                                   :before-upload="beforeupload"
+                                   :on-success="TopicSuccess"
+                                   :file-list="imagesfileList">
+                            <img v-if="Form.HeardImg" :src="Form.HeardImg" class="avatar">
+                            <i v-else class="el-icon-plus" style="color:#fff;"></i>
+                        </el-upload>
+                    </el-form-item>
+                    <el-form-item label="应用说明">
+                        <el-input v-model="Form.Explain" type="textarea"
+                                  :rows="4"></el-input>
+                    </el-form-item>
+                    <el-form-item label="应用调教">
+                        <el-input v-model="Form.Guide" type="textarea"
+                                  :rows="8"></el-input>
+                    </el-form-item>
+                    <el-form-item label="示例">
+                        <el-button type="primary" icon="el-icon-circle-plus-outline" circle @@click="AddExplain"></el-button>
+                        <div v-for="(item,index) in Form.Examples" :key="index" style="margin-top:5px;">
+                            <el-input v-model="item.Text" style="width:70%"></el-input>
+                            <el-button icon="el-icon-delete" circle @@click="DelExplain(index)" style="margin-left:5px;"></el-button>
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="排序" prop="Sort">
+                        <el-input-number v-model="Form.Sort" :min="1" :max="500" label="排序"></el-input-number>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="SubForm('SubForm')">保存</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+        </el-container>
+    </div>
+    <script src="/lib/Vue/vue.js"></script>
+    <script src="/lib/Element/js/index.js"></script>
+    <script src="/lib/axios/axios.js"></script>
+    <script src="/lib/Scripts/admin.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    tableData: [],
+                    PageParams: {
+                        PageSizeList: window.PageSizeList,
+                        PageNum: 1,
+                        PageSize: 10,
+                        Total: 0
+                    },
+                    model: {
+                        Name: '',
+                        Type: ''
+                    },
+                    DiyList: [],
+                    Dialog: {
+                        Title: '',
+                        Show: false,
+                    },
+                    labelwidth: '35%',
+                    Form: {
+                        ID: 0,
+                        State: 1,
+                        Type: '',
+                        Name: '',
+                        HeardImg: '',
+                        Explain: '',
+                        Guide: '',
+                        Examples: [{
+                            Text: ''
+                        }],
+                        Sort: 1
+                    },
+                    imagesfileList: [],
+                    thisRow: {},
+                    Rule: {
+                        Type: [
+                            { required: true, message: '请选择应用分类', trigger: 'blur' }
+                        ],
+                        Name: [
+                            { required: true, message: '请输入应用名称', trigger: 'blur' }
+                        ],
+                        HeardImg: [
+                            { required: true, message: '请上传应用图标', trigger: 'blur' }
+                        ]
+                    }
+                };
+            },
+            methods: {
+                AddExplain() {
+                    this.Form.Examples.push({ Text: '' });
+                },
+                DelExplain(index) {
+                    this.Form.Examples.splice(index, 1);
+                },
+                up(a, b) {
+                    return a.Sort - b.Sort
+                },
+                Select() {
+                    this.PageParams.pageNum = 1;
+                    this.GetListPage();
+                },
+                Create() {
+                    const MOD = this.$refs['SubForm'];
+                    if (MOD) {
+                        MOD.resetFields()
+                    }
+                    this.Dialog.Title = '添加';
+                    this.Dialog.Show = true;
+                },
+                Edit(row) {
+                    this.Dialog.Show = true;
+                    this.$nextTick(() => {
+                        const MOD = this.$refs['SubForm'];
+                        if (MOD) {
+                            MOD.resetFields()
+                        }
+                        this.thisRow = row;
+                        this.Form = JSON.parse(JSON.stringify(row));
+                        this.Dialog.Title = '修改';
+                    });
+                },
+                SubForm(formName) {
+                    const that = this;
+                    this.$refs[formName].validate(function (valid) {
+                        if (valid) {
+                            if (that.Dialog.Title == '添加') {
+                                that.Add();
+                            } else {
+                                that.Update();
+                            }
+                        }
+                    })
+                },
+                Add() {
+                    const that = this;
+                    console.log(that.Form);
+                    axios({
+                        method: 'post',
+                        url: '/ChatGPT/ChatApp/Add',
+                        data: that.Form,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.tableData.push(res);
+                        that.$message({
+                            message: '添加成功！',
+                            type: 'success'
+                        });
+                        that.tableData.sort(that.up);
+                        that.Dialog.Show = false;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                Update() {
+                    const that = this;
+                    axios({
+                        method: 'put',
+                        url: '/ChatGPT/ChatApp/Update',
+                        data: that.Form,
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.thisRow.State = that.Form.State;
+                        that.thisRow.Type = that.Form.Type;
+                        that.thisRow.Name = that.Form.Name;
+                        that.thisRow.HeardImg = that.Form.HeardImg;
+                        that.thisRow.Explain = that.Form.Explain;
+                        that.thisRow.Guide = that.Form.Guide;
+                        that.thisRow.Examples = that.Form.Examples;
+                        that.thisRow.Sort = that.Form.Sort;
+                        that.$message({
+                            message: '更新成功！',
+                            type: 'success'
+                        });
+                        that.tableData.sort(that.up);
+                        that.Dialog.Show = false;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                Delete(ID) {
+                    const that = this;
+                    axios({
+                        method: 'Delete',
+                        url: '/ChatGPT/ChatApp/Delete',
+                        params: {
+                            ID: ID
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.$message({
+                            message: '删除成功！',
+                            type: 'success'
+                        });
+                        that.tableData.splice(that.tableData.findIndex(item => item.ID === ID), 1);
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                },
+                GetListPage() {
+                    const that = this;
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/ChatApp/GetListPage',
+                        params: {
+                            Name: that.model.Name,
+                            Type: that.model.Type,
+                            PageNum: that.PageParams.PageNum,
+                            PageSize: that.PageParams.PageSize,
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        that.tableData = res.DATA;
+                        that.PageParams.Total = res.DATACOUNT;
+                    }).catch(function (err) {
+                        that.$message.error(err);
+                    });
+                    this.tableData;
+                },
+                handleSizeChange(pageSize) {
+                    //当前页数
+                    this.PageParams.PageNum = 1;
+                    //当前页最大值
+                    this.PageParams.PageSize = pageSize;
+                    this.GetListPage();
+                },
+                handleCurrentChange(pageNum) {
+                    //当前页数
+                    this.PageParams.PageNum = pageNum;
+                    this.GetListPage();
+                },
+                CheckTime(Time) {
+                    let DataTime = new Date(Time);
+                    let TimeNow = new Date();
+                    if (TimeNow > DataTime) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
+
+                //文件上传后查看大图
+                handlePictureCardPreview(file) {
+                    this.dialogImageUrl = file.url;
+                    this.dialogVisible = true;
+                },
+                //上传文件超过数量函数
+                handleExceed(files, fileList) {
+                    //this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+                },
+                //上传前校验大小和类型函数
+                beforeupload(file) {
+                    this.Form.Img = '';
+
+                    let FileJson = file.name.split('.');
+                    if (FileJson.length > 2) {
+                        //文件非法
+                        this.$message.warning(`文件非法，请检查文件名称是否包含多个扩展名`);
+                        return false;
+                    } else {
+                        if (FileJson[1] === "png" || FileJson[1] === "PNG" || FileJson[1] === "jpg" || FileJson[1] === "JPG") {
+                            const filesize = file.size / 1024 / 1024;
+                            if (filesize > 15) {
+                                this.$message.warning(`文件最多支持大小15M，当前文件大小${filesize}`);
+                                return false;
+                            }
+                            return true;
+                        } else {
+                            this.$message.warning(`当前限制选择jpg、png文件，本次选择了 ${FileJson[1]} 文件`);
+                            return false;
+                        }
+                    }
+                },
+                //上传成功回调
+                TopicSuccess(response, file, fileList) {
+                    if (response.CODE == 200) {
+                        this.Form.HeardImg = response.DATA;
+                    } else {
+                        this.imagesfileList.splice(0, this.imagesfileList.length);
+                        this.$message.warning(`上传失败！${response.MSG}`);
+                    }
+                },
+                //加载字典
+                GetDiyList() {
+                    const that = this;
+                    axios({
+                        method: 'get',
+                        url: '/ChatGPT/ChatApp/GetItme',
+                        params: {
+                            Dcode: '20001'
+                        },
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        },
+                    }).then(function (res) {
+                        res.forEach(item => {
+                            that.DiyList.push(item);
+                        })
+                    }).catch(function (err) {
+                        this.$message.error(err);
+                    });
+
+                }
+            },
+            created: function () {
+                
+            },
+            mounted: function () {
+                this.GetDiyList();
+                this.GetListPage();
+            }
+        })
+    </script>
+</body>
+</html>

@@ -22,6 +22,15 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             return View();
         }
         [HttpGet]
+        public async Task<JsonResult> GetUserDrawTop10()
+        {
+            Mapper_GPT_ChatLog app = new Mapper_GPT_ChatLog();
+            return Json(new Result()
+            {
+                DATA = await app.GetTop10()
+            });
+        }
+        [HttpGet]
         public async Task<JsonResult> Check()
         {
             GetCookiesController CookiesApp = new GetCookiesController(_httpContextAccessor);

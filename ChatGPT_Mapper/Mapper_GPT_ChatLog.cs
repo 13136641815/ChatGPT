@@ -26,6 +26,13 @@ namespace ChatGPT_Mapper
                 .OrderBy(it => it.Time, OrderByType.Desc)
                 .ToPageListAsync(Page.PageNum, Page.PageSize, DataCount);
         }
+        public async Task<List<GPT_ChatLog>> GetTop10()
+        {
+            return await SugarConfig.CretClient().Queryable<GPT_ChatLog>()
+                .Where(it => it.Type == 3)
+                .Take(10)
+                .ToListAsync();
+        }
         /// <summary>
         /// 新增
         /// </summary>

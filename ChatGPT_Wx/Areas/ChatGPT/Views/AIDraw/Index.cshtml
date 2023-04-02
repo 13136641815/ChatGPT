@@ -142,7 +142,7 @@
         }
 
         .van-image--round img {
-            background-color: #1989fa;
+            background-color: #FFFFFF;
         }
 
         .van-cell__value--alone {
@@ -172,13 +172,29 @@
             line-height: 40px;
         }
     </style>
+    <style>
+        .my-swipe .van-swipe-item {
+            color: #fff;
+            font-size: 20px;
+            line-height: 150px;
+            text-align: center;
+            background-color: #FFFFFF;
+            width: 100%;
+            height: 150px;
+        }
+    </style>
 </head>
 
 <body>
     <div id="app" v-cloak>
         <div id="scroll" style="width: 100%; float: left; max-height: 100%;" class="scroll-container">
             <van-divider style="margin-top: 10px; margin-bottom: 5px; font-size: 10px; color: #ceccca;">本月剩余体验次数：{{Times}}</van-divider>
-            
+            <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
+                <van-swipe-item v-for="(image, index) in UserImgList" :key="index">
+                    <van-image height="100%" fit="contain"
+                               :src="image.url" ></van-image>
+                </van-swipe-item>
+            </van-swipe>
             <div class="div_AI">
                 <div class="AI_Img">
                     <van-image round
@@ -306,7 +322,7 @@
                 Name: '通用模型',
                 ID: 0,
                 Greetings: '您好，我是人工智能Openai绘画模型，请描述您想生成的图片！',
-                Img: '/ChatGPT_Wx/Img/ChatGPT.png'
+                Img: '/ChatGPT_Wx/Img/Draw.png'
             },
             scroll: null,
             setup: {},
@@ -316,7 +332,8 @@
                 Type: 3,
                 UserMessage: '',
                 AIMessage: ''
-            }
+            },
+            UserImgList: []
             ////////////////////////////
         },
         watch: {
@@ -446,6 +463,14 @@
                     // on close
                 });
             }
+            AxiosAsync('/ChatGPT/AIDraw/GetUserDrawTop10', 'get', this.ChatLog, true).then(res => {
+                res.forEach(item => {
+                    JSON.parse(item.AIMessage).forEach(IItem => {
+                        this.UserImgList.push(IItem);
+                    })
+                })
+
+            }).catch(err => { });
             this.UserInfo = await window.APP_GetUserInfoAsync();
             if (this.UserInfo.VIP_Type != 1) {
                 this.Times = 0;

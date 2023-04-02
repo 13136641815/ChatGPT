@@ -74,7 +74,8 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             foreach (var item in ImgList)
             {
                 FormFile file = DownloadImage(item.url);
-                string fullName = DateTime.Now.ToString("yyyyMMddHHmmssfff") + Guid.NewGuid().ToString();
+                string Name = DateTime.Now.ToString("yyyyMMddHHmmssfff") + Guid.NewGuid().ToString();
+                string fullName = Name;
                 fullName = filePath + fullName + ".jpeg";
                 using (FileStream stream = new FileStream(fullName, FileMode.Create, FileAccess.Write))
                 {
@@ -83,7 +84,7 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
                 }
                 DataImgList.Add(new ImgList
                 {
-                    url = "/ChatGPT/UploadImages/" + fullName + ".jpeg"
+                    url = "/ChatGPT/UploadImages/" + Name + ".jpeg"
                 });
             }
             model.AIMessage = JsonConvert.SerializeObject(DataImgList);

@@ -10,27 +10,73 @@
     <link rel="stylesheet" href="/lib/vant/css/index.css" />
     <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
     <title></title>
+    <style>
+        body {
+            background-color: #f5f6f7;
+        }
+    </style>
 </head>
 <body>
     <div id="app" v-cloak>
-
+        <van-nav-bar :title="APP.Name"
+                     left-text="返回"
+                     left-arrow
+                     @@click-left="onClickLeft"></van-nav-bar>
+        <div style="margin: 20px 0; text-align: center;">
+            <van-image width="100"
+                       height="100"
+                       :src="APP.HeardImg"></van-image>
+            <p style="color: #606266;font-size:16px;">{{APP.Explain}}</p>
+            <van-tabs type="card" @@click="ExamplesClick">
+                <van-tab :title="'示例'+ (index+1)" v-for="(item,index) in APP.Examples" :key="index"></van-tab>
+            </van-tabs>
+            <van-field style="margin:3%;width:94%;"
+                       v-model="message"
+                       rows="4"
+                       autosize
+                       type="textarea"
+                       maxlength="200"
+                       placeholder="请输入内容"
+                       size="large"
+                       show-word-limit></van-field>
+            <van-button type="info" block>生成</van-button>
+            <div style="margin-top: 20px; width: 100%; background-color: #ffffff; text-align: left; padding: 15px; font-size: 18px; color: rgb(96, 98, 102); white-space: pre-wrap; line-height: 28px; font-size: 16px; ">{{AIRes}}</div>
+        </div>
     </div>
     <script src="/ChatGPT_Wx/Global.js"></script>
+    <script src="/ChatGPT_Wx/Script/script.js"></script>
     <script>
         // 在 #app 标签下渲染一个按钮组件
         new Vue({
             el: '#app',
             data: {
-
+                APP: {},
+                message: '',
+                AIRes: '1'
             },
             methods: {
-
+                onClickLeft() {
+                    window.history.go(-1);
+                },
+                async GetApp(ID) {
+                    return await AxiosPromise('/ChatGPT/AIApp/GetApp', 'get', {
+                        ID: ID
+                    }, false);
+                },
+                ExamplesClick(Index) {
+                    this.message = this.APP.Examples[Index].Text;
+                }
             },
             created() {
 
             },
-            mounted() {
-
+            async mounted() {
+                var parms = getURLParams();
+                let ID = 0;
+                if (parms.ID) {
+                    ID = parms.ID;
+                }
+                this.APP = await this.GetApp(ID);
             }
         })
     </script>

@@ -26,34 +26,56 @@
             padding-top: 1%;
             float: left;
             text-align: center;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)
         }
     </style>
 </head>
 <body>
     <div id="app" v-cloak>
-        <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }">
-            以下情景机器人为SVIP会员专享
-        </van-divider>
-        <div style="width: 100%; float: left; padding-left: 2%;padding-top:2%;">
-            <div class="bot" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)" v-show="Item.show">
-                <div style="width: 100%; background-color: #ffffff; padding-bottom: 10%;">
-                    <van-image round
-                               width="50%"
-                               height="50%"
-                               style="padding: 10%; padding-bottom: 2%;"
-                               :src="Item.Img"></van-image>
-                    <p style="text-align: center; margin: 0px; color: #606266;">{{Item.Name}}</p>
+        @*<van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }">
+                以下情景机器人为SVIP会员专享
+            </van-divider>*@
+        <van-tabs v-model="active" color="#1989fa">
+            <van-tab title="情景模式">
+                <div style="width: 100%; float: left; padding-left: 2%;padding-top:2%;">
+                    <div class="bot" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)" v-show="Item.show">
+                        <div style="width: 100%; background-color: #ffffff; padding-bottom: 10%;">
+                            <van-image round
+                                       width="50%"
+                                       height="50%"
+                                       style="padding: 10%; padding-bottom: 2%;"
+                                       :src="Item.Img"></van-image>
+                            <p style="text-align: center; margin: 0px; color: #606266;">{{Item.Name}}</p>
+                        </div>
+                    </div>
+                    @*<div style="width:25%;float:left;" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)">
+                            <van-image round
+                                       width="70%"
+                                       height="70%"
+                                       style="padding: 15%; padding-bottom: 2%;"
+                                       :src="Item.Img"></van-image>
+                            <p style="text-align: center; margin: 0px; color: #606266;">{{Item.Name}}</p>
+                        </div>*@
                 </div>
-            </div>
-            @*<div style="width:25%;float:left;" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)">
-                    <van-image round
-                               width="70%"
-                               height="70%"
-                               style="padding: 15%; padding-bottom: 2%;"
-                               :src="Item.Img"></van-image>
-                    <p style="text-align: center; margin: 0px; color: #606266;">{{Item.Name}}</p>
-                </div>*@
-        </div>
+            </van-tab>
+            <van-tab title="AI应用">
+                <div v-for="(item,index) in AppList" :key="index" style="width: 100%; float: left; padding-left: 2%; padding-top: 2%;">
+                    <div class="van-cell-group__title van-cell-group__title--inset">
+                        {{item.TypeName}}
+                    </div>
+                    <div class="bot" v-for="(IItem,IIndex) in item.ItemList" :key="IIndex" v-show="IItem.show">
+                        <div style="width: 100%; background-color: #ffffff; padding-bottom: 10%;">
+                            <van-image width="50%"
+                                       height="50%"
+                                       style="padding: 10%; padding-bottom: 2%;"
+                                       :src="IItem.HeardImg"></van-image>
+                            <p style="text-align: center; margin: 0px; color: #606266;">{{IItem.Name}}</p>
+                        </div>
+                    </div>
+                </div>
+            </van-tab>
+        </van-tabs>
+
         <div style="height:50px;float:left;width:100%"></div>
     </div>
     <script src="/ChatGPT_Wx/Global.js"></script>
@@ -62,8 +84,10 @@
         new Vue({
             el: '#app',
             data: {
+                active: 1,
                 list: [],
-                UserInfo: {}
+                UserInfo: {},
+                AppList: []
             },
             methods: {
                 Jump(BotID) {
@@ -83,6 +107,25 @@
                         });
                     } else {
                         parent.HomeVue.ChangeAI(BotID);
+                    }
+                },
+                JumpApp() {
+                    //校验是否SVIP
+                    //const res = await window.APP_GetUserInfoAsync();
+                    if (this.UserInfo.VIP_Type != 1 && this.UserInfo.Free_Second == 0) {
+                        //会员充值提示
+                        vant.Dialog.confirm({
+                            title: '提示',
+                            message: '此项服务为SVIP会员专用！',
+                            confirmButtonText: '开通SVIP',
+                            cancelButtonText: '取消',
+                        }).then(() => {
+                            parent.window.HomeVue.HomeHref('/ChatGPT/Pay/PayMember');
+                        }).catch(() => {
+                            // on cancel
+                        });
+                    } else {
+                        window.location.href = '/ChatGPT/AIApp/Index';
                     }
                 },
                 GetList() {
@@ -106,6 +149,12 @@
                     }).catch(err => {
 
                     })
+                },
+                async GetDiyList() {
+                    return await AxiosPromise('/ChatGPT/AIApp/GetItme', 'get', { Dcode: '20001' });
+                },
+                async GetApp() {
+                    return await AxiosPromise('/ChatGPT/AIApp/GetAIAppAll', 'get', {});
                 }
             },
             created() {
@@ -114,6 +163,28 @@
             async mounted() {
                 this.GetList();
                 this.UserInfo = await window.APP_GetUserInfoAsync();
+                const DiyList = await this.GetDiyList();//获取字典
+                const AppList = await this.GetApp();//获取应用列表
+                DiyList.forEach(item => {
+                    let Json = {
+                        TypeName: item.ItemValue,
+                        ItemList: []
+                    }
+                    let queryData = AppList.filter(function (_data) {
+                        return _data.Type == item.ItemValue;
+                    });
+                    queryData.forEach(IItem => {
+                        IItem.show = false;
+                        Json.ItemList.push(IItem);
+                        let imgObj = new Image(); // 创建图片对象
+                        imgObj.src = IItem.HeardImg;
+                        imgObj.addEventListener('load', function () { // 这里没有考虑error，实际上要考虑
+                            IItem.show = true;
+                        }, false);
+                    });
+                    this.AppList.push(Json);
+                });
+                console.log();
             }
         })
     </script>

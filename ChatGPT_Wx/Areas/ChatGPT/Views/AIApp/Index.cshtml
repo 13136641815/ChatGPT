@@ -14,37 +14,55 @@
         body {
             background-color: #f5f6f7;
         }
+
+        .van-tabs__nav--card .van-tab.van-tab--active {
+            background-color: #1989fa;
+        }
+
+        .van-tabs__nav--card {
+            border: 1px solid #1989fa;
+        }
+
+            .van-tabs__nav--card .van-tab {
+                color: #1989fa;
+                border-right: 1px solid #1989fa;
+            }
     </style>
 </head>
 <body>
     <div id="app" v-cloak>
-        <van-nav-bar :title="APP.Name"
-                     left-text="返回"
-                     left-arrow
-                     @@click-left="onClickLeft"></van-nav-bar>
-        <div style="margin: 20px 0; text-align: center;">
-            <van-image width="100"
-                       height="100"
-                       :src="APP.HeardImg"></van-image>
-            <p style="color: #606266;font-size:16px;">{{APP.Explain}}</p>
-            <van-tabs type="card" @@click="ExamplesClick">
-                <van-tab :title="'示例'+ (index+1)" v-for="(item,index) in APP.Examples" :key="index"></van-tab>
-            </van-tabs>
-            <van-field style="margin:3%;width:94%;"
-                       v-model="message"
-                       rows="4"
-                       autosize
-                       type="textarea"
-                       maxlength="200"
-                       placeholder="请输入内容"
-                       size="large"
-                       show-word-limit></van-field>
-            <van-button type="info" block>生成</van-button>
-            <div style="margin-top: 20px; width: 100%; background-color: #ffffff; text-align: left; padding: 15px; font-size: 18px; color: rgb(96, 98, 102); white-space: pre-wrap; line-height: 28px; font-size: 16px; ">{{AIRes}}</div>
+        <div id="scroll" style="width: 100%; float: left; max-height: 100%;" class="scroll-container">
+            <van-nav-bar :title="APP.Name"
+                         left-text="返回"
+                         left-arrow
+                         @@click-left="onClickLeft"></van-nav-bar>
+            <div style="margin: 20px 0; text-align: center;">
+                <van-image width="100"
+                           height="100"
+                           :src="APP.HeardImg"></van-image>
+                <p style="color: #606266;font-size:16px;">{{APP.Explain}}</p>
+                <van-tabs type="card" @@click="ExamplesClick">
+                    <van-tab :title="'示例'+ (index+1)" v-for="(item,index) in APP.Examples" :key="index"></van-tab>
+                </van-tabs>
+                <van-field style="margin:3%;width:94%;"
+                           v-model="message"
+                           rows="4"
+                           autosize
+                           type="textarea"
+                           maxlength="200"
+                           placeholder="请输入内容"
+                           size="large"
+                           show-word-limit></van-field>
+                <van-button type="info" block @@click="GenerateText">生成</van-button>
+                <div style="margin-top: 20px; width: 96%; background-color: #ffffff; text-align: left; padding: 2%; font-size: 18px; color: rgb(96, 98, 102); white-space: pre-wrap; line-height: 28px; font-size: 16px;" v-show="AIRes">{{AIRes}}</div>
+                <van-button icon="description" type="primary" @@click="Copy" v-show="CopyBtnShow" size="small" style="margin-top:20px;">复制</van-button>
+            </div>
+            <div style="height:50px;"></div>
         </div>
     </div>
     <script src="/ChatGPT_Wx/Global.js"></script>
     <script src="/ChatGPT_Wx/Script/script.js"></script>
+    <script src="/lib/signalr/signalr.min.js"></script>
     <script>
         // 在 #app 标签下渲染一个按钮组件
         new Vue({
@@ -52,9 +70,31 @@
             data: {
                 APP: {},
                 message: '',
-                AIRes: '1'
+                AIRes: '',
+                CopyBtnShow: false,
+                ChatLog: {
+                    Type: 2,
+                    UserMessage: '',
+                    AIMessage: ''
+                },
+                scroll: null
             },
             methods: {
+                async GenerateText() {
+                    this.CopyBtnShow = false;
+                    this.AIRes = '生成中...';
+                    this.ChatLog.UserMessage = this.message;
+                    this.Signalr(this.message);
+                },
+                Copy() {
+                    const copyToClipboard = str => {
+                        if (navigator && navigator.clipboard && navigator.clipboard.writeText)
+                            return navigator.clipboard.writeText(str);
+                        return Promise.reject('The Clipboard API is not available.');
+                    };
+                    copyToClipboard(this.AIRes);
+                    vant.Notify({ type: 'success', message: '已复制' });
+                },
                 onClickLeft() {
                     window.history.go(-1);
                 },
@@ -65,20 +105,125 @@
                 },
                 ExamplesClick(Index) {
                     this.message = this.APP.Examples[Index].Text;
-                }
+                },
+                Signalr(sendMsg) {
+                    this.connection.invoke("SendAppMessage", this.APP.ID, sendMsg).catch(function (err) {
+                        console.error(err);
+                        vant.Dialog.confirm({
+                            title: '异常',
+                            message: '链接异常断开',
+                            confirmButtonText: '重连',
+                            showCancelButton: false
+                        }).then(() => {
+                            window.location.reload();
+                        }).catch(() => {
+                            // on cancel
+                        });
+                    });
+                },
+                async contion() {
+                    vant.Toast.loading({
+                        message: 'AI服务链接中...',
+                        forbidClick: true,
+                        duration: 0,
+                        forbidClick: true
+                    });
+                    //获取API地址，然后创建连接
+                    try {
+                        let res = await AxiosPromise('/ChatGPT/AI/GetAPI_Url', 'get', {}, true);
+                        const that = this;
+                        that.setup = res;
+                        that.Notice = res.Notice.split('|')
+                        that.apiUrl = res.ApiUrl;
+                        that.connection = new signalR.HubConnectionBuilder().withUrl(res.ApiUrl + '/chatHub3_5').build();
+                        that.connection.on("ReceiveMessage", function (botID, message) {
+                            if (that.AIRes === '生成中...') {
+                                that.AIRes = message.replace(/[\r\n]/g, "");
+                                console.log(that.NowContext.content);
+                            } else {
+                                that.AIRes = that.AIRes += message;
+                            }
+                            setTimeout(() => {
+                                SmoothVerticalScrolling(that.scroll, 500, "center");
+                            }, 200);
+                        });
+                        that.connection.on("EndMessage", function (botID, message) {
+                            try {
+                                that.ChatLog.AIMessage = that.AIRes;
+                                AxiosAsync('/ChatGPT/ChatLog/Add', 'post', that.ChatLog, true).then(res => { }).catch(err => { });
+                            } catch (e) {
+
+                            }
+                            that.CopyBtnShow = true;
+                            console.log("对话结束：", message);
+                            setTimeout(() => {
+                                SmoothVerticalScrolling(that.scroll, 500, "center");
+                            }, 200);
+                        });
+                        that.connection.on("ErrMessage", function (botID, message) {
+                            vant.Dialog.confirm({
+                                title: '异常',
+                                message: '老外服务器不给力：' + message,
+                                confirmButtonText: '再试试',
+                                cancelButtonText: '忍了',
+                            }).then(() => {
+                                // on confirm
+                                that.GenerateText();
+                            }).catch(() => {
+                                // on cancel
+                                that.message = '';
+                                that.AIRes = '';
+                            });
+                            setTimeout(() => {
+                                SmoothVerticalScrolling(that.scroll, 500, "center");
+                            }, 200);
+                        });
+                        that.connection.start().then(function () {
+                            //连接成功
+                            vant.Toast.clear();
+                        }).catch(function (err) {
+                            return console.error(err.toString());
+                        });
+                    } catch (err) {
+                        vant.Toast.fail(err);
+                    }
+                },
             },
             created() {
 
             },
             async mounted() {
+                this.scroll = document.getElementById('scroll'); // 获取对象
                 var parms = getURLParams();
                 let ID = 0;
                 if (parms.ID) {
                     ID = parms.ID;
+                    this.APP = await this.GetApp(ID);
+                    this.ExamplesClick(0);
+                    await this.contion();
+                } else {
+                    vant.Toast.fail({
+                        message: '参数异常',
+                        duration: 0
+                    });
                 }
-                this.APP = await this.GetApp(ID);
+
             }
         })
+    </script>
+    <script>
+        function SmoothVerticalScrolling(e, time, where) {
+            var eTop = where == "top" ? (e.getBoundingClientRect().top < 2000 ? e.getBoundingClientRect().top - 1000 : e.getBoundingClientRect().top) : (e.getBoundingClientRect().bottom > 2000 ? e.getBoundingClientRect().bottom + 1000 : e.getBoundingClientRect().bottom);
+            var eAmt = eTop / 100;
+            var curTime = 0;
+            while (curTime <= time) {
+                window.setTimeout(SVS_B, curTime, eAmt, where);
+                curTime += time / 100;
+            }
+        }
+        function SVS_B(eAmt, where) {
+            window.scrollBy(0, eAmt);
+        }
     </script>
 </body>
 </html>

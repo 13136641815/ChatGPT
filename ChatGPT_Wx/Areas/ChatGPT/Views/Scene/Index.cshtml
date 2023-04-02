@@ -63,7 +63,7 @@
                     <div class="van-cell-group__title van-cell-group__title--inset">
                         {{item.TypeName}}
                     </div>
-                    <div class="bot" v-for="(IItem,IIndex) in item.ItemList" :key="IIndex" v-show="IItem.show">
+                    <div class="bot" v-for="(IItem,IIndex) in item.ItemList" :key="IIndex" v-show="IItem.show" @@click="Go(IItem.ID)">
                         <div style="width: 100%; background-color: #ffffff; padding-bottom: 10%;">
                             <van-image width="50%"
                                        height="50%"
@@ -90,6 +90,10 @@
                 AppList: []
             },
             methods: {
+                Go(ID) {
+                    console.log(ID);
+                    window.location.href = '/ChatGPT/AIApp?ID=' + ID;
+                },
                 Jump(BotID) {
                     //校验是否SVIP
                     //const res = await window.APP_GetUserInfoAsync();

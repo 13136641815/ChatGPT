@@ -33,6 +33,14 @@ namespace ChatGPT_Mapper
                 .Take(10)
                 .ToListAsync();
         }
+        public async Task<List<GPT_ChatLog>> GetQList() 
+        {
+            return await SugarConfig.CretClient().Queryable<GPT_ChatLog>()
+                    .Where(it => it.Type == 1)
+                    .Take(3)
+                    .OrderBy(it => SqlFunc.GetRandom())
+                    .ToListAsync();
+        }
         /// <summary>
         /// 新增
         /// </summary>

@@ -184,14 +184,14 @@
         }
 
         .swipeSpan {
-            width: 48%;
+            width: 44%;
             float: left;
             color: #606266;
             font-size: 14px;
             height: 100%;
             background-color: #eaf4fb;
             border-radius: 10px;
-            margin-left: 2%;
+            margin-left: 4%;
             padding-left: 2%;
         }
 
@@ -200,6 +200,9 @@
                 margin: 5px 0px;
                 line-height: 16px;
             }
+        .van-swipe__indicator {
+            background-color: #0066ff;
+        }
     </style>
 </head>
 
@@ -434,6 +437,7 @@
                 }, 200);
                 //先校验权限是否允许发送
                 try {
+                    vant.Toast('发送成功，请耐心等待图片生成。');
                     let formData = new FormData();
                     formData.append('Text', this.text);
                     await AxiosPromise('/ChatGPT/AI/Check', 'post', formData, true);

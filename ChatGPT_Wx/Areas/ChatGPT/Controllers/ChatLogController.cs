@@ -60,6 +60,15 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
                 CODE = i > 0 ? ResultCode.Success : ResultCode.Empty
             });
         }
+        [HttpGet]
+        public async Task<JsonResult> GetQList() 
+        {
+            Mapper_GPT_ChatLog app = new Mapper_GPT_ChatLog();
+            return Json(new Result()
+            {
+                DATA = await app.GetQList()
+            });
+        }
         [HttpPost]
         public async Task<JsonResult> AddDraw([FromBody] GPT_ChatLog model)
         {

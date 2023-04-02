@@ -26,7 +26,7 @@
         .div_AI {
             margin: 8px;
             float: left;
-            width: 98%;
+            width: 97.5%;
         }
 
         .AI_Img {
@@ -171,6 +171,29 @@
             height: 40px;
             line-height: 40px;
         }
+
+        .Hot {
+            /* 设置元素两端对齐 */
+            width: 100%;
+            /* 设置元素两端对齐 */
+            text-align: justify;
+        }
+
+            .Hot:after {
+                content: "";
+                display: inline-block;
+                overflow: hidden;
+                width: 100%;
+                color: #75777a;
+            }
+
+            .Hot .Spans {
+                width: 100px;
+                /* 设置盒子为行内块 */
+                display: inline-block;
+                /* 设置盒子内元素水平居中 */
+                text-align: center;
+            }
     </style>
 </head>
 
@@ -204,6 +227,15 @@
                     <van-icon name="volume-o" style="margin-left:20px;margin-top:5px;" @@click="read(Bot.Greetings)"></van-icon>
                     <van-icon name="description" style="margin-top: 5px; float: right;" @@click="copy(Bot.Greetings)"></van-icon>
                 </div>
+            </div>
+            <div>
+                <div class="Hot">
+                    <span class="Spans"><span style="color:#fb4646;"><van-icon name="fire"></van-icon></span>热门提问</span>
+                    <span class="Spans" @@click="GetQList">换一批<van-icon name="replay"></van-icon></span>
+                </div>
+                <van-notice-bar color="#1989fa" background="#f4f4f5" style="margin-bottom:8px;" v-for="(item,index) in QList" :key="index" :scrollable="false">
+                    {{item.UserMessage}}
+                </van-notice-bar>
             </div>
             <div v-for="(item,index) in messages" :key="index">
                 <div class="div_Player" v-if="item.role=='user'">
@@ -358,10 +390,16 @@
                 Type: 1,
                 UserMessage: '',
                 AIMessage: ''
-            }
+            },
+            QList: []//随机问题
             ////////////////////////////
         },
         methods: {
+            GetQList() {
+                AxiosAsync('/ChatGPT/ChatLog/GetQList', 'Get', {}).then(res => {
+                    this.QList = res;
+                }).catch(err => { });
+            },
             async GetBot(ID) {
                 return await AxiosPromise('/ChatGPT/AI/GetBot', 'get', {
                     ID: ID
@@ -503,6 +541,7 @@
                         content: this.text
                     });//发送用户的输入
                     this.ChatLog = {
+                        Type: 1,
                         UserMessage: '',
                         AIMessage: ''
                     }
@@ -580,6 +619,7 @@
 
         },
         async mounted() {
+            this.GetQList();
             this.scroll = document.getElementById('scroll'); // 获取对象
             await this.contion();
             var parms = getURLParams();

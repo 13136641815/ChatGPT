@@ -44,6 +44,7 @@ namespace ChatGPT_WebAPI.Controllers
             }
             return new Result()
             {
+                CODE = ResultCode.Empty,
                 MSG = "图片未生成，请重试：" + err
             };
         }

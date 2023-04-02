@@ -35,5 +35,14 @@ namespace ChatGPT_Mapper
         {
             return await SugarConfig.CretClient().Insertable(model).ExecuteReturnIdentityAsync();
         }
+        public async Task<List<GPT_ChatLog>> GetListFromMonth(DateTime firstTime, DateTime LastTime, string Openid)
+        {
+            return await SugarConfig.CretClient().Queryable<GPT_ChatLog>()
+                .Where(it => it.Time >= firstTime && it.Time <= LastTime)
+                   .Where(it => it.Openid == Openid)
+                   .Where(it => it.Type == 3)
+                   .OrderBy(it => it.Time, OrderByType.Desc)
+                   .ToListAsync();
+        }
     }
 }

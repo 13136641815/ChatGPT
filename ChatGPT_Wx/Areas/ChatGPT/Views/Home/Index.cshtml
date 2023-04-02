@@ -153,43 +153,42 @@
                         }
                     }
                     that.route = [];
-                    const list = [
-                        {
-                            url: '/ChatGPT/AI/GPT3_5Voice',
-                            name: 'ChatBot',
-                            icon: 'chat',
-                            transition: 'van-slide-right',
-                            Index: 0,
-                            islode: false,
-                            dot: true,
-                        },
-                        {
-                            url: '/ChatGPT/Scene/Index',
-                            name: '机器人模式',
-                            icon: 'smile',
-                            transition: 'van-slide-right',
-                            Index: 1,
-                            islode: false,
-                            dot: false,
-                        },
-                        {
-                            url: '/ChatGPT/AIDraw/Index',
-                            name: '绘画模型',
-                            icon: 'photo',
-                            transition: 'van-slide-right',
-                            Index: 3,
-                            islode: false,
-                            dot: false,
-                        },
-                        {
-                            url: '/ChatGPT/My/PersonalCnter',
-                            name: '个人中心',
-                            icon: 'manager',
-                            transition: 'van-slide-right',
-                            Index: 4,
-                            islode: false,
-                            dot: false,
-                        }];
+                    const list = [{
+                        url: '/ChatGPT/AI/GPT3_5Voice',
+                        name: 'ChatBot',
+                        icon: 'chat',
+                        transition: 'van-slide-right',
+                        Index: 0,
+                        islode: false,
+                        dot: true,
+                    },
+                    {
+                        url: '/ChatGPT/Scene/Index',
+                        name: '应用情景',
+                        icon: 'gem',
+                        transition: 'van-slide-right',
+                        Index: 1,
+                        islode: false,
+                        dot: false,
+                    },
+                    {
+                        url: '/ChatGPT/AIDraw/Index',
+                        name: '绘画模型',
+                        icon: 'photo',
+                        transition: 'van-slide-right',
+                        Index: 3,
+                        islode: false,
+                        dot: false,
+                    },
+                    {
+                        url: '/ChatGPT/My/PersonalCnter',
+                        name: '个人中心',
+                        icon: 'manager',
+                        transition: 'van-slide-right',
+                        Index: 4,
+                        islode: false,
+                        dot: false,
+                    }];
                     list[that.Index].islode = true;
                     list.forEach((item) => {
                         that.route.push(item);

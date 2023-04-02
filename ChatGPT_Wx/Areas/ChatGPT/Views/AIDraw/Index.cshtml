@@ -177,6 +177,8 @@
 <body>
     <div id="app" v-cloak>
         <div id="scroll" style="width: 100%; float: left; max-height: 100%;" class="scroll-container">
+            <van-divider style="margin-top: 10px; margin-bottom: 5px; font-size: 10px; color: #ceccca;">本月剩余体验次数：{{Times}}</van-divider>
+            
             <div class="div_AI">
                 <div class="AI_Img">
                     <van-image round
@@ -221,7 +223,9 @@
                                 <van-loading color="#000000" style="display: inline; line-height: 24px; margin-left: 7px;" size="16px" v-if="item.content==='loding'">
                                 </van-loading>
                                 <div class="potext" v-else style="white-space: pre-wrap;">
-                                    <van-image @@click="ShowImgList(item.content,index)" fit="contain" v-for="(IItem,index) in item.content" :key="index" width="100" style="margin-right:10px;"
+                                    <van-loading color="#000000" style="display: inline; line-height: 24px; margin-left: 7px;" size="16px" v-if="item.content.length==0">
+                                    </van-loading>
+                                    <van-image v-else @@click="ShowImgList(item.content,index)" fit="contain" v-for="(IItem,index) in item.content" :key="index" width="100" style="margin-right:10px;"
                                                height="100"
                                                :src="IItem"></van-image>
                                 </div>
@@ -265,7 +269,7 @@
                     <span class="custom-title">绘制图片数量</span>
                 </template>
                 <template>
-                    <van-stepper v-model="Speak.n" integer min="1" max="10"></van-stepper>
+                    <van-stepper v-model="Speak.n" integer min="1" max="10" disabled disable-input></van-stepper>
                 </template>
             </van-cell>
 
@@ -284,6 +288,7 @@
     window.MyVue = new Vue({
         el: '#app',
         data: {
+            Times: 0,
             UserInfo: {},
             Speak: {
                 show: false,
@@ -300,7 +305,7 @@
             Bot: {
                 Name: '通用模型',
                 ID: 0,
-                Greetings: '你好！我是人工智能绘画模型，请说出你向描绘的内容。',
+                Greetings: '您好，我是人工智能Openai绘画模型，请描述您想生成的图片！',
                 Img: '/ChatGPT_Wx/Img/ChatGPT.png'
             },
             scroll: null,
@@ -350,6 +355,20 @@
                     vant.Notify({ type: 'warning', message: '内容不得为空' });
                     return;
                 }
+                if (this.UserInfo.VIP_Type != 1) {
+                    //会员充值提示
+                    vant.Dialog.confirm({
+                        title: '提示',
+                        message: '此项服务为SVIP会员专用！',
+                        confirmButtonText: '开通SVIP',
+                        cancelButtonText: '取消',
+                    }).then(() => {
+                        parent.window.HomeVue.HomeHref('/ChatGPT/Pay/PayMember');
+                    }).catch(() => {
+                        // on cancel
+                    });
+                    return;
+                }
                 let msg = document.getElementById('scroll'); // 获取对象
                 this.messages.push({
                     role: 'user',
@@ -359,41 +378,57 @@
                     SmoothVerticalScrolling(msg, 500, "center");
                 }, 200);
                 //先校验权限是否允许发送
-                let formData = new FormData();
-                formData.append('Text', this.text);
                 try {
+                    let formData = new FormData();
+                    formData.append('Text', this.text);
+                    await AxiosPromise('/ChatGPT/AI/Check', 'post', formData, true);
+                    this.Times = await AxiosPromise('/ChatGPT/AIDraw/Check', 'get', {}, true);
+                    let Imglist = [];
+                    this.messages.push({
+                        role: 'assistant',
+                        content: Imglist
+                    });
                     let DrawRes = await AxiosPromise(res.ApiUrl + '/api/AIDraw/DrawImg', 'post', {
                         prompt: this.text,
                         n: this.Speak.n
-                    });
-                    let Imglist = [];
+                    }, true);
                     DrawRes.forEach(item => {
                         Imglist.push(item.url);
                     });
                     this.ChatLog.UserMessage = this.text;
                     this.ChatLog.AIMessage = JSON.stringify(DrawRes);
                     AxiosAsync('/ChatGPT/ChatLog/AddDraw', 'post', this.ChatLog, true).then(res => { }).catch(err => { });
+                    this.Times--;
                     //发送消息
                     this.text = '';
-                    //模拟收到数据
-                    this.messages.push({
-                        role: 'assistant',
-                        content: Imglist
-                    });
+
                     setTimeout(() => {
                         SmoothVerticalScrolling(msg, 500, "center");
                     }, 200);
                 } catch (err) {
-                    vant.Dialog.confirm({
-                        title: '异常',
-                        message: err,
-                        confirmButtonText: '重试',
-                        showCancelButton: false
-                    }).then(() => {
-                        window.location.reload();
-                    }).catch(() => {
-                        // on cancel
-                    });
+                    this.text = '';
+                    console.log(err);
+                    if (err.indexOf('会员') != -1) {
+                        //会员充值提示
+                        vant.Dialog.confirm({
+                            title: '提示',
+                            message: err,
+                            confirmButtonText: '开通会员',
+                            cancelButtonText: '取消',
+                        }).then(() => {
+                            parent.window.HomeVue.HomeHref('/ChatGPT/Pay/PayMember');
+                        }).catch(() => {
+                            // on cancel
+                        });
+                    } else {
+                        //敏感词
+                        vant.Dialog.alert({
+                            title: '提示',
+                            message: err,
+                        }).then(() => {
+                            // on close
+                        });
+                    }
                 }
             },
         },
@@ -401,7 +436,20 @@
 
         },
         async mounted() {
+            try {
+                this.Times = await AxiosPromise('/ChatGPT/AIDraw/Check', 'get', {});
+            } catch (err) {
+                vant.Dialog.alert({
+                    title: '提示',
+                    message: err,
+                }).then(() => {
+                    // on close
+                });
+            }
             this.UserInfo = await window.APP_GetUserInfoAsync();
+            if (this.UserInfo.VIP_Type != 1) {
+                this.Times = 0;
+            }
         }
     });
     function SmoothVerticalScrolling(e, time, where) {

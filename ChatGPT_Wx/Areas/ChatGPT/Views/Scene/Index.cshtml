@@ -35,7 +35,7 @@
         @*<van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }">
                 以下情景机器人为SVIP会员专享
             </van-divider>*@
-        <van-tabs v-model="active" color="#1989fa" animated>
+        <van-tabs v-model="active" color="#1989fa" animated swipeable>
             <van-tab title="情景模式">
                 <div style="width: 100%; float: left; padding-left: 2%;padding-top:2%;">
                     <div class="bot" v-for="(Item,Index) in list" :key="Index" @@click="Jump(Item.ID)" v-show="Item.show">

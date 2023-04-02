@@ -182,6 +182,24 @@
             width: 100%;
             height: 150px;
         }
+
+        .swipeSpan {
+            width: 48%;
+            float: left;
+            color: #606266;
+            font-size: 14px;
+            height: 100%;
+            background-color: #eaf4fb;
+            border-radius: 10px;
+            margin-left: 2%;
+            padding-left: 2%;
+        }
+
+            .swipeSpan p {
+                text-align:left;
+                margin: 5px 0px;
+                line-height: 16px;
+            }
     </style>
 </head>
 
@@ -191,8 +209,9 @@
             <van-divider style="margin-top: 10px; margin-bottom: 5px; font-size: 10px; color: #ceccca;">本月剩余体验次数：{{Times}}</van-divider>
             <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
                 <van-swipe-item v-for="(image, index) in UserImgList" :key="index">
-                    <van-image height="100%" fit="contain"
-                               :src="image.url" ></van-image>
+                    <div class="swipeSpan" @@click="ShowText(image.text)"><p>{{image.text}}</p></div>
+                    <van-image height="100%" fit="contain" style="width:48%;float:left;"
+                               :src="image.url" @@click="ShowImgList1(UserImgList,index)"></van-image>
                 </van-swipe-item>
             </van-swipe>
             <div class="div_AI">
@@ -346,11 +365,30 @@
             },
         },
         methods: {
+            //查看文字
+            ShowText(text) {
+                vant.Toast({
+                    message: text,
+                    duration: 4000,
+                });
+            },
+            ShowImgList1(JsonList,Index) {
+                let List = [];
+                JsonList.forEach(item => {
+                    List.push(item.url);
+                })
+                vant.ImagePreview({
+                    images: List,
+                    startPosition: Index,
+                    closeable: true
+                });
+            },
             //查看图片组
             ShowImgList(List, Index) {
                 vant.ImagePreview({
                     images: List,
-                    startPosition: Index
+                    startPosition: Index,
+                    closeable: true
                 });
             },
             async GetBot(ID) {
@@ -466,7 +504,10 @@
             AxiosAsync('/ChatGPT/AIDraw/GetUserDrawTop10', 'get', this.ChatLog, true).then(res => {
                 res.forEach(item => {
                     JSON.parse(item.AIMessage).forEach(IItem => {
-                        this.UserImgList.push(IItem);
+                        this.UserImgList.push({
+                            text: item.UserMessage,
+                            url: IItem.url
+                        });
                     })
                 })
 

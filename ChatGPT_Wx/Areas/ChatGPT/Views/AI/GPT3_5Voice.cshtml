@@ -233,7 +233,7 @@
                     <span class="Spans"><span style="color:#fb4646;"><van-icon name="fire"></van-icon></span>热门提问</span>
                     <span class="Spans" @@click="GetQList">换一批<van-icon name="replay"></van-icon></span>
                 </div>
-                <van-notice-bar color="#1989fa" background="#f4f4f5" style="margin-bottom:8px;" v-for="(item,index) in QList" :key="index" :scrollable="false">
+                <van-notice-bar color="#1989fa" background="#f4f4f5" style="margin-bottom:8px;" v-for="(item,index) in QList" :key="index" :scrollable="false" @@click="CopyQ(item.UserMessage)">
                     {{item.UserMessage}}
                 </van-notice-bar>
             </div>
@@ -395,6 +395,9 @@
             ////////////////////////////
         },
         methods: {
+            CopyQ(text) {
+                this.text = text;
+            },
             GetQList() {
                 AxiosAsync('/ChatGPT/ChatLog/GetQList', 'Get', {}).then(res => {
                     this.QList = res;

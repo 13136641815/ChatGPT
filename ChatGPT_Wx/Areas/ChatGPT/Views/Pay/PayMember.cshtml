@@ -15,16 +15,24 @@
         [v-cloak] {
             display: none;
         }
+
         .top .status {
             padding-top: 2.5rem;
         }
+
         .VIPtext {
             color: #b88f34;
             font-size: 14px;
             padding: 5px;
             padding-left: 20px;
             padding-right: 20px;
+            line-height: 24px;
         }
+
+            .VIPtext span {
+                font-weight: 600;
+                color: #615691;
+            }
     </style>
     <title>@ViewBag.Title</title>
 </head>
@@ -50,14 +58,14 @@
             <div class="status">
                 <span>&nbsp;</span>
                 @*<p style="padding-top: 0.03rem;">*VIP：不限次数+单次对话字数200字以内+无上下文关联</p>
-                <p style="padding-top:0px;padding-right:.5rem">*SVIP：不限次数+单次对话字数1000字左右+上下文关联+多款情景机器人</p>*@
+                    <p style="padding-top:0px;padding-right:.5rem">*SVIP：不限次数+单次对话字数1000字左右+上下文关联+多款情景机器人</p>*@
             </div>
         </div>
         <!--精选会员卡列表-->
         <div class="card-list active">
             <div class="cate">
-                <p class="active"><i></i>SVIP超级会员</p>
-                <p><i></i>VIP会员</p>
+                <p class="active" @@click="SvipRemarkType=true"><i></i>SVIP超级会员</p>
+                <p @@click="SvipRemarkType=false"><i></i>VIP会员</p>
             </div>
             <div class="list">
                 <ul class="active">
@@ -91,8 +99,21 @@
             </div>
         </div>
         <!--特权-->
-        <p class="VIPtext">*VIP：不限次数+单次对话字数200字以内+无上下文关联</p>
-        <p class="VIPtext">*SVIP：不限次数+单次对话字数1000字左右+上下文关联+多款情景机器人+AI应用+AI绘画</p>
+        <p class="VIPtext" v-if="SvipRemarkType">
+            <span>Svip超级会员权益：</span><br />
+            *每月不限次数对话<br />
+            *单次对话字数多达1000字左右<br />
+            *机器人回答可上下文关联<br />
+            *多款情景机器人、AI应用机器人<br />
+            *每月免费赠送3次AI图片生成
+        </p>
+        <p class="VIPtext" v-else>
+            <span>Vip会员权益：</span><br />
+            *每月不限次数对话<br />
+            *单次对话字数200字以内<br />
+            *机器人回答无上下文关联
+        </p>
+
         <!--开通会员-->
         <div class="submit">
             <van-button type="success" @@click="Pay" :disabled="ButtonEnable">立即开通</van-button>
@@ -104,7 +125,7 @@
 </html>
 <script src="/ChatGPT_Wx/Global.js"></script>
 <script>
-    
+
 </script>
 <script>
     new Vue({
@@ -116,6 +137,7 @@
             CommodityList0: [],
             ButtonEnable: false,
             showMore: false,
+            SvipRemarkType: true
         },
         methods: {
             more() {
@@ -162,7 +184,7 @@
             }
         },
         created() {
-            
+
         },
         async mounted() {
             // 超级会员，普通会员切换

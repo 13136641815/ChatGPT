@@ -80,7 +80,7 @@ namespace ChatGPT_Service.PayBack
                 }
                 isok = await SVIP(UserModel, CommodityModel, db);//充值SVIP
             }
-            else
+            else if (Type == 0)
             {
                 //普通会员
                 if (UserModel.YN_VIP == null || UserModel.YN_VIP == 0 || UserModel.BeOverdue_VIP == null || UserModel.BeOverdue_VIP < dt)
@@ -98,7 +98,19 @@ namespace ChatGPT_Service.PayBack
                     UserModel.BeOverdue_PVIP = dn;
                     isok = await UserApp.longPvip(UserModel, db);
                 }
-
+            }
+            else
+            {
+                //AI绘画次数
+                int ThisSecond = 0; //现有的次数
+                if (UserModel.AIDraw_Second != null)
+                {
+                    //兼容老数据为null的数据
+                    ThisSecond = (int)UserModel.AIDraw_Second;
+                }
+                ThisSecond = (int)CommodityModel.Duration;
+                UserModel.AIDraw_Second = ThisSecond;
+                isok = await UserApp.AIDraw_Second(UserModel, db);
             }
             return isok;
         }

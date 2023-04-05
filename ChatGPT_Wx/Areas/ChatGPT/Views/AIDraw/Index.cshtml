@@ -196,10 +196,11 @@
         }
 
             .swipeSpan p {
-                text-align:left;
+                text-align: left;
                 margin: 5px 0px;
                 line-height: 16px;
             }
+
         .van-swipe__indicator {
             background-color: #0066ff;
         }
@@ -209,7 +210,7 @@
 <body>
     <div id="app" v-cloak>
         <div id="scroll" style="width: 100%; float: left; max-height: 100%;" class="scroll-container">
-            <van-divider style="margin-top: 10px; margin-bottom: 5px; font-size: 10px; color: #ceccca;">本月剩余体验次数：{{Times}}</van-divider>
+            <van-divider style="margin-top: 10px; margin-bottom: 5px; font-size: 10px; color: #ceccca;">本月剩余体验次数：{{Times}},购买剩余次数：{{Times1}}</van-divider>
             <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
                 <van-swipe-item v-for="(image, index) in UserImgList" :key="index">
                     <div class="swipeSpan" @@click="ShowText(image.text)"><p>{{image.text}}</p></div>
@@ -326,7 +327,8 @@
     window.MyVue = new Vue({
         el: '#app',
         data: {
-            Times: 0,
+            Times: 0,//免费次数
+            Times1: 0,//购买次数
             UserInfo: {},
             Speak: {
                 show: false,
@@ -375,7 +377,7 @@
                     duration: 4000,
                 });
             },
-            ShowImgList1(JsonList,Index) {
+            ShowImgList1(JsonList, Index) {
                 let List = [];
                 JsonList.forEach(item => {
                     List.push(item.url);
@@ -413,20 +415,6 @@
                     vant.Notify({ type: 'warning', message: '内容不得为空' });
                     return;
                 }
-                if (this.UserInfo.VIP_Type != 1) {
-                    //会员充值提示
-                    vant.Dialog.confirm({
-                        title: '提示',
-                        message: '此项服务为SVIP会员专用！',
-                        confirmButtonText: '开通SVIP',
-                        cancelButtonText: '取消',
-                    }).then(() => {
-                        parent.window.HomeVue.HomeHref('/ChatGPT/Pay/PayMember');
-                    }).catch(() => {
-                        // on cancel
-                    });
-                    return;
-                }
                 let msg = document.getElementById('scroll'); // 获取对象
                 this.messages.push({
                     role: 'user',
@@ -437,11 +425,13 @@
                 }, 200);
                 //先校验权限是否允许发送
                 try {
-                    vant.Toast('发送成功，请耐心等待图片生成。');
                     let formData = new FormData();
                     formData.append('Text', this.text);
                     await AxiosPromise('/ChatGPT/AI/Check', 'post', formData, true);
-                    this.Times = await AxiosPromise('/ChatGPT/AIDraw/Check', 'get', {}, true);
+                    const IntList = await AxiosPromise('/ChatGPT/AIDraw/Check', 'get', {}, true);
+                    this.Times = IntList[0];
+                    this.Times1 = IntList[1];
+                    vant.Toast('发送成功，请耐心等待图片生成。');
                     let Imglist = [];
                     this.messages.push({
                         role: 'assistant',
@@ -457,7 +447,12 @@
                     this.ChatLog.UserMessage = this.text;
                     this.ChatLog.AIMessage = JSON.stringify(DrawRes);
                     AxiosAsync('/ChatGPT/ChatLog/AddDraw', 'post', this.ChatLog, true).then(res => { }).catch(err => { });
-                    this.Times--;
+                    if (this.Times != 0) {
+                        this.Times--;
+                    } else {
+                        this.Times1--;
+                    }
+
                     //发送消息
                     this.text = '';
 
@@ -473,6 +468,18 @@
                             title: '提示',
                             message: err,
                             confirmButtonText: '开通会员',
+                            cancelButtonText: '取消',
+                        }).then(() => {
+                            parent.window.HomeVue.HomeHref('/ChatGPT/Pay/PayMember');
+                        }).catch(() => {
+                            // on cancel
+                        });
+                    } else if (err.indexOf('绘画') != -1) {
+                        //会员充值提示
+                        vant.Dialog.confirm({
+                            title: '提示',
+                            message: err,
+                            confirmButtonText: '购买绘画',
                             cancelButtonText: '取消',
                         }).then(() => {
                             parent.window.HomeVue.HomeHref('/ChatGPT/Pay/PayMember');
@@ -496,13 +503,20 @@
         },
         async mounted() {
             try {
-                this.Times = await AxiosPromise('/ChatGPT/AIDraw/Check', 'get', {});
+                const IntList = await AxiosPromise('/ChatGPT/AIDraw/Check', 'get', {}, true);
+                this.Times = IntList[0];
+                this.Times1 = IntList[1];
             } catch (err) {
-                vant.Dialog.alert({
+                //会员充值提示
+                vant.Dialog.confirm({
                     title: '提示',
                     message: err,
+                    confirmButtonText: '购买绘画',
+                    cancelButtonText: '取消',
                 }).then(() => {
-                    // on close
+                    parent.window.HomeVue.HomeHref('/ChatGPT/Pay/PayMember');
+                }).catch(() => {
+                    // on cancel
                 });
             }
             AxiosAsync('/ChatGPT/AIDraw/GetUserDrawTop10', 'get', this.ChatLog, true).then(res => {

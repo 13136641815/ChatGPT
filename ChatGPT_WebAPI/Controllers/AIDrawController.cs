@@ -29,6 +29,7 @@ namespace ChatGPT_WebAPI.Controllers
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + APIKEY);
                 HttpContent httpContent = JsonContent.Create<DrawModel>(Send);
                 string PostRes = client.PostAsync("https://api.openai.com/v1/images/generations", httpContent).Result.Content.ReadAsStringAsync().Result;
+                err = "OpenAI反馈："+PostRes;
                 var res = JsonConvert.DeserializeObject<DrawResModel>(PostRes);
                 if (res.data.Count > 0)
                 {
@@ -40,12 +41,12 @@ namespace ChatGPT_WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                err = ex.ToString();
+                err += "系统内异常：" + ex.ToString();
             }
             return new Result()
             {
                 CODE = ResultCode.Empty,
-                MSG = "图片未生成，请重试：" + err
+                MSG = "图片未生成，可能OpenAI未识别，请换一种说法再试试：" + err
             };
         }
     }

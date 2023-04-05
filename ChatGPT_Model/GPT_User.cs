@@ -92,6 +92,7 @@ namespace ChatGPT_Model
         public string AccountType { get; set; }
         public string AccountNum { get; set; }
         public decimal? ShareCommission { get; set; } = null;
-        public int Block { get; set; } = 0;
+        public int? Block { get; set; } = 0;
+        public int? AIDraw_Second { get; set; } = 0;
     }
 }

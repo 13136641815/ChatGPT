@@ -61,7 +61,7 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             });
         }
         [HttpGet]
-        public async Task<JsonResult> GetQList() 
+        public async Task<JsonResult> GetQList()
         {
             Mapper_GPT_ChatLog app = new Mapper_GPT_ChatLog();
             return Json(new Result()
@@ -101,10 +101,30 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             var CookiesModel = JsonConvert.DeserializeObject<H5Cookie>(Tools.AES.staticKeyTo_DecryptAES(value));//获取COOKIE身份
             model.Openid = CookiesModel.UserInfo.openid;
             Mapper_GPT_ChatLog app = new Mapper_GPT_ChatLog();
-            int i = await app.AddAsync(model);
+            int n = await app.AddAsync(model);
+            if (n > 0)
+            {
+                //扣减绘画次数
+                ChatGPT_Service.AIDraw.App AI = new ChatGPT_Service.AIDraw.App();
+                Mapper_GPT_User UserApp = new Mapper_GPT_User();
+                var UserModel = await UserApp.GetModelFirst(model.Openid);
+                int i = -1;
+                if (UserModel.YN_VIP == 1 && DateTime.Now < UserModel.BeOverdue_VIP)
+                {
+                    //是超级会员且未过期，查看免费次数
+                    i = (await AI.GetThisMonthsCount(model.Openid));
+                }
+                if (i < 0)
+                {
+                    //体验次数没有了，扣减付费次数
+
+                    UserModel.AIDraw_Second--;
+                    bool isok = await UserApp.UpdateAIDraw_SecondAsync(UserModel);
+                }
+            }
             return Json(new Result()
             {
-                CODE = i > 0 ? ResultCode.Success : ResultCode.Empty
+                CODE = n > 0 ? ResultCode.Success : ResultCode.Empty
             });
         }
         FormFile DownloadImage(string url)

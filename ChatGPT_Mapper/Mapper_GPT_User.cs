@@ -165,7 +165,7 @@ namespace ChatGPT_Mapper
         /// <param name="model"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public async Task<bool> longSvip(GPT_User model, SqlSugarScope db) 
+        public async Task<bool> longSvip(GPT_User model, SqlSugarScope db)
         {
             return await db.Updateable(model).UpdateColumns(it => new
             {
@@ -185,6 +185,20 @@ namespace ChatGPT_Mapper
             {
                 it.YN_PVIP,
                 it.BeOverdue_PVIP
+            }).Where(it => it.ID == model.ID)
+                  .ExecuteCommandHasChangeAsync();
+        }
+        /// <summary>
+        /// 充值绘画次数
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public async Task<bool> AIDraw_Second(GPT_User model, SqlSugarScope db)
+        {
+            return await db.Updateable(model).UpdateColumns(it => new
+            {
+                it.AIDraw_Second
             }).Where(it => it.ID == model.ID)
                   .ExecuteCommandHasChangeAsync();
         }
@@ -235,6 +249,16 @@ namespace ChatGPT_Mapper
             })
             .Where(it => it.ID == model.ID)
             .ExecuteCommandHasChangeAsync();
+        }
+        //扣减绘画次数
+        public async Task<bool> UpdateAIDraw_SecondAsync(GPT_User model)
+        {
+            return await SugarConfig.CretClient().Updateable(model).UpdateColumns(it => new
+            {
+                it.AIDraw_Second
+            })
+                .Where(it => it.WxOpenID == model.WxOpenID)
+                .ExecuteCommandHasChangeAsync();
         }
     }
 }

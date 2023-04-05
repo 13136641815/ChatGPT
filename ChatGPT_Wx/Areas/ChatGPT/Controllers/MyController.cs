@@ -74,7 +74,9 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
                 Free_Second = model.Free_Second,
                 VIP_Type = model.YN_VIP == 1 && model.BeOverdue_VIP > DateTime.Now ? 1 : model.YN_PVIP == 1 && model.BeOverdue_PVIP > DateTime.Now ? 0 : -1,
                 AccountType = model.AccountType,
-                AccountNum = model.AccountNum
+                AccountNum = model.AccountNum,
+                Block = model.Block,
+                AIDraw_Second = model.AIDraw_Second
 
             };
             return Json(new Result()

@@ -75,5 +75,7 @@ namespace ChatGPT_Model.AppModel
         public int VIP_Type { get; set; } = -1;//-1非会员|0普通会员|1超级会员
         public string AccountType { get; set; }
         public string AccountNum { get; set; }
+        public int? Block { get; set; }
+        public int? AIDraw_Second { get; set; }
     }
 }

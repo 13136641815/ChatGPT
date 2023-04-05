@@ -59,14 +59,15 @@
             <div class="status">
                 <span>&nbsp;</span>
                 @*<p style="padding-top: 0.03rem;">*VIP：不限次数+单次对话字数200字以内+无上下文关联</p>
-                    <p style="padding-top:0px;padding-right:.5rem">*SVIP：不限次数+单次对话字数1000字左右+上下文关联+多款情景机器人</p>*@
+                <p style="padding-top:0px;padding-right:.5rem">*SVIP：不限次数+单次对话字数1000字左右+上下文关联+多款情景机器人</p>*@
             </div>
         </div>
         <!--精选会员卡列表-->
         <div class="card-list active">
             <div class="cate">
-                <p class="active" @@click="SvipRemarkType=true"><i></i>SVIP超级会员</p>
-                <p @@click="SvipRemarkType=false"><i></i>VIP会员</p>
+                <p class="active" @@click="SvipRemarkType=0"><i></i>SVIP超级会员</p>
+                <p @@click="SvipRemarkType=1"><i></i>VIP会员</p>
+                <p @@click="SvipRemarkType=2"><i></i>AI绘画</p>
             </div>
             <div class="list">
                 <ul class="active">
@@ -97,11 +98,25 @@
                         </li>
                     </van-radio-group>
                 </ul>
+                <ul>
+                    <van-radio-group v-model="radio" style="display: flex;">
+                        <li :class="radio==Item.ID?'active':''" v-for="(Item,Index) in CommodityList2" :key="Index">
+                            <van-radio :name="Item.ID" shape="square">
+                                <div class="title">{{Item.CommodityName}}</div>
+                                <div class="desc">
+                                    <p class="yh" v-show="Item.Explain">{{Item.Explain}}</p>
+                                    <p class="money"><i>¥</i><span>{{(Item.CommodityPresentPrice/100).toFixed(2)}}</span></p>
+                                    <p class="old">原价¥{{(Item.CommodityOriginalPrice/100).toFixed(2)}}</p>
+                                </div>
+                            </van-radio>
+                        </li>
+                    </van-radio-group>
+                </ul>
             </div>
         </div>
         <!--特权-->
 
-        <p class="VIPtext" v-if="SvipRemarkType">
+        <p class="VIPtext" v-if="SvipRemarkType==0">
             <span>Svip超级会员权益：</span><br />
             √每月不限次数对话<br />
             √单次对话字数多达1000字左右<br />
@@ -109,13 +124,17 @@
             √多款情景机器人、AI应用机器人<br />
             √每月免费赠送3次AI图片生成
         </p>
-        <p class="VIPtext" v-else>
+        <p class="VIPtext" v-else-if="SvipRemarkType==1">
             <span>Vip会员权益：</span><br />
             √每月不限次数对话<br />
             √单次对话字数200字以内<br />
             √机器人回答无上下文关联
         </p>
-
+        <p class="VIPtext" v-else-if="SvipRemarkType==2">
+            <span>AI绘画权益：</span><br />
+            √AI智能绘画<br />
+            √绘画永久留存<br />
+        </p>
         <!--开通会员-->
         <div class="submit">
             <van-button type="success" @@click="Pay" :disabled="ButtonEnable">立即开通</van-button>
@@ -135,11 +154,12 @@
         data: {
             radio: 1,
             UserInfo: {},
+            CommodityList2:[],
             CommodityList1: [],
             CommodityList0: [],
             ButtonEnable: false,
             showMore: false,
-            SvipRemarkType: true
+            SvipRemarkType: 0
         },
         methods: {
             more() {
@@ -200,8 +220,10 @@
             ResList.forEach(item => {
                 if (item.Type == 0) {
                     this.CommodityList0.push(item);
-                } else {
+                } else if (item.Type == 1) {
                     this.CommodityList1.push(item);
+                } else {
+                    this.CommodityList2.push(item);
                 }
             })
         }

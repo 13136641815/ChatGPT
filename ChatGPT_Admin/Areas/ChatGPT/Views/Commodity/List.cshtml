@@ -26,6 +26,7 @@
                         <el-select v-model="model.Type" placeholder="商品类型" style="width:100%;" @@change="change">
                             <el-option label="超级会员" :value="1"></el-option>
                             <el-option label="普通会员" :value="0"></el-option>
+                            <el-option label="绘画次数" :value="2"></el-option>
                         </el-select>
                     </div>
                     <div class="ButtonContainer">
@@ -149,6 +150,7 @@
                     <el-form-item label="会员类型">
                         <el-radio v-model="Form.Type" :label="0" disabled>普通VIP</el-radio>
                         <el-radio v-model="Form.Type" :label="1" disabled>超级VIP</el-radio>
+                        <el-radio v-model="Form.Type" :label="2" disabled>绘画次数</el-radio>
                     </el-form-item>
                     <el-form-item label="是否折扣">
                         <el-radio v-model="Form.Discount" :label="1">是</el-radio>
@@ -161,9 +163,9 @@
                         <el-input-number v-model="Form.CommodityPresentPrice" :min="0.01" :precision="2" :step="0.01" :max="3000"></el-input-number>
                     </el-form-item>
                     <el-form-item label="类型" prop="CommodityType">
-                        <el-radio v-model="Form.CommodityType" :label="2">天</el-radio>
-                        <el-radio v-model="Form.CommodityType" :label="0">月</el-radio>
-                        <el-radio v-model="Form.CommodityType" :label="1">次</el-radio>
+                        <el-radio v-model="Form.CommodityType" :label="2" :disabled="Form.Type==2">天</el-radio>
+                        <el-radio v-model="Form.CommodityType" :label="0" :disabled="Form.Type==2">月</el-radio>
+                        <el-radio v-model="Form.CommodityType" :label="1" :disabled="Form.Type==2">次</el-radio>
                     </el-form-item>
                     <el-form-item :label="Form.CommodityType==0?'充值月数':Form.CommodityType==2?'充值天数':'充值次数'" prop="Duration">
                         <el-input-number v-model="Form.Duration" :min="1" :max="500"></el-input-number>
@@ -272,6 +274,9 @@
             methods: {
                 change(val) {
                     this.Form.Type = val;
+                    if (val == 2) {
+                        this.Form.CommodityType = 1;
+                    }
                     this.GetListPage();
                 },
                 up(a, b) {
@@ -389,8 +394,8 @@
                 Add() {
                     const that = this;
                     let PostFrom = JSON.parse(JSON.stringify(that.Form));
-                    PostFrom.CommodityOriginalPrice = that.Form.CommodityOriginalPrice.toFixed(2) * 100;
-                    PostFrom.CommodityPresentPrice = that.Form.CommodityPresentPrice.toFixed(2) * 100;
+                    PostFrom.CommodityOriginalPrice = Math.ceil(that.Form.CommodityOriginalPrice.toFixed(2) * 100);
+                    PostFrom.CommodityPresentPrice = Math.ceil(that.Form.CommodityPresentPrice.toFixed(2) * 100);
                     console.log(that.Form);
                     axios({
                         method: 'post',
@@ -414,8 +419,8 @@
                 Update() {
                     const that = this;
                     let PostFrom = JSON.parse(JSON.stringify(that.Form));
-                    PostFrom.CommodityOriginalPrice = that.Form.CommodityOriginalPrice.toFixed(2) * 100;
-                    PostFrom.CommodityPresentPrice = that.Form.CommodityPresentPrice.toFixed(2) * 100;
+                    PostFrom.CommodityOriginalPrice = Math.ceil(that.Form.CommodityOriginalPrice.toFixed(2) * 100);
+                    PostFrom.CommodityPresentPrice = Math.ceil(that.Form.CommodityPresentPrice.toFixed(2) * 100);
                     axios({
                         method: 'put',
                         url: '/ChatGPT/Commodity/Update',

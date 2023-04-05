@@ -109,7 +109,17 @@
             color: #fff;
             font-weight: 900;
             position: absolute;
-            top: 0.7rem;
+            top: 1.0rem;
+            right: 3rem;
+        }
+
+        .Reload {
+            width: 50px;
+            font-size: 24px;
+            color: #fff;
+            font-weight: 900;
+            position: absolute;
+            top: 1.5rem;
             right: 3rem;
         }
 
@@ -165,6 +175,7 @@
                     <p v-if="UserInfo.VIP_Type==-1" style="color:#cdcdcd;">剩余体验次数{{UserInfo.Free_Second}}</p>
                     <p v-else-if="UserInfo.VIP_Type==1" style="color: #f1debd; ">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
                     <p v-else style="color: #ffffff; ">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
+                    <p style="color: #c6c3ff;">AI绘画次数：{{AIDrawSecond(UserInfo.AIDraw_Second)}}次<span @@click="Reload" style="float: right; margin-right: 2.5rem; font-size: 17px; color: #fff; "><van-icon name="replay"></van-icon></span></p>
                     <div class="tops" style="color: #f1debd; text-shadow: 5px 5px 1px #ffffff59;" v-if="UserInfo.VIP_Type==1">SVIP</div>
                     <div class="tops" style="color: #ffffff; text-shadow: 5px 5px 1px #ffffff59; " v-else-if="UserInfo.VIP_Type==0">VIP</div>
                     <div class="tops" style="color:#cdcdcd;" v-else>Visitor</div>
@@ -311,7 +322,7 @@
                         vant.Notify({ type: 'success', message: res, duration: 5000 });
                         setTimeout(() => {
                             window.location.reload();
-                        },2000)
+                        }, 2000)
                     }).catch(err => {
                         vant.Notify({ type: 'danger', message: err });
                     })
@@ -332,6 +343,17 @@
                         }).catch(err => {
 
                         })
+                },
+                AIDrawSecond(val) {
+                    console.log(val);
+                    if (val) {
+                        return val;
+                    } else {
+                        return 0;
+                    }
+                },
+                async Reload() {
+                    this.UserInfo = await window.APP_GetUserInfoAsync();
                 }
             },
             created() {

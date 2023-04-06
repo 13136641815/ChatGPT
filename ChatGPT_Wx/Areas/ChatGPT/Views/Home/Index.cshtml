@@ -44,7 +44,7 @@
     <div id="app" v-cloak>
         <div class="scroll-wrapper">
             <transition :name="item.transition" v-for="(item,index) in route" :key="index">
-                <iframe ref="IFRAME" :src="item.islode==true?item.url:''" v-show="index==active" data-scrolltop="0" frameborder="0" onload="Lode(this)"></iframe>
+                <iframe ref="IFRAME" :src="IsLazyPage==true?(item.islode==true?item.url:''):item.url" v-show="index==active" data-scrolltop="0" frameborder="0" onload="Lode(this)"></iframe>
             </transition>
         </div>
         <van-tabbar v-show="TabbarShow" v-model="active" safe-area-inset-bottom fixed @@change="tabChange" :before-change="beforeChange">
@@ -70,6 +70,7 @@
                 Index: 0,
                 TabbarShow: false,
                 isHaveBill: false,
+                IsLazyPage: false,//是否懒加载
             },
             methods: {
                 ChangeAI(botID) {
@@ -102,11 +103,13 @@
                 },
                 beforeChange(name) {
                     if (!this.route[name].islode) {
-                        vant.Toast.loading({
-                            message: '加载中...',
-                            forbidClick: true,
-                            duration: 0,
-                        });
+                        if (this.IsLazyPage) {
+                            vant.Toast.loading({
+                                message: '加载中...',
+                                forbidClick: true,
+                                duration: 0,
+                            });
+                        }
                         setTimeout(() => {
                             this.route[name].islode = true;
                             //vant.Toast.clear();

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="/lib/vant/css/index.css" />
     <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
-    <title></title>
+    <title>@ViewBag.Title</title>
     <style>
         .SVIP_DivHeardBg {
             width: 100%;
@@ -311,7 +311,7 @@
             √AI智能绘画<br />
             √绘画永久留存<br />
         </p>
-        <van-button type="info" :class="active==0?'SVIPBtn':active==1?'':'AIDrawBtn'" block>立即支付</van-button>
+        <van-button type="info" :class="active==0?'SVIPBtn':active==1?'':'AIDrawBtn'" block  @@click="Pay" :disabled="ButtonEnable">立即支付</van-button>
     </div>
 </body>
 <script src="/ChatGPT_Wx/Global.js"></script>
@@ -325,7 +325,8 @@
             UserInfo: {},
             CommodityList0: [],
             CommodityList1: [],
-            CommodityList2: []
+            CommodityList2: [],
+            ButtonEnable: false,
         },
         methods: {
             onClickLeft() {
@@ -333,6 +334,39 @@
             },
             async GetCommodityList() {
                 return await AxiosPromise('/ChatGPT/PayPage/GetCommodityList', 'get');
+            },
+            async Pay() {
+                try {
+                    const that = this;
+                    that.ButtonEnable = true;
+                    const res = await AxiosPromise('/ChatGPT/Pay/DownOrder', 'post', {
+                        ComID: this.radio
+                    }, true);
+                    const PayData = res.PayData;
+                    const PayConfig = res.PayConfig;
+                    const PayRes = await AxiosPromise('/WeChatHome/Pay', 'post', {
+                        PayData: PayData,
+                        PayConfig: PayConfig
+                    });
+                    const PayJson = JSON.parse(PayRes);
+                    WeixinJSBridge.invoke(
+                        'getBrandWCPayRequest', PayJson,//josn串
+                        function (res) {
+                            if (res.err_msg == "get_brand_wcpay_request:ok") {
+                                //支付成功
+                                history.back();
+                            } else if (res.err_msg == "get_brand_wcpay_request:cancel") {
+                                vant.Notify({ type: 'primary', message: '支付取消' });
+                                that.ButtonEnable = false;
+                            } else {
+                                that.ButtonEnable = false;
+                                vant.Notify({ type: 'warning', message: '支付失败' + res.err_msg });
+                            }
+                        }
+                    );
+                } catch (err) {
+                    alert(err);
+                }
             }
         },
         created() {

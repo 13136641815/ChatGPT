@@ -24,8 +24,11 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
         {
             return View();
         }
-        public IActionResult PayList()
+        public async Task<IActionResult> PayList()
         {
+            Mapper_GPT_Setup setApp = new Mapper_GPT_Setup();
+            var setmodel = await setApp.GetFirstAsync();
+            ViewBag.Title = setmodel.Title;
             return View();
         }
         public async Task<IActionResult> PayMember()

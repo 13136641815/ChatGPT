@@ -1,0 +1,355 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="/lib/vant/css/index.css" />
+    <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
+    <title></title>
+    <style>
+        .SVIP_DivHeardBg {
+            width: 100%;
+            padding: 1rem 0 2rem 0;
+            background: linear-gradient(to right, #e3ad6b, #956844);
+        }
+
+        .VIP_DivHeardBg {
+            width: 100%;
+            padding: 1rem 0 2rem 0;
+            background: linear-gradient(to right, #3cabec, #634bf6);
+        }
+
+        .AIDraw_DivHeardBg {
+            width: 100%;
+            padding: 1rem 0 2rem 0;
+            background: linear-gradient(to right, #23d3c2, #336f04);
+        }
+
+        .DivHeard {
+            display: flex;
+            -webkit-box-align: center;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+        }
+
+        .HeardImg {
+            width: 50px;
+            height: 50px;
+            border-radius: 100%;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.7);
+            margin-right: 0.5rem;
+        }
+
+        .HeardName {
+            flex: 1;
+            min-width: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+            .HeardName h2 {
+                color: rgba(255,255,255,0.9);
+                font-weight: normal;
+                font-size: 1.1rem;
+            }
+
+        .SVIP {
+            font-size: 34px;
+            font-weight: 800;
+            color: rgb(241, 222, 189);
+            text-shadow: rgba(255, 255, 255, 0.35) 5px 5px 1px;
+        }
+
+        .VIP {
+            font-size: 34px;
+            font-weight: 800;
+            color: #d3f0fc;
+            text-shadow: rgba(255, 255, 255, 0.35) 5px 5px 1px;
+        }
+
+        .AIDraw {
+            font-size: 34px;
+            font-weight: 800;
+            color: #bdf1cd;
+            text-shadow: rgba(255, 255, 255, 0.35) 5px 5px 1px;
+        }
+
+        .Container {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 20px;
+            padding-right: 8px;
+        }
+
+        .van-radio__icon {
+            display: none;
+        }
+
+        .van-radio {
+            display: inline-block;
+        }
+
+        .Card {
+            width: 100px;
+            display: inline-block;
+            height: 120px;
+            border: 1px solid #e9e9e9;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+            .Card .Title {
+                background-color: #eff2f4;
+                line-height: 35px;
+                font-size: 16px;
+            }
+
+            .Card .Remark {
+                background-color: #f4635c;
+                color: #fff;
+                line-height: 20px;
+                margin: 7px auto;
+                width: 75px;
+                font-size: 14px;
+            }
+
+            .Card .XJ {
+                font-size: 22px;
+                font-weight: 600;
+                margin: 2px 0;
+            }
+
+            .Card .YJ {
+                font-size: 10px;
+                text-decoration: line-through;
+                color: #999;
+            }
+
+        .SVIPCardChecked {
+            border: 1px solid #a1734a;
+            background-color: #f3eae0;
+        }
+
+            .SVIPCardChecked .Title {
+                background-color: #bc8b58;
+            }
+
+        .VIPCardChecked {
+            border: 1px solid #1989fa;
+            background-color: #deeeff;
+        }
+
+            .VIPCardChecked .Title {
+                background-color: #1989fa;
+            }
+
+        .AIDrawCardChecked {
+            border: 1px solid #337610;
+            background-color: #e5fddd;
+        }
+
+            .AIDrawCardChecked .Title {
+                background-color: #2d9145;
+            }
+
+        .CardChecked {
+            width: 100px;
+            display: inline-block;
+            height: 120px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+            .CardChecked .Title {
+                line-height: 35px;
+                font-size: 16px;
+                color: #fff;
+            }
+
+            .CardChecked .Remark {
+                background-color: #f4635c;
+                color: #fff;
+                line-height: 20px;
+                margin: 7px auto;
+                width: 75px;
+                font-size: 14px;
+            }
+
+            .CardChecked .XJ {
+                font-size: 22px;
+                font-weight: 600;
+                margin: 2px 0;
+            }
+
+            .CardChecked .YJ {
+                font-size: 10px;
+                text-decoration: line-through;
+                color: #999;
+            }
+
+        .SVIPText {
+            color: #b88f34;
+        }
+
+        .VIPText {
+            color: #1989fa;
+        }
+
+        .AIDrawText {
+            color: #01a70d;
+        }
+
+        .VIPtext {
+            font-size: 14px;
+            padding: 5px;
+            padding-left: 20px;
+            padding-right: 20px;
+            line-height: 24px;
+            min-height: 160px;
+        }
+
+            .VIPtext span {
+                font-weight: 600;
+            }
+        .SVIPBtn {
+            background-color: #dfa969;
+            border: #dfa969;
+        }
+        .VIPBtn {
+            background-color: #986b46;
+            border: #986b46;
+        }
+        .AIDrawBtn {
+            background-color: #26c09e;
+            border: #26c09e;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <van-nav-bar title="充值"
+                     left-text="返回"
+                     left-arrow
+                     @@click-left="onClickLeft"></van-nav-bar>
+        <div :class="active==0?'SVIP_DivHeardBg':active==1?'VIP_DivHeardBg':'AIDraw_DivHeardBg'">
+            <div class="DivHeard">
+                <div class="HeardImg">
+                    <van-image width="100%"
+                               height="100%"
+                               :src="UserInfo.WxHeadUrl"></van-image>
+                </div>
+                <div class="HeardName">
+                    <h2 style="margin-bottom: 0px;">ID：{{UserInfo.ID}}</h2>
+                    <h2 style="margin-top: 5px;">{{UserInfo.NikeName}}</h2>
+                </div>
+                <div :class="active==0?'SVIP':active==1?'VIP':'AIDraw'">{{active==0?'SVIP':active==1?'VIP':'AI绘画'}}</div>
+            </div>
+        </div>
+        <van-tabs v-model="active" animated>
+            <van-tab title="SVIP超级会员">
+                <van-radio-group v-model="radio" class="Container">
+                    <van-radio :name="item.ID" v-for="(item,index) in CommodityList1" :key="index">
+                        <div :class="radio==item.ID?'CardChecked SVIPCardChecked':'Card'">
+                            <div class="Title">{{item.CommodityName}}</div>
+                            <div class="Remark" v-if="item.Explain">{{item.Explain}}</div>
+                            <div v-else style="height:34px;"></div>
+                            <div class="XJ">{{(item.CommodityPresentPrice/100).toFixed(2)}}</div>
+                            <div class="YJ">原价：{{(item.CommodityOriginalPrice/100).toFixed(2)}}</div>
+                        </div>
+                    </van-radio>
+                </van-radio-group>
+            </van-tab>
+            <van-tab title="VIP普通会员">
+                <van-radio-group v-model="radio" class="Container">
+                    <van-radio :name="item.ID" v-for="(item,index) in CommodityList0" :key="index">
+                        <div :class="radio==item.ID?'CardChecked VIPCardChecked':'Card'">
+                            <div class="Title">{{item.CommodityName}}</div>
+                            <div class="Remark" v-if="item.Explain">{{item.Explain}}</div>
+                            <div v-else style="height:34px;"></div>
+                            <div class="XJ">{{(item.CommodityPresentPrice/100).toFixed(2)}}</div>
+                            <div class="YJ">原价：{{(item.CommodityOriginalPrice/100).toFixed(2)}}</div>
+                        </div>
+                    </van-radio>
+                </van-radio-group>
+            </van-tab>
+            <van-tab title="AI绘画">
+                <van-radio-group v-model="radio" class="Container">
+                    <van-radio :name="item.ID" v-for="(item,index) in CommodityList2" :key="index">
+                        <div :class="radio==item.ID?'CardChecked AIDrawCardChecked':'Card'">
+                            <div class="Title">{{item.CommodityName}}</div>
+                            <div class="Remark" v-if="item.Explain">{{item.Explain}}</div>
+                            <div v-else style="height:34px;"></div>
+                            <div class="XJ">{{(item.CommodityPresentPrice/100).toFixed(2)}}</div>
+                            <div class="YJ">原价：{{(item.CommodityOriginalPrice/100).toFixed(2)}}</div>
+                        </div>
+                    </van-radio>
+                </van-radio-group>
+            </van-tab>
+        </van-tabs>
+        <p class="VIPtext SVIPText" v-if="active==0">
+            <span>SVIP超级会员权益：</span><br />
+            √每月不限次数对话<br />
+            √单次对话字数多达1000字左右<br />
+            √机器人回答可上下文关联<br />
+            √多款情景机器人、AI应用机器人<br />
+            √每月免费赠送3次AI图片生成
+        </p>
+        <p class="VIPtext VIPText" v-else-if="active==1">
+            <span>VIP会员权益：</span><br />
+            √每月不限次数对话<br />
+            √单次对话字数200字以内<br />
+            √机器人回答无上下文关联
+        </p>
+        <p class="VIPtext AIDrawText" v-else-if="active==2">
+            <span>AI绘画权益：</span><br />
+            √AI智能绘画<br />
+            √绘画永久留存<br />
+        </p>
+        <van-button type="info" :class="active==0?'SVIPBtn':active==1?'':'AIDrawBtn'" block>立即支付</van-button>
+    </div>
+</body>
+<script src="/ChatGPT_Wx/Global.js"></script>
+<script>
+    // 在 #app 标签下渲染一个按钮组件
+    new Vue({
+        el: '#app',
+        data: {
+            radio: 1,
+            active: 0,
+            UserInfo: {},
+            CommodityList0: [],
+            CommodityList1: [],
+            CommodityList2: []
+        },
+        methods: {
+            onClickLeft() {
+                history.back();
+            },
+            async GetCommodityList() {
+                return await AxiosPromise('/ChatGPT/PayPage/GetCommodityList', 'get');
+            }
+        },
+        created() {
+
+        },
+        async mounted() {
+            this.UserInfo = await window.APP_GetUserInfoAsync();
+            const ResList = await this.GetCommodityList();
+            ResList.forEach(item => {
+                if (item.Type == 0) {
+                    this.CommodityList0.push(item);
+                } else if (item.Type == 1) {
+                    this.CommodityList1.push(item);
+                } else {
+                    this.CommodityList2.push(item);
+                }
+            })
+        }
+    })
+</script>

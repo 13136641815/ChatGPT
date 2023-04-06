@@ -219,17 +219,17 @@
             }
 
         .VIPBtn {
-            background-color: #dfa969;
+            background: linear-gradient(to right, #e3ad6b, #956844);
             border: #dfa969;
         }
 
         .SVIPBtn {
-            background-color: #986b46;
+            background: linear-gradient(to right, #3cabec, #634bf6);
             border: #986b46;
         }
 
         .AIDrawBtn {
-            background-color: #26c09e;
+            background: linear-gradient(to right, #23d3c2, #336f04);
             border: #26c09e;
         }
 
@@ -245,6 +245,18 @@
                 border-right: 0px;
                 color: #8e8e8e;
             }
+
+        .SVIPtab .van-tab--active {
+            background: linear-gradient(to right, #3cabec, #634bf6);
+        }
+
+        .VIPtab .van-tab--active {
+            background: linear-gradient(to right, #e3ad6b, #956844);
+        }
+
+        .AIDrawtab .van-tab--active {
+            background: linear-gradient(to right, #23d3c2, #336f04);
+        }
     </style>
 </head>
 <body>
@@ -267,7 +279,7 @@
                 <div :class="active==0?'SVIP':active==1?'VIP':'AIDraw'">{{active==0?'SVIP':active==1?'VIP':'AI绘画'}}</div>
             </div>
         </div>
-        <van-tabs v-model="active" animated type="card">
+        <van-tabs v-model="active" animated type="card" :class="active==0?'SVIPtab':active==1?'VIPtab':'AIDrawtab'" @@change="change">
             <van-tab title="SVIP超级会员">
                 <van-radio-group v-model="radio" class="Container">
                     <van-radio :name="item.ID" v-for="(item,index) in CommodityList1" :key="index">
@@ -327,7 +339,7 @@
             √AI智能绘画<br />
             √绘画永久留存<br />
         </p>
-        <van-button type="info" :class="active==0?'':active==1?'VIPBtn':'AIDrawBtn'" block @@click="Pay" :disabled="ButtonEnable">立即支付</van-button>
+        <van-button type="info" :class="active==0?'SVIPBtn':active==1?'VIPBtn':'AIDrawBtn'" block @@click="Pay" :disabled="ButtonEnable">立即支付</van-button>
     </div>
 </body>
 <script src="/ChatGPT_Wx/Global.js"></script>
@@ -345,6 +357,15 @@
             ButtonEnable: false,
         },
         methods: {
+            change(val) {
+                if (val == 0) {
+                    this.radio = this.CommodityList1[0].ID;
+                } else if (val == 1) {
+                    this.radio = this.CommodityList0[0].ID;
+                } else {
+                    this.radio = this.CommodityList2[0].ID;
+                }
+            },
             onClickLeft() {
                 history.back();
             },
@@ -400,6 +421,7 @@
                     this.CommodityList2.push(item);
                 }
             })
+            this.radio = this.CommodityList1[0].ID;
         }
     })
 </script>

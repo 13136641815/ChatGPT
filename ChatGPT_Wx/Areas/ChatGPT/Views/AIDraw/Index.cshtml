@@ -211,13 +211,16 @@
     <div id="app" v-cloak>
         <div id="scroll" style="width: 100%; float: left; max-height: 100%;" class="scroll-container">
             <van-divider style="margin-top: 10px; margin-bottom: 5px; font-size: 10px; color: #ceccca;">本月剩余体验次数：{{Times}},购买剩余次数：{{Times1}}</van-divider>
-            <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
-                <van-swipe-item v-for="(image, index) in UserImgList" :key="index">
-                    <div class="swipeSpan" @@click="ShowText(image.text)"><p>{{image.text}}</p></div>
-                    <van-image height="100%" fit="contain" style="width:48%;float:left;"
-                               :src="image.url" @@click="ShowImgList1(UserImgList,index)"></van-image>
-                </van-swipe-item>
-            </van-swipe>
+            <!--<lazy-component>
+                <van-swipe class="my-swipe" :autoplay="8000" indicator-color="white" :touchable="false">
+                    <van-swipe-item v-for="(image, index) in UserImgList" :key="index">
+                        <div class="swipeSpan" @@click="ShowText(image.text)"><p>{{image.text}}</p></div>-->
+                        @*<img v-lazy="image.url" style="width:48%;float:left;" @@click="ShowImgList1(UserImgList,index)">*@
+                        <!--<van-image height="100%" fit="contain" style="width:48%;float:left;"
+                                   :src="image.url" @@click="ShowImgList1(UserImgList,index)" lazy-load></van-image>
+                    </van-swipe-item>
+                </van-swipe>
+            </lazy-component>-->
             <div class="div_AI">
                 <div class="AI_Img">
                     <van-image round
@@ -316,17 +319,16 @@
     </div>
 </body>
 <!-- 引入 Vue 和 Vant 的 JS 文件 -->
-<script src="/lib/vue/vue.js"></script>
-<script src="/lib/vant/js/vant.js"></script>
-<script src="/lib/axios/axios.js"></script>
-<script src="/lib/axios/PromiseAxios.js"></script>
-<script src="/ChatGPT_Wx/APPJS/App.js"></script>
+<script src="/ChatGPT_Wx/Global.js"></script>
 <script src="/ChatGPT_Wx/Script/script.js"></script>
 <script src="/lib/signalr/signalr.min.js"></script>
 <script src="/ChatGPT_Wx/Script/recorder.js"></script>
 <script src="/ChatGPT_Wx/Script/prism.js"></script>
 <script>
-    Prism.highlightAll();
+    //Prism.highlightAll();
+    Vue.use(vant.Lazyload, {
+        lazyComponent: true
+    });
     // 在 #app 标签下渲染一个按钮组件
     window.MyVue = new Vue({
         el: '#app',
@@ -523,17 +525,16 @@
                     // on cancel
                 });
             }
-            AxiosAsync('/ChatGPT/AIDraw/GetUserDrawTop10', 'get', this.ChatLog, true).then(res => {
-                res.forEach(item => {
-                    JSON.parse(item.AIMessage).forEach(IItem => {
-                        this.UserImgList.push({
-                            text: item.UserMessage,
-                            url: IItem.url
-                        });
-                    })
-                })
-
-            }).catch(err => { });
+            //AxiosAsync('/ChatGPT/AIDraw/GetUserDrawTop10', 'get', this.ChatLog, true).then(res => {
+            //    res.forEach(item => {
+            //        JSON.parse(item.AIMessage).forEach(IItem => {
+            //            this.UserImgList.push({
+            //                text: item.UserMessage,
+            //                url: IItem.url
+            //            });
+            //        })
+            //    })
+            //}).catch(err => { });
             this.UserInfo = await window.APP_GetUserInfoAsync();
             if (this.UserInfo.VIP_Type != 1) {
                 this.Times = 0;

@@ -30,7 +30,8 @@ namespace ChatGPT_Mapper
         {
             return await SugarConfig.CretClient().Queryable<GPT_ChatLog>()
                 .Where(it => it.Type == 3)
-                .Take(10)
+                .Take(3)
+                .OrderBy(it => SqlFunc.GetRandom())
                 .ToListAsync();
         }
         public async Task<List<GPT_ChatLog>> GetQList() 

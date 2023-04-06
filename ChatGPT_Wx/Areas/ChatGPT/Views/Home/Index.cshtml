@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="/lib/vant/css/index.css" />
     <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
     <title>@ViewBag.Title</title>
+    @*<script src="/lib/eruda/eruda.min.js"></script>
+    <script>eruda.init();</script>*@
     <style>
         iframe {
             /*            width: 100%;
@@ -44,7 +46,7 @@
     <div id="app" v-cloak>
         <div class="scroll-wrapper">
             <transition :name="item.transition" v-for="(item,index) in route" :key="index">
-                <iframe ref="IFRAME" :src="IsLazyPage==true?(item.islode==true?item.url:''):item.url" v-show="index==active" data-scrolltop="0" frameborder="0" onload="Lode(this)"></iframe>
+                <iframe :id="'IFRAME'+index" v-if="item.islode" :src="item.url" v-show="index==active" data-scrolltop="0" frameborder="0" onload="Lode(this)"></iframe>
             </transition>
         </div>
         <van-tabbar v-show="TabbarShow" v-model="active" safe-area-inset-bottom fixed @@change="tabChange" :before-change="beforeChange">
@@ -70,7 +72,6 @@
                 Index: 0,
                 TabbarShow: false,
                 isHaveBill: false,
-                IsLazyPage: false,//是否懒加载
             },
             methods: {
                 ChangeAI(botID) {
@@ -103,13 +104,11 @@
                 },
                 beforeChange(name) {
                     if (!this.route[name].islode) {
-                        if (this.IsLazyPage) {
-                            vant.Toast.loading({
-                                message: '加载中...',
-                                forbidClick: true,
-                                duration: 0,
-                            });
-                        }
+                        vant.Toast.loading({
+                            message: '加载中...',
+                            forbidClick: true,
+                            duration: 0,
+                        });
                         setTimeout(() => {
                             this.route[name].islode = true;
                             //vant.Toast.clear();
@@ -158,7 +157,7 @@
                     that.route = [];
                     const list = [{
                         url: '/ChatGPT/AI/GPT3_5Voice',
-                        name: 'ChatBot',
+                        name: 'Chat聊天',
                         icon: 'chat',
                         transition: 'van-slide-right',
                         Index: 0,

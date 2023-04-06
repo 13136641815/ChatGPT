@@ -10,6 +10,6 @@ namespace ChatGPT_Model.GPTDraw
     {
         public string prompt { get; set; }
         public int n { get; set; }
-        public string size { get; set; } = "1024x1024";
+        public string size { get; set; } = "512x512";
     }
 }

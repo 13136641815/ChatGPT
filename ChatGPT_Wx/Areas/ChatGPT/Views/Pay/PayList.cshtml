@@ -9,13 +9,13 @@
     <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
     <title>@ViewBag.Title</title>
     <style>
-        .SVIP_DivHeardBg {
+        .VIP_DivHeardBg {
             width: 100%;
             padding: 1rem 0 2rem 0;
             background: linear-gradient(to right, #e3ad6b, #956844);
         }
 
-        .VIP_DivHeardBg {
+        .SVIP_DivHeardBg {
             width: 100%;
             padding: 1rem 0 2rem 0;
             background: linear-gradient(to right, #3cabec, #634bf6);
@@ -57,14 +57,14 @@
                 font-size: 1.1rem;
             }
 
-        .SVIP {
+        .VIP {
             font-size: 34px;
             font-weight: 800;
             color: rgb(241, 222, 189);
             text-shadow: rgba(255, 255, 255, 0.35) 5px 5px 1px;
         }
 
-        .VIP {
+        .SVIP {
             font-size: 34px;
             font-weight: 800;
             color: #d3f0fc;
@@ -130,21 +130,21 @@
                 color: #999;
             }
 
-        .SVIPCardChecked {
+        .VIPCardChecked {
             border: 1px solid #a1734a;
             background-color: #f3eae0;
         }
 
-            .SVIPCardChecked .Title {
+            .VIPCardChecked .Title {
                 background-color: #bc8b58;
             }
 
-        .VIPCardChecked {
+        .SVIPCardChecked {
             border: 1px solid #1989fa;
             background-color: #deeeff;
         }
 
-            .VIPCardChecked .Title {
+            .SVIPCardChecked .Title {
                 background-color: #1989fa;
             }
 
@@ -193,11 +193,11 @@
                 color: #999;
             }
 
-        .SVIPText {
+        .VIPText {
             color: #b88f34;
         }
 
-        .VIPText {
+        .SVIPText {
             color: #1989fa;
         }
 
@@ -217,18 +217,34 @@
             .VIPtext span {
                 font-weight: 600;
             }
-        .SVIPBtn {
+
+        .VIPBtn {
             background-color: #dfa969;
             border: #dfa969;
         }
-        .VIPBtn {
+
+        .SVIPBtn {
             background-color: #986b46;
             border: #986b46;
         }
+
         .AIDrawBtn {
             background-color: #26c09e;
             border: #26c09e;
         }
+
+        .van-tabs {
+            margin-top: 20px;
+        }
+
+        .van-tabs__nav--card {
+            border: 0px;
+        }
+
+            .van-tabs__nav--card .van-tab {
+                border-right: 0px;
+                color: #8e8e8e;
+            }
     </style>
 </head>
 <body>
@@ -251,7 +267,7 @@
                 <div :class="active==0?'SVIP':active==1?'VIP':'AIDraw'">{{active==0?'SVIP':active==1?'VIP':'AI绘画'}}</div>
             </div>
         </div>
-        <van-tabs v-model="active" animated>
+        <van-tabs v-model="active" animated type="card">
             <van-tab title="SVIP超级会员">
                 <van-radio-group v-model="radio" class="Container">
                     <van-radio :name="item.ID" v-for="(item,index) in CommodityList1" :key="index">
@@ -311,7 +327,7 @@
             √AI智能绘画<br />
             √绘画永久留存<br />
         </p>
-        <van-button type="info" :class="active==0?'SVIPBtn':active==1?'':'AIDrawBtn'" block  @@click="Pay" :disabled="ButtonEnable">立即支付</van-button>
+        <van-button type="info" :class="active==0?'':active==1?'VIPBtn':'AIDrawBtn'" block @@click="Pay" :disabled="ButtonEnable">立即支付</van-button>
     </div>
 </body>
 <script src="/ChatGPT_Wx/Global.js"></script>

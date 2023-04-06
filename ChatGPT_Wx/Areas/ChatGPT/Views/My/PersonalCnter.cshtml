@@ -89,7 +89,7 @@
         }
 
             .CardContentText h3 {
-                color: #f1debd;
+                color: #d1eeff;
                 font-size: 1.0rem;
                 position: relative;
                 width: 68%;
@@ -173,10 +173,10 @@
                     <h3 v-else-if="UserInfo.VIP_Type==0" style="color: #ffffff;">普通会员</h3>
                     <h3 v-else style="color: #cdcdcd;">游客</h3>
                     <p v-if="UserInfo.VIP_Type==-1" style="color:#cdcdcd;">剩余体验次数{{UserInfo.Free_Second}}</p>
-                    <p v-else-if="UserInfo.VIP_Type==1" style="color: #f1debd; ">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
-                    <p v-else style="color: #ffffff; ">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
+                    <p v-else-if="UserInfo.VIP_Type==1" style="color: #d1eeff; margin: 3px 0; ">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
+                    <p v-else style="color: #ffffff; margin: 3px 0; ">将于：{{UserInfo.BeOverdue_VIP}} 到期</p>
                     <p style="color: #c6c3ff;">AI绘画次数：{{AIDrawSecond(UserInfo.AIDraw_Second)}}次<span @@click="Reload" style="float: right; margin-right: 2.5rem; font-size: 17px; color: #fff; "><van-icon name="replay"></van-icon></span></p>
-                    <div class="tops" style="color: #f1debd; text-shadow: 5px 5px 1px #ffffff59;" v-if="UserInfo.VIP_Type==1">SVIP</div>
+                    <div class="tops" style="color: #d1eeff; text-shadow: rgb(151 151 151) 5px 5px 1px; " v-if="UserInfo.VIP_Type==1">SVIP</div>
                     <div class="tops" style="color: #ffffff; text-shadow: 5px 5px 1px #ffffff59; " v-else-if="UserInfo.VIP_Type==0">VIP</div>
                     <div class="tops" style="color:#cdcdcd;" v-else>Visitor</div>
                 </div>

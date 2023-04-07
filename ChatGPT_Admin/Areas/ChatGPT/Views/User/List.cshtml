@@ -183,6 +183,9 @@
                     <el-form-item label="剩余体验次数" prop="Free_Second">
                         <el-input-number v-model="Form.Free_Second" :min="1" :max="500"></el-input-number>
                     </el-form-item>
+                    <el-form-item label="绘画剩余次数" prop="AIDraw_Second">
+                        <el-input-number v-model="Form.AIDraw_Second" :min="1" :max="500"></el-input-number>
+                    </el-form-item>
                     <el-form-item label="特定分佣比例（0.00为不分佣）" prop="ShareCommission">
                         <el-input-number v-model="Form.ShareCommission" :min="0.00" :precision="2" :step="0.01" :max="1"></el-input-number>
                     </el-form-item>
@@ -257,7 +260,8 @@
                         WxHeadUrl: '',
                         YN_VIP: '',
                         BeOverdue_VIP: '',
-                        Free_Second: '',
+                        Free_Second: 0,
+                        AIDraw_Second: 0,
                         ShareCommission: 0.00
                     },
                     thisRow: {},
@@ -332,6 +336,7 @@
                     }).then(function (res) {
                         that.thisRow.Block = that.Form.Block;
                         that.thisRow.Free_Second = that.Form.Free_Second;
+                        that.thisRow.AIDraw_Second = that.Form.AIDraw_Second;
                         that.thisRow.ShareCommission = that.Form.ShareCommission;
                         that.$message({
                             message: '更新成功！',

@@ -25,5 +25,6 @@ namespace ChatGPT_Model
         public string Notice { get; set; }
         public int VIP_NumberWords { get; set; }
         public int Draw_Second { get; set; }
+        public int Free_DrawSecond { get; set; }
     }
 }

@@ -44,7 +44,8 @@ namespace ChatGPT_Service.Home
                     BeOverdue_VIP = DateTime.Parse("2000/01/01"),
                     BeOverdue_PVIP = DateTime.Parse("2000/01/01"),
                     Free_Second = setmodel.Free_Second,
-                    PushOpenID = pushopenid == UserInfo.openid ? "0" : pushopenid
+                    PushOpenID = pushopenid == UserInfo.openid ? "0" : pushopenid,
+                    AIDraw_Second=setmodel.Free_DrawSecond,//新用户免费绘画次数
                 };
                 var i = app.UserAdd(model);
                 if (i > 0)

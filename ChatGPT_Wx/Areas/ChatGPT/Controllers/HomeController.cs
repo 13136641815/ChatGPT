@@ -28,7 +28,7 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             {
                 var model = JsonConvert.DeserializeObject<H5Cookie>(Tools.AES.staticKeyTo_DecryptAES(value));//获取COOKIE身份
                 ChatGPT_Service.Home.Mapper_HomeController app = new ChatGPT_Service.Home.Mapper_HomeController();
-                var isok =await app.CheckedInfo(model.UserInfo);
+                var isok = await app.CheckedInfo(model.UserInfo);
             }
             return View();
         }
@@ -40,9 +40,15 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             {
                 var model = JsonConvert.DeserializeObject<H5Cookie>(Tools.AES.staticKeyTo_DecryptAES(value));//获取COOKIE身份
                 ChatGPT_Service.Home.Mapper_HomeController app = new ChatGPT_Service.Home.Mapper_HomeController();
-                var isok =await app.CheckedInfo(model.UserInfo);
+                var isok = await app.CheckedInfo(model.UserInfo);
             }
             return Json(new Result());
         }
+        //[HttpGet]
+        //public async Task<JsonResult> GetWxShare()
+        //{
+        //    string URL = _httpContextAccessor.HttpContext.Request.Host.Host + _httpContextAccessor.HttpContext.Request.Path;
+
+        //}
     }
 }

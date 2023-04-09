@@ -34,6 +34,10 @@
                             <el-form-item label="移动端标题" prop="Title">
                                 <el-input v-model="GPT_Setup.Title"></el-input>
                             </el-form-item>
+                            <el-form-item label="分享描述" prop="Desc_">
+                                <el-input type="textarea"
+                                          :rows="4" v-model="GPT_Setup.Desc_"></el-input>
+                            </el-form-item>
                             <el-form-item label="API接口地址" prop="ApiUrl">
                                 <el-input v-model="GPT_Setup.ApiUrl"></el-input>
                             </el-form-item>

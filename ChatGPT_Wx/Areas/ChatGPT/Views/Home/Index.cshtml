@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="/lib/vant/css/index.css" />
     <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
     <title>@ViewBag.Title</title>
-    @*<script src="/lib/eruda/eruda.min.js"></script>
-    <script>eruda.init();</script>*@
+    <script src="/lib/eruda/eruda.min.js"></script>
+    <script>eruda.init();</script>
     <style>
         iframe {
             /*            width: 100%;
@@ -55,8 +55,8 @@
     </div>
 
     <!-- 引入 Vue 和 Vant 的 JS 文件 -->
-    <script src="/lib/vue/vue.js"></script>
-    <script src="/lib/vant/js/vant.js"></script>
+    <script src="https://res2.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+    <script src="/ChatGPT_Wx/Global.js"></script>
     <script>
         function Lode(dom) {
             window.HomeVue.iframeLode(dom);
@@ -130,7 +130,7 @@
             },
             mounted() {
                 const that = this;
-
+                window.APP_Wxshare();
                 window.addEventListener('pageshow', function (event) {
                     // 点击回退按钮返回
                     if (event.persisted || window.performance && window.performance.navigation.type == 2) {

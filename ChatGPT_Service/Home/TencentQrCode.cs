@@ -5,6 +5,8 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -61,6 +63,24 @@ namespace ChatGPT_Service.Home
             }
             return "";
         }
+        public async Task<string> GetTicket()
+        {
+            string access_token = await GetAccess_token();
+            if (!string.IsNullOrEmpty(access_token))
+            {
+                var url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + access_token + "&type=jsapi";
+                HttpClient httpClient = new HttpClient();
+                QRCodeCreate model = new QRCodeCreate();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var ResStr = httpClient.GetAsync(url).Result.Content.ReadAsStringAsync().Result;
+                var ResTicketModel = JsonConvert.DeserializeObject<ResTicket>(ResStr);
+                if (!string.IsNullOrEmpty(ResTicketModel.ticket))
+                {
+                    return ResTicketModel.ticket;
+                }
+            }
+            return "";
+        }
         /// <summary>
         /// 首次进入系统，通过本人的openid看看是否是被别人邀请进入的
         /// </summary>
@@ -81,6 +101,25 @@ namespace ChatGPT_Service.Home
             {
                 return "0";
             }
+        }
+
+        /// <summary>
+        /// Sha1签名
+        /// </summary>
+        /// <param name="str">内容</param>
+        /// <param name="encoding">编码</param>
+        /// <returns></returns>
+        public static string Sha1Signature(string str, Encoding encoding = null)
+        {
+            if (encoding == null) encoding = Encoding.UTF8;
+            var buffer = encoding.GetBytes(str);
+            var data = SHA1.Create().ComputeHash(buffer);
+            StringBuilder sub = new StringBuilder();
+            foreach (var t in data)
+            {
+                sub.Append(t.ToString("x2"));
+            }
+            return sub.ToString();
         }
     }
 }

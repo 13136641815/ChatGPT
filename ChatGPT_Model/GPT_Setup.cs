@@ -18,6 +18,10 @@ namespace ChatGPT_Model
         public int ID { get; set; }
         public DateTime? Stamp { get; set; } = DateTime.Now;
         public string Title { get; set; }
+        /// <summary>
+        /// 微信端分享描述
+        /// </summary>
+        public string Desc_ { get; set; }
         public string ApiUrl { get; set; }
         public string CommissionRemark { get; set; }
         public int Free_Second { get; set; }

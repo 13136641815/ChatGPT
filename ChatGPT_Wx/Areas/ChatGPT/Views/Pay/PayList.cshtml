@@ -212,6 +212,7 @@
             padding-right: 20px;
             line-height: 24px;
             min-height: 160px;
+            white-space: pre-line;
         }
 
             .VIPtext span {
@@ -320,24 +321,17 @@
                 </van-radio-group>
             </van-tab>
         </van-tabs>
-        <p class="VIPtext SVIPText" v-if="active==0">
-            <span>SVIP超级会员权益：</span><br />
-            √每月不限次数对话<br />
-            √单次对话字数多达1000字左右<br />
-            √机器人回答可上下文关联<br />
-            √多款情景机器人、AI应用机器人<br />
-            √每月免费赠送3次AI图片生成
+        <p class="VIPtext SVIPText" v-if="active==0&&setupShow">
+            <span>{{SetUp.VIPReamrk[0].Title}}</span>
+            {{SetUp.VIPReamrk[0].Mx}}
         </p>
-        <p class="VIPtext VIPText" v-else-if="active==1">
-            <span>VIP会员权益：</span><br />
-            √每月不限次数对话<br />
-            √单次对话字数200字以内<br />
-            √机器人回答无上下文关联
+        <p class="VIPtext VIPText" v-else-if="active==1&&setupShow">
+            <span>{{SetUp.VIPReamrk[1].Title}}</span>
+            {{SetUp.VIPReamrk[1].Mx}}
         </p>
-        <p class="VIPtext AIDrawText" v-else-if="active==2">
-            <span>AI绘画权益：</span><br />
-            √AI智能绘画<br />
-            √绘画永久留存<br />
+        <p class="VIPtext AIDrawText" v-else-if="active==2&&setupShow">
+            <span>{{SetUp.VIPReamrk[2].Title}}</span>
+            {{SetUp.VIPReamrk[2].Mx}}
         </p>
         <van-button type="info" :class="active==0?'SVIPBtn':active==1?'VIPBtn':'AIDrawBtn'" block @@click="Pay" :disabled="ButtonEnable">立即支付</van-button>
     </div>
@@ -355,6 +349,8 @@
             CommodityList1: [],
             CommodityList2: [],
             ButtonEnable: false,
+            SetUp: {},
+            setupShow: false
         },
         methods: {
             change(val) {
@@ -404,12 +400,21 @@
                 } catch (err) {
                     alert(err);
                 }
+            },
+            GetSetUp() {
+                AxiosAsync('/ChatGPT/Home/GetSetUp', 'get', {}).then(res => {
+                    this.SetUp = res;
+                    this.setupShow = true;
+                }).catch(err => {
+
+                })
             }
         },
         created() {
 
         },
         async mounted() {
+            this.GetSetUp();
             this.UserInfo = await window.APP_GetUserInfoAsync();
             const ResList = await this.GetCommodityList();
             ResList.forEach(item => {

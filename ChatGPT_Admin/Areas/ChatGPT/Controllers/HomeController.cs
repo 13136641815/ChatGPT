@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ChatGPT_Model.AppModel;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ChatGPT_Admin.Areas.ChatGPT.Controllers
 {
@@ -8,6 +10,11 @@ namespace ChatGPT_Admin.Areas.ChatGPT.Controllers
         public IActionResult List()
         {
             return View();
+        }
+        [HttpGet]
+        public async Task<JsonResult> UpdateTable()
+        {
+            return Json(new Result() { });
         }
     }
 }

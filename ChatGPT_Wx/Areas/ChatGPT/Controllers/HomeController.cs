@@ -38,6 +38,10 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             }
             return View();
         }
+        public async Task<IActionResult> Description()
+        {
+            return View();
+        }
         [HttpGet]
         public async Task<JsonResult> CheckedInfo()
         {
@@ -76,6 +80,15 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
                 MSG = ""
             });
         }
-
+        [HttpGet]
+        public async Task<JsonResult> GetSetUp()
+        {
+            Mapper_GPT_Setup setApp = new Mapper_GPT_Setup();
+            var setmodel = await setApp.GetFirstAsync();
+            return Json(new Result()
+            {
+                DATA = setmodel
+            });
+        }
     }
 }

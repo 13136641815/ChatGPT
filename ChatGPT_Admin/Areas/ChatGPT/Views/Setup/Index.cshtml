@@ -64,6 +64,35 @@
                                 <el-input type="textarea"
                                           :rows="8" v-model="GPT_Setup.Notice"></el-input>
                             </el-form-item>
+                            <el-tabs v-model="activeName" v-if="tabshow">
+                                <el-tab-pane label="SVIP" name="first">
+                                    <el-form-item label="SVIP标题">
+                                        <el-input v-model="GPT_Setup.VIPReamrk[0].Title"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="SVIP具体说明">
+                                        <el-input type="textarea"
+                                                  :rows="8" v-model="GPT_Setup.VIPReamrk[0].Mx"></el-input>
+                                    </el-form-item>
+                                </el-tab-pane>
+                                <el-tab-pane label="VIP" name="second">
+                                    <el-form-item label="VIP标题">
+                                        <el-input v-model="GPT_Setup.VIPReamrk[1].Title"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="VIP具体说明">
+                                        <el-input type="textarea"
+                                                  :rows="8" v-model="GPT_Setup.VIPReamrk[1].Mx"></el-input>
+                                    </el-form-item>
+                                </el-tab-pane>
+                                <el-tab-pane label="AI绘画" name="third">
+                                    <el-form-item label="AI绘画标题">
+                                        <el-input v-model="GPT_Setup.VIPReamrk[2].Title"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="AI绘画具体说明">
+                                        <el-input type="textarea"
+                                                  :rows="8" v-model="GPT_Setup.VIPReamrk[2].Mx"></el-input>
+                                    </el-form-item>
+                                </el-tab-pane>
+                            </el-tabs>
                         </el-form>
                     </div>
                 </el-card>
@@ -86,6 +115,8 @@
             el: '#app',
             data: function () {
                 return {
+                    activeName: 'first',
+                    tabshow: false,
                     dialogTableVisible: false,
                     gridData: [],
                     GPT_Setup: {
@@ -112,7 +143,17 @@
                         DoorJe: [
                             { required: true, message: '请输入门槛金额', trigger: 'blur' }
                         ]
-                    }
+                    },
+                    VIPReamrk: [{
+                        Title: '',
+                        Mx: ''
+                    }, {
+                        Title: '',
+                        Mx: ''
+                    }, {
+                        Title: '',
+                        Mx: ''
+                    }]
                 };
             },
             methods: {
@@ -186,6 +227,7 @@
                         },
                     }).then(function (res) {
                         that.GPT_Setup = res;
+                        that.tabshow = true;
                     }).catch(function (err) {
                         that.$message.error(err);
                     });

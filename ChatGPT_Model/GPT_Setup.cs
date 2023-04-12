@@ -1,4 +1,5 @@
-﻿using SqlSugar;
+﻿using ChatGPT_Model.AppModel;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,5 +31,7 @@ namespace ChatGPT_Model
         public int VIP_NumberWords { get; set; }
         public int Draw_Second { get; set; }
         public int Free_DrawSecond { get; set; }
+        [SqlSugar.SugarColumn(ColumnDataType = "varchar(4000)" /*可以设置类型*/, IsJson = true)]
+        public List<VIPReamrk> VIPReamrk { get; set; }
     }
 }

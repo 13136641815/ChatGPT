@@ -1,0 +1,66 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="/lib/vant/css/index.css" />
+    <link href="/ChatGPT_Wx/Style.css" rel="stylesheet" />
+    <title></title>
+    <style>
+        .text {
+            font-size: 16px;
+            padding: 5px;
+            padding-left: 20px;
+            padding-right: 20px;
+            line-height: 44px;
+            min-height: 160px;
+            white-space: pre-line;
+            color: #1989fa;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <van-nav-bar title="推广说明"
+                     left-text="返回"
+                     left-arrow
+                     @@click-left="onClickLeft"></van-nav-bar>
+        <div class="text" v-if="setupShow">{{SetUp.CommissionRemark}}</div>
+    </div>
+    <script src="/ChatGPT_Wx/Global.js"></script>
+    <script>
+        // 在 #app 标签下渲染一个按钮组件
+        new Vue({
+            el: '#app',
+            data: {
+                SetUp: {},
+                setupShow: false
+            },
+            methods: {
+                GetSetUp() {
+                    AxiosAsync('/ChatGPT/Home/GetSetUp', 'get', {}).then(res => {
+                        this.SetUp = res;
+                        this.setupShow = true;
+                    }).catch(err => {
+
+                    })
+                },
+                onClickLeft() {
+                    window.history.go(-1);
+                },
+            },
+            created() {
+
+            },
+            mounted() {
+                this.GetSetUp();
+            }
+        })
+    </script>
+</body>
+</html>

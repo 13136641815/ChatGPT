@@ -33,5 +33,6 @@ namespace ChatGPT_Model
         public int Free_DrawSecond { get; set; }
         [SqlSugar.SugarColumn(ColumnDataType = "varchar(4000)" /*可以设置类型*/, IsJson = true)]
         public List<VIPReamrk> VIPReamrk { get; set; }
+        public string PushImg { get; set; }
     }
 }

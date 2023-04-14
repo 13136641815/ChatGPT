@@ -7,9 +7,13 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\**" />
+    <Compile Remove="wwwroot\ChatGPT\UploadImages\**" />
     <Content Remove="Controllers\**" />
+    <Content Remove="wwwroot\ChatGPT\UploadImages\**" />
     <EmbeddedResource Remove="Controllers\**" />
+    <EmbeddedResource Remove="wwwroot\ChatGPT\UploadImages\**" />
     <None Remove="Controllers\**" />
+    <None Remove="wwwroot\ChatGPT\UploadImages\**" />
   </ItemGroup>
 
   <ItemGroup>

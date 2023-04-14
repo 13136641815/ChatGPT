@@ -60,6 +60,20 @@
                                 <el-input type="textarea"
                                           :rows="8" v-model="GPT_Setup.CommissionRemark"></el-input>
                             </el-form-item>
+                            <el-form-item label="分销海报" prop="PushImg">
+                                <el-upload action="/ChatGPT/Bot/UploedImg"
+                                           list-type="picture-card"
+                                           :show-file-list="false"
+                                           :on-preview="handlePictureCardPreview"
+                                           accept=".jpg,.png"
+                                           :on-exceed="handleExceed"
+                                           :before-upload="beforeupload"
+                                           :on-success="TopicSuccess"
+                                           :file-list="imagesfileList">
+                                    <img v-if="GPT_Setup.PushImg" :src="GPT_Setup.PushImg" class="avatar">
+                                    <i v-else class="el-icon-plus" style="color:#fff;"></i>
+                                </el-upload>
+                            </el-form-item>
                             <el-form-item label="系统公告" prop="Notice">
                                 <el-input type="textarea"
                                           :rows="8" v-model="GPT_Setup.Notice"></el-input>
@@ -119,6 +133,7 @@
                     tabshow: false,
                     dialogTableVisible: false,
                     gridData: [],
+                    imagesfileList: [],
                     GPT_Setup: {
                     },
                     Rule: {
@@ -136,6 +151,9 @@
                         ],
                         Draw_Second: [
                             { required: true, message: '请输入限制绘画次数', trigger: 'blur' }
+                        ],
+                        PushImg: [
+                            { required: true, message: '请选择推广海报', trigger: 'blur' }
                         ],
                         Free_DrawSecond: [
                             { required: true, message: '请输入免费绘画次数', trigger: 'blur' }
@@ -157,6 +175,47 @@
                 };
             },
             methods: {
+                //文件上传后查看大图
+                handlePictureCardPreview(file) {
+
+                },
+                //上传文件超过数量函数
+                handleExceed(files, fileList) {
+                    //this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+                },
+                //上传前校验大小和类型函数
+                beforeupload(file) {
+                    this.GPT_Setup.PushImg = '';
+
+                    let FileJson = file.name.split('.');
+                    if (FileJson.length > 2) {
+                        //文件非法
+                        this.$message.warning(`文件非法，请检查文件名称是否包含多个扩展名`);
+                        return false;
+                    } else {
+                        if (FileJson[1] === "png" || FileJson[1] === "PNG" || FileJson[1] === "jpg" || FileJson[1] === "JPG") {
+                            const filesize = file.size / 1024 / 1024;
+                            if (filesize > 15) {
+                                this.$message.warning(`文件最多支持大小15M，当前文件大小${filesize}`);
+                                return false;
+                            }
+                            return true;
+                        } else {
+                            this.$message.warning(`当前限制选择jpg、png文件，本次选择了 ${FileJson[1]} 文件`);
+                            return false;
+                        }
+                    }
+                },
+                //上传成功回调
+                TopicSuccess(response, file, fileList) {
+                    if (response.CODE == 200) {
+                        this.GPT_Setup.PushImg = response.DATA;
+                        console.log(this.GPT_Setup.PushImg);
+                    } else {
+                        this.imagesfileList.splice(0, this.imagesfileList.length);
+                        this.$message.warning(`上传失败！${response.MSG}`);
+                    }
+                },
                 Update() {
                     const that = this;
                     axios({

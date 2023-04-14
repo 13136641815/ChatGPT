@@ -70,7 +70,7 @@
                                            :before-upload="beforeupload"
                                            :on-success="TopicSuccess"
                                            :file-list="imagesfileList">
-                                    <img v-if="GPT_Setup.PushImg" :src="GPT_Setup.PushImg" class="avatar">
+                                    <img height="100%;" v-if="GPT_Setup.PushImg" :src="GPT_Setup.PushImg" class="avatar">
                                     <i v-else class="el-icon-plus" style="color:#fff;"></i>
                                 </el-upload>
                             </el-form-item>

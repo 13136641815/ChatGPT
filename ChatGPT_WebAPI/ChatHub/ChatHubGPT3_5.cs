@@ -21,6 +21,7 @@ namespace ChatGPT_WebAPI.ChatHub
         public async Task SendMessage(int botID, string message, int VIPTYPE)
         {
             Dictionary<string, string> DiLog = new Dictionary<string, string>();
+            DiLog.Add("0.", "首次对话时间：" + DateTime.Now.ToString());
             try
             {
                 ChatGPT_Mapper.Mapper_GPT_BobotList botapp = new ChatGPT_Mapper.Mapper_GPT_BobotList(); //查询情景机器人
@@ -133,7 +134,7 @@ namespace ChatGPT_WebAPI.ChatHub
                     // 逐行读取文本内容
                     while (!reader.EndOfStream)
                     {
-                        Thread.Sleep(15);
+                        Thread.Sleep(30);
                         string line = await reader.ReadLineAsync();
                         // 在这里对每一行文本进行处理
                         if (line.Contains("[DONE]"))
@@ -141,7 +142,7 @@ namespace ChatGPT_WebAPI.ChatHub
                             //回复流结束
                             DiLog.Add("4.", DateTime.Now.ToString() + "|消息接收完结,回复完整内容：" + Text);
                             await Clients.Caller.SendAsync("EndMessage", "", line);//回复
-                            await Log(DiLog);
+                            await WebAPI_Log(DiLog);
                             return;
                         }
                         if (line.Contains("assistant"))
@@ -174,12 +175,12 @@ namespace ChatGPT_WebAPI.ChatHub
                         }
                         DiLog.Add("5.", DateTime.Now.ToString() + "|接收异常:[代码:" + ErrModel.error.type + "][内容:" + ErrModel.error.message + "]");
                         await Clients.Caller.SendAsync("ErrMessage", "", ErrModel.error.message);//异常回复
-                        await Log(DiLog);
+                        await WebAPI_Log(DiLog);
                     }
                 }
             }
         }
-        async Task Log(Dictionary<string, string> di)
+        async Task WebAPI_Log(Dictionary<string, string> di)
         {
             SYSTEM_Models.sys_Log4net modelLog4 = new SYSTEM_Models.sys_Log4net()
             {

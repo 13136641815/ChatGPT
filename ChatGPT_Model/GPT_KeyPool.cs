@@ -16,10 +16,15 @@ namespace ChatGPT_Model
         }
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int ID { get; set; }
+        [SugarColumn(IsNullable = true)]
         public DateTime? Stamp { get; set; } = DateTime.Now;
+        [SugarColumn(IsNullable = true)]
         public int? Enable { get; set; }
+        [SugarColumn(IsNullable = true)]
         public int? State { get; set; }
+        [SugarColumn(IsNullable = true)]
         public string ApiKey { get; set; }
+        [SugarColumn(IsNullable = true)]
         public string Explain { get; set; }
 
     }

@@ -24,7 +24,7 @@ namespace SYSTEM_Models
         /// 日志系统输出时间
         /// </summary>
         [SplitField]
-        public DateTime LogTime { get; set; }
+        public DateTime? LogTime { get; set; }
         /// <summary>
         /// 系统名称
         /// </summary>

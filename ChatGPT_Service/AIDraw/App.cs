@@ -23,7 +23,7 @@ namespace ChatGPT_Service.AIDraw
             var list = await app.GetListFromMonth(firstDayOfMonth, lastDayOfMonth, OpenID);
             Mapper_GPT_Setup setApp = new Mapper_GPT_Setup();
             var setModel = await setApp.GetFirstAsync();
-            int Draw_Second = setModel.Draw_Second;
+            int Draw_Second = int.Parse(setModel.Draw_Second.ToString());
             return Draw_Second - list.Count;
         }
     }

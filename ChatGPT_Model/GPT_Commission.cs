@@ -24,33 +24,18 @@ namespace ChatGPT_Model
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int ID { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public DateTime? Stamp { get; set; } = DateTime.Now;
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public DateTime? BackStamp { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public int? State { get; set; }
+        [SugarColumn(IsNullable = true)]
         public int? CheckState { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public int? Push_ID { get; set; }
 
         /// <summary>
@@ -58,6 +43,7 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public string Push_WxOpenID { get; set; }
 
         /// <summary>
@@ -65,13 +51,10 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public string Push_NikeName { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public int? Buy_ID { get; set; }
 
         /// <summary>
@@ -79,6 +62,7 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public string Buy_WxOpenID { get; set; }
 
         /// <summary>
@@ -86,6 +70,7 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public string Buy_NikeName { get; set; }
 
         /// <summary>
@@ -93,6 +78,7 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public string OrderNumber { get; set; }
 
         /// <summary>
@@ -100,6 +86,7 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public string CommodityName { get; set; }
 
         /// <summary>
@@ -107,6 +94,7 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(ColumnDataType = "decimal(18,2)",IsNullable = true)]
         public decimal? ShareCommission { get; set; }
 
         /// <summary>
@@ -114,6 +102,7 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(ColumnDataType = "decimal(18,2)",IsNullable = true)]
         public decimal? OrderAmountYuan { get; set; }
 
         /// <summary>
@@ -121,6 +110,7 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(ColumnDataType = "decimal(18,2)",IsNullable = true)]
         public decimal? Commission { get; set; }
 
     }

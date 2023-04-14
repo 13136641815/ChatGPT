@@ -16,14 +16,23 @@ namespace ChatGPT_Model
         }
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int ID { get; set; }
+        [SugarColumn(IsNullable = true)]
         public DateTime? Stamp { get; set; } = DateTime.Now;
+        [SugarColumn(IsNullable = true)]
         public string CDK { get; set; }
-        public int State { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public int? State { get; set; }
+        [SugarColumn(IsNullable = true)]
         public string NikeName { get; set; }
-        public int UserID { get; set; }
-        public DateTime BigoTime { get; set; }
-        public int Type { get; set; }
-        public int Duration { get; set; }
-        public int Free_Second { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public int? UserID { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public DateTime? BigoTime { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public int? Type { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public int? Duration { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public int? Free_Second { get; set; }
     }
 }

@@ -12,8 +12,9 @@ namespace ChatGPT_Admin.Areas.ChatGPT.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<JsonResult> UpdateTable()
+        public JsonResult UpdateTable()
         {
+            ChatGPT_Mapper.CreateTable.Create();
             return Json(new Result() { });
         }
     }

@@ -24,11 +24,7 @@ namespace ChatGPT_Model
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int ID { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public DateTime? Stamp { get; set; } = DateTime.Now;
         public int? Type { get; set; }
 
@@ -37,20 +33,12 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public string OrderNumber { get; set; }
-
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public int? Enable { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public int? Discount { get; set; }
 
         /// <summary>
@@ -58,34 +46,19 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public string CommodityName { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public int? CommodityOriginalPrice { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public int? CommodityPresentPrice { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public int? CommodityType { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public int? Duration { get; set; }
 
         /// <summary>
@@ -93,6 +66,7 @@ namespace ChatGPT_Model
         /// Default:
         /// Nullable:True
         /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public string Explain { get; set; }
 
     }

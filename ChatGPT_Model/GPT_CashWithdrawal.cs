@@ -22,24 +22,21 @@ namespace ChatGPT_Model
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int ID { get; set; }
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public DateTime? Stamp { get; set; } = DateTime.Now;
 
-        /// <summary>
-        /// Desc:
-        /// Default:
-        /// Nullable:True
-        /// </summary>           
+        [SugarColumn(IsNullable = true)]
         public int? State { get; set; }
+        [SugarColumn(IsNullable = true)]
         public string NikeName { get; set; }
+        [SugarColumn(IsNullable = true)]
         public string Opneid { get; set; }
+        [SugarColumn(IsNullable = true)]
         public string AccountType { get; set; }
+        [SugarColumn(IsNullable = true)]
         public string AccountNum { get; set; }
-        public int ZBS { get; set; }
-        public decimal ZJE { get; set; }
+        public int? ZBS { get; set; }
+        [SugarColumn(ColumnDataType = "decimal(18,2)",IsNullable = true)]
+        public decimal? ZJE { get; set; }
     }
 }

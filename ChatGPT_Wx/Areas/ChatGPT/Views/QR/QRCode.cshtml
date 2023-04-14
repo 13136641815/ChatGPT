@@ -23,7 +23,7 @@
                      left-arrow
                      @@click-left="onClickLeft"></van-nav-bar>
         <div id="QRImg" style="background-color:#FFFFFF">
-            <img style="width:100%; object-fit: contain;" src="/ChatGPT_Wx/Img/TG.jpg" />
+            <img style="width:100%; object-fit: contain;" :src="'data:image/png;base64,'+QRCode.Base64Bg" />
             <div style="height:20%;width:100%;">
                 <van-row>
                     <van-col span="4"></van-col>
@@ -59,7 +59,8 @@
             QRCode: {
                 show: false,
                 Base64QR: '',
-                Base64Heard: ''
+                Base64Heard: '',
+                Base64Bg: ''
             }
         },
         methods: {
@@ -90,6 +91,7 @@
                     .then(res => {
                         this.QRCode.Base64QR = res.Base64QR;
                         this.QRCode.Base64Heard = res.Base64Heard;
+                        this.QRCode.Base64Bg = res.Base64Bg;
                         this.ImgIsOk = true;
                     }).catch(err => {
 

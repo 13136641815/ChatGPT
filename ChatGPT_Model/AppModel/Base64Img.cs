@@ -10,5 +10,6 @@ namespace ChatGPT_Model.AppModel
     {
         public string Base64QR { get; set; }
         public string Base64Heard { get; set; }
+        public string Base64Bg { get; set; }
     }
 }

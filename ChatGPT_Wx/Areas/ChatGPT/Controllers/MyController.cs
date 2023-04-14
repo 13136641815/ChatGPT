@@ -94,6 +94,9 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
             var CODE = ResultCode.Success;
             var Base64QR = await app.UrlToImage("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + HttpUtility.UrlEncode(ticket));
             var Base64Heard = await app.UrlToImage(CookiesModel.UserInfo.headimgurl);
+            Mapper_GPT_Setup setApp = new Mapper_GPT_Setup();
+            var setmodel = await setApp.GetFirstAsync();
+            var bg = await app.UrlToImage(setmodel.PushImg);
             if (string.IsNullOrEmpty(ticket))
             {
                 CODE = ResultCode.Empty;
@@ -104,7 +107,8 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
                 DATA = new Base64Img()
                 {
                     Base64QR = Base64QR,
-                    Base64Heard = Base64Heard
+                    Base64Heard = Base64Heard,
+                    Base64Bg = bg
                 }
             });
         }

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ChatGPT_Mapper;
+using ChatGPT_Model.AppModel;
+using ChatGPT_Service.Home;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +16,6 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
         {
             return View();
         }
+
     }
 }

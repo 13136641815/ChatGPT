@@ -1,4 +1,5 @@
-﻿using ChatGPT_Model.GPT3_5;
+﻿using ChatGPT_Model.AppModel;
+using ChatGPT_Model.GPT3_5;
 using ChatGPT_Service.ChatGPT;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
@@ -123,7 +124,8 @@ namespace ChatGPT_WebAPI.ChatHub
             HttpContent httpContent = JsonContent.Create<ChatGPT_Model.GPT3_5.Body>(Body);
             DiLog.Add("1.", DateTime.Now.ToString() + "|APIKEY:" + APIKEY);
             DiLog.Add("2.", DateTime.Now.ToString() + "|消息发送:" + messages[messages.Count - 1].content);
-            var response = await client.PostAsync("https://api.openai.com/v1/chat/completions", httpContent);
+            string DOMAIN = AppSettingsHelper.Configuration["DOMAIN:URL"].ToString();
+            var response = await client.PostAsync($"https://{DOMAIN}/v1/chat/completions", httpContent);
             // 读取响应内容
             using (var stream = await response.Content.ReadAsStreamAsync())
             {

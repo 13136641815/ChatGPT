@@ -70,7 +70,7 @@ namespace ChatGPT_Wx.Areas.ChatGPT.Controllers
                 WxHeadUrl = model.WxHeadUrl,
                 YN_VIP = model.YN_VIP,
                 Type_VIP = model.Type_VIP,
-                BeOverdue_VIP = model.BeOverdue_VIP,
+                BeOverdue_VIP = model.BeOverdue_PVIP < model.BeOverdue_VIP ? model.BeOverdue_VIP : model.BeOverdue_PVIP,
                 Free_Second = model.Free_Second,
                 VIP_Type = model.YN_VIP == 1 && model.BeOverdue_VIP > DateTime.Now ? 1 : model.YN_PVIP == 1 && model.BeOverdue_PVIP > DateTime.Now ? 0 : -1,
                 AccountType = model.AccountType,

@@ -115,7 +115,7 @@ namespace ChatGPT_WebAPI.ChatHub
             }
 
         }
-        async Task SendHttpPost(Dictionary<string, string> DiLog, string APIKEY, Body Body, List<Messages> messages)
+        async Task SendHttpPostNew(Dictionary<string, string> DiLog, string APIKEY, Body Body, List<Messages> messages)
         {
             //请求开始
             var client = new HttpClient();
@@ -179,6 +179,104 @@ namespace ChatGPT_WebAPI.ChatHub
                         await Clients.Caller.SendAsync("ErrMessage", "", ErrModel.error.message);//异常回复
                         await WebAPI_Log(DiLog);
                     }
+                }
+            }
+        }
+        async Task SendHttpPost(Dictionary<string, string> DiLog, string APIKEY, Body Body, List<Messages> messages)
+        {
+            //请求开始
+            //var client = new HttpClient();
+            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //client.DefaultRequestHeaders.Add("Authorization", "Bearer " + APIKEY);
+            HttpContent httpContent = JsonContent.Create<ChatGPT_Model.GPT3_5.Body>(Body);
+            DiLog.Add("1.", DateTime.Now.ToString() + "|APIKEY:" + APIKEY);
+            DiLog.Add("2.", DateTime.Now.ToString() + "|消息发送:" + messages[messages.Count - 1].content);
+            string DOMAIN = AppSettingsHelper.Configuration["DOMAIN:URL"].ToString();
+            // 创建HTTP客户端
+            using (var client = new HttpClient())
+            {
+                // 创建HTTP请求消息
+                var request = new HttpRequestMessage(HttpMethod.Post, $"https://{DOMAIN}/v1/chat/completions");
+                // 将请求消息承载的内容设置为流式响应，而不是完整的响应
+                request.Headers.Add("Authorization", "Bearer " + APIKEY);
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
+                request.Headers.TransferEncodingChunked = true;
+                request.Content = httpContent;
+
+                // 发送HTTP请求，并异步接收响应
+                using (var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+                {
+                    // 确认响应状态为成功
+                    //response.EnsureSuccessStatusCode();
+
+                    // 逐行读取响应内容
+                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    {
+                        using (var reader = new StreamReader(stream, Encoding.UTF8))
+                        {
+                            string Error = "";
+                            string Text = "";
+                            // 逐行读取文本内容
+                            while (!reader.EndOfStream)
+                            {
+                                Thread.Sleep(30);
+                                string line = await reader.ReadLineAsync();
+                                // 在这里对每一行文本进行处理
+                                if (line.Contains("[DONE]"))
+                                {
+                                    //回复流结束
+                                    DiLog.Add("4.", DateTime.Now.ToString() + "|消息接收完结,回复完整内容：" + Text);
+                                    await Clients.Caller.SendAsync("EndMessage", "", line);//回复
+                                    await WebAPI_Log(DiLog);
+                                    return;
+                                }
+                                if (line.Contains("assistant"))
+                                {
+                                    //首次接收消息
+                                    DiLog.Add("3.", DateTime.Now.ToString() + "|首次接收到回应消息");
+                                }
+                                if (line.Contains("data:"))
+                                {
+                                    line = line.Replace("data:", "");
+                                    var ItemResponse = JsonConvert.DeserializeObject<ChatGPT_Model.GPT3_5.StreamRespose>(line);
+                                    if (ItemResponse.choices[0].delta.content != null && ItemResponse.choices[0].delta.content != "")
+                                    {
+                                        string ReturnHtmlStr = ItemResponse.choices[0].delta.content;
+                                        Text += ReturnHtmlStr;
+                                        await Clients.Caller.SendAsync("ReceiveMessage", "", ReturnHtmlStr);//回复
+                                    }
+                                }
+                                else
+                                {
+                                    Error += line;
+                                }
+                            }
+                            if (Error.Contains("error"))
+                            {
+                                var ErrModel = JsonConvert.DeserializeObject<ChatGPT_Model.GPT3_5.ErrorBody>(Error.Trim(' '));
+                                if (ErrModel.error.type == "access_terminated" || ErrModel.error.type == "insufficient_quota")
+                                {
+                                    await ApiKeyCacheTime.RemvoCache(APIKEY);
+                                }
+                                DiLog.Add("5.", DateTime.Now.ToString() + "|接收异常:[代码:" + ErrModel.error.type + "][内容:" + ErrModel.error.message + "]");
+                                await Clients.Caller.SendAsync("ErrMessage", "", ErrModel.error.message);//异常回复
+                                await WebAPI_Log(DiLog);
+                            }
+                        }
+                        //var buffer = new byte[1024];
+                        //var bytesRead = 0;
+                        //var totalBytesRead = 0L;
+                        //do
+                        //{
+                        //    bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                        //    totalBytesRead += bytesRead;
+
+                        //    // 处理缓冲区中已经读取到的字节数据
+                        //    // ...
+                        //}
+                        //while (bytesRead > 0);
+                    }
+
                 }
             }
         }

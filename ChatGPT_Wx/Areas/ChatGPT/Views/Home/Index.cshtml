@@ -13,6 +13,15 @@
     @*<script src="/lib/eruda/eruda.min.js"></script>
         <script>eruda.init();</script>*@
     <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient( #ff7500,#002fa7);
+        }
         iframe {
             /*            width: 100%;
             height: 100%;
@@ -21,7 +30,8 @@
             bottom: 50px;*/
             height: 100%;
             width: 100%;
-            position: fixed;
+            position: absolute;
+            /*position: fixed;*/
             right: 0;
             bottom: 0;
             left: 0;
@@ -39,11 +49,28 @@
             .scroll-wrapper iframe {
                 /* 你自己指定的样式 */
             }
+        .van-tabbar--fixed {
+            position: absolute;
+        }
+        .PC_App {
+            position: relative;
+            width: 1000px;
+            height: 90%;
+            background-color: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .App {
+        
+        }
     </style>
 </head>
 
 <body>
-    <div id="app" v-cloak>
+    <div id="app" :class="AppClass" v-cloak>
         <div class="scroll-wrapper">
             <transition :name="item.transition" v-for="(item,index) in route" :key="index">
                 <iframe :id="'IFRAME'+index" v-if="item.islode" :src="item.url" v-show="index==active" data-scrolltop="0" frameborder="0" onload="Lode(this)"></iframe>
@@ -72,6 +99,7 @@
                 Index: 0,
                 TabbarShow: false,
                 isHaveBill: false,
+                AppClass:'PC_App'
             },
             methods: {
                 ChangeAI(botID) {
@@ -181,10 +209,23 @@
 
                     });
                 },
+                PageCss() {
+                    let width = document.documentElement.clientWidth;
+                    if (width > 1000) {
+                        this.AppClass = 'PC_App';
+                    } else {
+                        this.AppClass = 'App';
+                    }
+                }
             },
             mounted() {
                 const that = this;
                 this.Wxshare();
+                window.onresize = function () {
+                    return (function () {
+                        that.PageCss();
+                    })()
+                };
                 window.addEventListener('pageshow', function (event) {
                     // 点击回退按钮返回
                     if (event.persisted || window.performance && window.performance.navigation.type == 2) {

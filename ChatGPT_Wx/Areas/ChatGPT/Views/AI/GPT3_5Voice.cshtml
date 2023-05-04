@@ -266,7 +266,7 @@
                             @*<p class="AItriangle"></p>*@
                             <div style="max-width: 100%; min-width: 28px;">
                                 <van-loading color="#000000" style="display: inline; line-height: 24px; margin-left: 7px;" size="16px" v-if="item.content==='loding'">
-                                   思考中...
+                                    思考中...
                                 </van-loading>
                                 <div class="potext" v-else style="white-space: pre-wrap;">{{item.content}}</div>
                             </div>
@@ -284,9 +284,9 @@
                                         @@click="switchCh">
                             </van-button>
                             @*<input type="text" v-show="!Voice" placeholder="请输入您想咨询的问题" class="van-field__control"
-                                   v-model="text" style="background-color: #fff; height: 32px; height: 40px;padding-left: 15px; " />*@
-                            <textarea  type="text" v-show="!Voice" placeholder="请输入您想咨询的问题" class="van-field__control"
-                                   v-model="text" style="background-color: #fff; min-height: 40px;padding-left: 15px;" oninput="autoHeight(this)"></textarea>
+                                v-model="text" style="background-color: #fff; height: 32px; height: 40px;padding-left: 15px; " />*@
+                            <textarea type="text" v-show="!Voice" placeholder="请输入您想咨询的问题" class="van-field__control"
+                                      v-model="text" style="background-color: #fff; min-height: 40px;padding-left: 15px;" oninput="autoHeight(this)" @@keydown.enter.prevent="addLineBreak"></textarea>
                             <button type="button" id="bt_recoding" class="van-button van-button--default van-button--normal van-button--plain"
                                     style="height: 32px; height: 40px; width: 85%;" v-show="Voice">
                                 {{VoiceText}}
@@ -402,6 +402,14 @@
             ////////////////////////////
         },
         methods: {
+            //回车事件
+            async addLineBreak(event) {
+                if (event.shiftKey) {
+                    this.text += '\n';
+                } else {
+                    await this.Send();
+                }
+            },
             CopyQ(text) {
                 this.text = text;
             },

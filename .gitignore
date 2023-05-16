@@ -3,3 +3,15 @@
 ################################################################################
 
 /.vs/ChatGPT
+/ChatGPT_Admin/obj/Debug/net5.0
+/ChatGPT_Mapper/bin/Debug/net5.0
+/ChatGPT_Model/bin/Debug/net5.0
+/ChatGPT_Model/obj/Debug/net5.0
+/ChatGPT_Service/bin/Debug/net5.0
+/ChatGPT_WebAPI/bin/Debug/net5.0
+/ChatGPT_WebAPI/obj
+/ChatGPT_Wx/obj
+/ChatGPT_Service/obj
+/ChatGPT_Model/obj
+/ChatGPT_Mapper/obj
+/ChatGPT_Admin/obj

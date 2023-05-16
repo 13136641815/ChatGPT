@@ -22,7 +22,7 @@ namespace ChatGPT_WebAPI.ChatHub
             string APIKEY = "";
             foreach (var item in CacheList)
             {
-                if (item.i >= 19)
+                if (item.i >= 3)
                 {
                     //对时间的判断
                     DateTime dt = DateTime.Now;
